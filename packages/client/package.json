@@ -12,10 +12,14 @@
   },
   "dependencies": {
     "dotenv": "^16.0.2",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/material": "^5.10.3",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "6"
   },
   "devDependencies": {
     "@testing-library/react": "^13.3.0",
