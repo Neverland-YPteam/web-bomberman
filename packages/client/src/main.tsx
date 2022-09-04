@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { App } from './components/organisms/app'
+import { App } from '@organisms/app'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
-import { AuthPage } from '../../pages/auth';
+import { AuthPage } from '@pages/auth';
 
 function App() {
   useEffect(() => {
