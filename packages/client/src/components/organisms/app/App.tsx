@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import './App.css';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import { AuthPage } from '@pages/auth';
 
 function App() {
@@ -14,14 +14,16 @@ function App() {
     fetchServerData()
   }, [])
   return (
-    <div className="App">
-      <div className="wrapper">
-        <Routes>
-          // пока тут будет авторизация
-          <Route path="/" element={<AuthPage />} />
-        </Routes>
+    <BrowserRouter>
+      <div className="App">
+        <div className="wrapper">
+          <Routes>
+            // пока тут будет авторизация
+            <Route path="/" element={<AuthPage />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   )
 }
 

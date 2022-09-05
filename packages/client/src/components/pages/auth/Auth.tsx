@@ -11,7 +11,6 @@ const Auth = () => {
     >
         <p>Authorization page</p>
     </Box>
-
   );
 };
 
