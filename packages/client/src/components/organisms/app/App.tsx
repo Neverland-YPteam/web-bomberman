@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import './App.css';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
-import { AuthPage } from '@pages/auth';
+import { BrowserRouter } from 'react-router-dom';
+import { AppRoutes } from '@organisms/app-routes'
 
 function App() {
   useEffect(() => {
@@ -17,10 +17,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <div className="wrapper">
-          <Routes>
-            // пока тут будет авторизация
-            <Route path="/" element={<AuthPage />} />
-          </Routes>
+          <AppRoutes />
         </div>
       </div>
     </BrowserRouter>
