@@ -6,7 +6,7 @@ import { boundError } from '../../../utils/boundary-error/BoundaryError'
 export class ErrorModal extends Component<boundError> {
 
   componentWillUnmount() {
-    console.log('123421')
+    console.log('1234211')
   }
 
   render = () => {
