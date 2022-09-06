@@ -21,17 +21,16 @@ const Leaderboard = () => {
       minWidth="100vh"
     >
       <Box
+        sx={{backgroundColor: 'white'}}
         display="flex"
         flexDirection="column"
         justifyContent="center"
-        alignItems="center"
         minHeight="80vh"
         minWidth="100vh"
-        backgroundColor="white"
         padding="48px"
       >
-        <Typography variant="h4">Таблица лидеров</Typography>
-        <TableContainer component={Paper}>
+        <Typography variant="h5" sx={{ marginBottom: '40px' }}>Таблица лидеров</Typography>
+        <TableContainer>
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>
