@@ -35,7 +35,7 @@ const Leaderboard = () => {
             <TableHead>
               <TableRow>
                 <TableCell align="left" sx={{fontWeight: 'bold'}}>Аватар</TableCell>
-                <TableCell align="center" sx={{fontWeight: 'bold'}}>Имя</TableCell>
+                <TableCell align="left" sx={{fontWeight: 'bold'}}>Имя</TableCell>
                 <TableCell align="left" sx={{fontWeight: 'bold'}}>Очки</TableCell>
                 <TableCell align="left" sx={{fontWeight: 'bold'}}>Место</TableCell>
               </TableRow>
