@@ -1,14 +1,14 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { AuthPage } from '@pages/auth'
-import { SignupPage } from '@pages/sign-up'
+import Leaderboard from '@pages/Leaderboard'
 
 const AppRoutes = () => {
   return (
     <Routes>
       // пока тут будет авторизация
       <Route path="/" element={<AuthPage />} />
-      <Route path="/sign-up" element={<SignupPage />} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
     </Routes>
   )
 }
