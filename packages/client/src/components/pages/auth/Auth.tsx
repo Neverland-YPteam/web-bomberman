@@ -26,7 +26,6 @@ const Auth = () => {
         label="Логин"
         name="login"
         autoComplete="login"
-        autoFocus
       />
       <TextField
         margin="normal"
@@ -38,7 +37,7 @@ const Auth = () => {
         autoComplete="current-password"
       />
       <SubmitButton>ВОЙТИ</SubmitButton>
-      <FormLink to="/sign-in" text="Нет аккаунта? Регистрация" />
+      <FormLink to="/sign-up" text="Нет аккаунта? Регистрация" />
     </FormContainer>
   );
 };
