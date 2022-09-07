@@ -18,6 +18,7 @@ const paletteOptions: PaletteOptions = {
   },
   info: {
     main: '#4794EB',
+    dark: '#1976E1',
   }
 }
 
