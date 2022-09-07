@@ -61,7 +61,7 @@ const Signup = () => {
         label="Пароль"
         type="password"
       />
-      <SubmitButton>ЗАРЕГИСТРИРОВАТЬСЯ</SubmitButton>
+      <SubmitButton>Зарегистрироваться</SubmitButton>
       <FormLink to="/" text="Уже есть аккаунт? Войти" />
     </FormContainer>
   )

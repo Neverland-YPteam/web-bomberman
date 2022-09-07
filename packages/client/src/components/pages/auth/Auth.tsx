@@ -36,7 +36,7 @@ const Auth = () => {
         type="password"
         autoComplete="current-password"
       />
-      <SubmitButton>ВОЙТИ</SubmitButton>
+      <SubmitButton>Войти</SubmitButton>
       <FormLink to="/sign-up" text="Нет аккаунта? Регистрация" />
     </FormContainer>
   );
