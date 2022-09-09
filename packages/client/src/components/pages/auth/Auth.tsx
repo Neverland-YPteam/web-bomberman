@@ -1,23 +1,44 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material'
+import { TextField } from '@mui/material'
+import { FormContainer } from '@molecules/form-container'
+import { SubmitButton } from '@atoms/submit-button'
+import { FormLink } from '@atoms/form-link'
 
 const Auth = () => {
+  const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    const data = new FormData(evt.currentTarget);
+    console.log({
+      login: data.get('login'),
+      password: data.get('password'),
+    });
+  }
+
   return (
-    <Box
-    sx={{
-      height: '100vh',
-      // display: 'flex',
-    }}
+    <FormContainer
+      onFormSubmit={handleSubmit}
+      title="Авторизация"
     >
-        {/* Просто пример использования */}
-        <Typography
-          sx={{
-            background: ({ palette }) => palette.info.main,
-          }}
-        >
-          Authorization page
-        </Typography>
-    </Box>
+      <TextField
+        margin="normal"
+        required
+        fullWidth
+        label="Логин"
+        name="login"
+        autoComplete="login"
+      />
+      <TextField
+        margin="normal"
+        required
+        fullWidth
+        name="password"
+        label="Пароль"
+        type="password"
+        autoComplete="current-password"
+      />
+      <SubmitButton>Войти</SubmitButton>
+      <FormLink to="/sign-up" text="Нет аккаунта? Регистрация" />
+    </FormContainer>
   );
 };
 
