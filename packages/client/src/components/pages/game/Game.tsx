@@ -3,11 +3,13 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 
-import { loadResources } from './js'
 
 const Game = () => {
   useEffect(() => {
-    loadResources()
+    (async () => {
+      const { loadResources } = await import('./js')
+      loadResources()
+    })()
   }, [])
 
   return (
