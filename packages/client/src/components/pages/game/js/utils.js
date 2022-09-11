@@ -42,12 +42,15 @@ const omit = (arr, omitted) => {
   })
 }
 
+const floatNum = (num) => parseFloat(num.toFixed(5))
+
 export {
   delay,
   getRandomArrayValue,
   getBooleanWithProbability,
   getRandomNumberBetween,
   getRandomBoolean,
+  floatNum,
   limitFrames,
   omit,
 }

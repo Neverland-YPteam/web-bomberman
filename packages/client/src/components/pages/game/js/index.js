@@ -1,6 +1,6 @@
 import { RESOURCE_BASE_URL } from './const.js'
 import { canvasStatic } from './canvas.js'
-import { loadImages } from './images.js'
+import { loadSprite } from './images.js'
 import { panel } from './panel.js'
 import { map } from './map.js'
 import { level } from './level.js'
@@ -29,7 +29,7 @@ const loadFont = async () => {
 
 const loadResources = async () => {
   await loadFont()
-  loadImages()
+  loadSprite()
 }
 
 // onLoad вызовет загрузчик изображений, когда сделает свое дело

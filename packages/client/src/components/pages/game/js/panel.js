@@ -1,5 +1,5 @@
 /**
- * Верхняя панелька с информацией о набранных очках и доступных жизнях
+ * Верхняя панелька с информацией о времени, набранных очках и доступных жизнях
  */
 
 import {
@@ -8,21 +8,25 @@ import {
   TEXT_COLOR,
   FONT_SIZE,
   TILE_SIZE,
-  TEXTURE_HEART,
+  TIME_INITIAL_S,
+  SCORE_INITIAL,
   LIVES_INITIAL,
+  textures,
 } from './const.js'
 
 import { canvasStatic } from './canvas.js'
 
+const { TEXTURE_HEART } = textures
+
 const TEXT_GAP = 24
-const SCORE_TEXT = 'Счет'
-const SCORE_INITIAL = 0
+const TIME_TEXT = 'Время'
 
 class Panel {
+  _time = TIME_INITIAL_S
   _score = SCORE_INITIAL
   _lives = LIVES_INITIAL
 
-  _scoreTextWidth
+  _timeTextWidth
   _liveCountTextWidth
 
   _text(text, x, align = 'left') {
@@ -36,8 +40,9 @@ class Panel {
 
     this._liveCountTextWidth = canvasStatic.measureText(`×${this._lives}`)
 
-    this._text(SCORE_TEXT, TILE_SIZE)
-    this._text(String(this._score), TILE_SIZE + this._scoreTextWidth + TEXT_GAP)
+    this._text(TIME_TEXT, TILE_SIZE)
+    this._text(String(this._time), TILE_SIZE + this._timeTextWidth + TEXT_GAP)
+    this._text(String(this._score), canvasStatic.width / 2, 'center')
     this._text(`×${this._lives}`, canvasStatic.width - TILE_SIZE, 'right')
 
     canvasStatic.image(
@@ -50,7 +55,12 @@ class Panel {
   init() {
     canvasStatic.setFontSize(FONT_SIZE)
 
-    this._scoreTextWidth = canvasStatic.measureText(SCORE_TEXT)
+    this._timeTextWidth = canvasStatic.measureText(TIME_TEXT)
+    this._redraw()
+  }
+
+  updateTime(num) {
+    this._time = num
     this._redraw()
   }
 
