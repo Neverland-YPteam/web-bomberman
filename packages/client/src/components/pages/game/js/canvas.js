@@ -1,9 +1,10 @@
 import {
   TILE_SIZE,
+  SPRITE_TEXTURE_SIZE,
   FONT_FAMILY,
 } from './const.js'
 
-import { images } from './images.js'
+import { getImageCoords, sprite } from './images.js'
 
 /**
  * Используем два канваса — один для статики, другой для текстур с перемещением и анимацией
@@ -78,8 +79,18 @@ class Canvas {
   }
 
   image(texture, x, y, width = TILE_SIZE, height = TILE_SIZE) {
-    const image = images[texture]
-    this._offscreenContext.drawImage(image, x, y, width, height)
+    const [spriteX, spriteY] = getImageCoords(texture)
+    this._offscreenContext.drawImage(
+      sprite,
+      spriteX,
+      spriteY,
+      SPRITE_TEXTURE_SIZE,
+      SPRITE_TEXTURE_SIZE,
+      x,
+      y,
+      width,
+      height,
+    )
   }
 
   // Старое. Пока не требуется

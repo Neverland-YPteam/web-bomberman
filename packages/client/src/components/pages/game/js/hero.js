@@ -7,19 +7,23 @@
 
 import {
   PANEL_HEIGHT_PX,
-  TEXTURE_COLUMN,
-  TEXTURE_WALL,
-  TEXTURE_HERO_RIGHT_STAYING,
   TILE_SIZE,
+  textures,
 } from './const.js'
 
 import { canvas } from './canvas.js'
 import { level } from './level.js'
 import { Controls } from './controls.js'
 
-const HERO_SPEED_DEFAULT = 2 // Скорость героя по умолчанию
+const {
+  TEXTURE_COLUMN,
+  TEXTURE_WALL,
+  TEXTURE_HERO_RIGHT_STAYING,
+} = textures
+
+const HERO_SPEED_DEFAULT = 3 // Скорость героя по умолчанию
 const HERO_SPEED_IMPROVED = 4 // Скорость героя при активном бонусе
-const HERO_TOLERANCE_PX = 5 // Допустимое отклонение от границ COLUMN или WALL для прохода героя между текстурами
+const HERO_TOLERANCE_PX = 9 // Допустимое отклонение от границ COLUMN или WALL для прохода героя между текстурами
 const HERO_LIVES_DEFAULT = 3
 
 class Hero {

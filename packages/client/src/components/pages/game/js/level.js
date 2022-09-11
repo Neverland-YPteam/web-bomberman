@@ -6,14 +6,13 @@
  */
 
 import {
+  FPS,
   MAP_TILES_COUNT_X,
   MAP_TILES_COUNT_Y,
-  TEXTURE_COLUMN,
-  TEXTURE_WALL,
-  TEXTURE_GRASS,
   BG_COLOR,
   TEXT_COLOR,
   FONT_SIZE,
+  textures,
 } from './const.js'
 
 import {
@@ -27,6 +26,12 @@ import { map } from './map.js'
 import { hero } from './hero.js'
 import { Enemy } from './enemy.js'
 
+const {
+  TEXTURE_COLUMN,
+  TEXTURE_WALL,
+  TEXTURE_GRASS,
+} = textures
+
 const LEVEL_INTRO_TIMEOUT_MS = 500 // На этапе разработки большое значение не нужно
 const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена образовалась прямо возле героя
 const SAFE_TILES_ENEMY_COUNT = 8 // И враги тоже
@@ -35,13 +40,18 @@ const WALL_PROBABILITY_PCT = 40 // Вероятность появления с�
 // @TODO Подумать, как прятать бонус под WALL, чтобы он появлялся при уничтожении WALL
 const levels = {
   1: {
-    enemies: { balloon: 4, ghost: 3, coin: 2, },
-    // bonus: 'bombs',
+    enemies: {
+      balloon: 2,
+      beaker: 2,
+      lantern: 2,
+      face: 2,
+      jelly: 2,
+      ghost: 2,
+      bear: 2,
+      coin: 2,
+    },
+    // bonus: 'bomb',
   },
-  // 2: {
-  //   enemies: { balloon: 3, coin: 1, },
-  //   bonus: 'flames',
-  // },
 }
 
 class Level {
@@ -170,12 +180,12 @@ class Level {
     canvas.update() // Обновили canvas
 
     /**
-     * Запускаем апдейтилку в ~60 FPS
+     * Запускаем апдейт фреймов
      *
      * @TODO Научиться временно дизаблить эту штуку
      * Пригодится перед очередным goToNextLevel или при появлении попапа о подтверждении выхода
      */
-    limitFrames(this._updateDynamicTextures)
+    limitFrames(this._updateDynamicTextures, FPS)
   }
 
   getTileType(col, row) {

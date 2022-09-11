@@ -1,7 +1,5 @@
 /**
- * Здесь будет класс Enemy, отвечающий за врагов
- * По аналогии с Hero, но не синглтон
- *
+ * Класс, отвечающий за врагов и их характеристики
  * Можно даже добавить несложный ИИ для высокоуровневых врагов
  * Если в поле зрения врага есть главный герой, меняем врагу направление движения
  */
@@ -9,55 +7,25 @@
  import {
   PANEL_HEIGHT_PX,
   TILE_SIZE,
-  TEXTURE_COLUMN,
-  TEXTURE_WALL,
-  TEXTURE_BALLOON_LEFT,
-  TEXTURE_BALLOON_RIGHT,
-  TEXTURE_GHOST_LEFT,
-  TEXTURE_GHOST_RIGHT,
-  TEXTURE_COIN_LEFT,
-  TEXTURE_COIN_RIGHT,
+  textures,
 } from './const.js'
 
 import {
+  omit,
   getRandomBoolean,
   getRandomArrayValue,
-  omit,
   getBooleanWithProbability,
+  floatNum,
 } from './utils.js'
 import { canvas } from './canvas.js'
 import { level } from './level.js'
+import { enemies } from './enemies-list.js'
+
+const { TEXTURE_COLUMN, TEXTURE_WALL } = textures
 
 const DIRECTIONS = ['left', 'right', 'up', 'down']
 const DIRECTION_DEFAULT = 'right'
 const DIRECTION_CHANGE_PROBABILITY_PTC = 40
-
-const enemies = {
-  balloon: {
-    textures: {
-      left: TEXTURE_BALLOON_LEFT,
-      right: TEXTURE_BALLOON_RIGHT,
-    },
-    speed: 1,
-  },
-  ghost: {
-    textures: {
-      left: TEXTURE_GHOST_LEFT,
-      right: TEXTURE_GHOST_RIGHT,
-    },
-    speed: 1,
-    wallPass: true,
-    unpredictable: true,
-  },
-  coin: {
-    textures: {
-      left: TEXTURE_COIN_LEFT,
-      right: TEXTURE_COIN_RIGHT,
-    },
-    speed: 3,
-    unpredictable: true,
-  },
-}
 
 class Enemy {
   x
@@ -69,19 +37,26 @@ class Enemy {
 
   _textures
   _speed
-  _abilities
+  _wallpass
+  _canTurn
+  _unpredictable
+
+  _changeTextureInterval
+  _currentTextureIndex = 0
 
   constructor(name) {
     const {
       textures,
       speed,
-      wallPass,
+      wallpass,
+      canTurn,
       unpredictable,
     } = enemies[name]
 
     this._textures = textures
     this._speed = speed
-    this._wallPass = wallPass ?? false
+    this._wallpass = wallpass ?? false
+    this._canTurn = canTurn ?? false
     this._unpredictable = unpredictable ?? false
 
     this._setDirection(this._getRandomDirection(DIRECTIONS))
@@ -99,17 +74,25 @@ class Enemy {
     }
   }
 
+  get _backDirection() {
+    if (this._directionAxis === 'x') {
+      return this._direction === 'left' ? 'right' : 'left'
+    }
+
+    return this._direction === 'up' ? 'down' : 'up'
+  }
+
   get _blockingTextures() {
-    if (this._wallPass && getRandomBoolean()) {
+    if (this._wallpass && getRandomBoolean()) {
       return [TEXTURE_COLUMN]
     }
 
     return [TEXTURE_COLUMN, TEXTURE_WALL]
   }
 
-  get _texture() {
-    return this._textures[this._lastDirectionX]
-  }
+  // get _texture() {
+  //   return this._textures[this._lastDirectionX]
+  // }
 
   get _canRandomlyChangeDirection() {
     return this._unpredictable && getBooleanWithProbability(DIRECTION_CHANGE_PROBABILITY_PTC)
@@ -119,8 +102,18 @@ class Enemy {
     return getRandomArrayValue(directions)
   }
 
-  _changeDirection(omittedDirection) {
-    const directionsFiltered = omit(DIRECTIONS, omittedDirection)
+  _changeDirection(isBackBlocked) {
+    const omittedDirections = [this._direction]
+
+    if (!this._canTurn && !isBackBlocked) {
+      if (this._directionAxis === 'x') {
+        omittedDirections.push('up', 'down')
+      } else {
+        omittedDirections.push('left', 'right')
+      }
+    }
+
+    const directionsFiltered = omit(DIRECTIONS, omittedDirections)
     this._setDirection(this._getRandomDirection(directionsFiltered))
   }
 
@@ -138,10 +131,21 @@ class Enemy {
 
   _moveFurther() {
     const axis = this._direction === 'left' || this._direction === 'right' ? 'x' : 'y'
+    const shift = this._direction === 'left' || this._direction === 'up' ? -this._speed : this._speed
 
-    this[axis] += this._direction === 'left' || this._direction === 'up'
-      ? -this._speed
-      : this._speed
+    this[axis] = floatNum(this[axis] + shift)
+  }
+
+  get _texture() {
+    return this._textures[this._lastDirectionX][this._currentTextureIndex]
+  }
+
+  _updateTexture = () => {
+    const textures = this._textures[this._lastDirectionX]
+
+    this._currentTextureIndex = this._currentTextureIndex === textures.length - 1
+      ? 0
+      : this._currentTextureIndex + 1
   }
 
   setPosition(row, col) {
@@ -156,8 +160,8 @@ class Enemy {
   move() {
     const { _coords, _direction, _directionAxis } = this
 
-    const isBetweenTilesX = _coords.topLeft.x % TILE_SIZE === 0
-    const isBetweenTilesY = _coords.topLeft.y % TILE_SIZE === 0
+    const isBetweenTilesX = floatNum(_coords.topLeft.x % TILE_SIZE) === 0
+    const isBetweenTilesY = floatNum(_coords.topLeft.y % TILE_SIZE) === 0
     const isBetweenTiles = isBetweenTilesX && isBetweenTilesY
 
     if (!isBetweenTiles) {
@@ -165,33 +169,34 @@ class Enemy {
       return
     }
 
-    const adjacentTileLeft = _coords.topLeft.x - this._speed
-    const adjacentTileRight = _coords.topRight.x + this._speed - 1
-    const adjacentTileUp = _coords.topLeft.y - this._speed
-    const adjacentTileDown = _coords.bottomLeft.y + this._speed - 1
+    const adjacentTileLeft = floatNum(_coords.topLeft.x - this._speed)
+    const adjacentTileRight = floatNum(_coords.topRight.x + this._speed - 0.1)
+    const adjacentTileUp = floatNum(_coords.topLeft.y - this._speed)
+    const adjacentTileDown = floatNum(_coords.bottomLeft.y + this._speed - 0.1)
 
     const adjacentTileTypes = {
       left: level.getTileType(
-        Math.floor(adjacentTileLeft / TILE_SIZE),
-        Math.floor(_coords.topLeft.y / TILE_SIZE),
+        Math.floor(floatNum(adjacentTileLeft / TILE_SIZE)),
+        Math.floor(floatNum(_coords.topLeft.y / TILE_SIZE)),
       ),
       right: level.getTileType(
-        Math.floor(adjacentTileRight / TILE_SIZE),
-        Math.floor(_coords.topLeft.y / TILE_SIZE),
+        Math.floor(floatNum(adjacentTileRight / TILE_SIZE)),
+        Math.floor(floatNum(_coords.topLeft.y / TILE_SIZE)),
       ),
       up: level.getTileType(
-        Math.floor(_coords.topLeft.x / TILE_SIZE),
-        Math.floor(adjacentTileUp / TILE_SIZE),
+        Math.floor(floatNum(_coords.topLeft.x / TILE_SIZE)),
+        Math.floor(floatNum(adjacentTileUp / TILE_SIZE)),
       ),
       down: level.getTileType(
-        Math.floor(_coords.topLeft.x / TILE_SIZE),
-        Math.floor(adjacentTileDown / TILE_SIZE),
+        Math.floor(floatNum(_coords.topLeft.x / TILE_SIZE)),
+        Math.floor(floatNum(adjacentTileDown / TILE_SIZE)),
       )
     }
 
     const blockingTextures = this._blockingTextures
     const freeDirectionsForTurn = []
 
+    let isBackBlocked = false
     let isBlockedFromAllSides = true
 
     Object.keys(adjacentTileTypes).forEach((direction) => {
@@ -199,6 +204,10 @@ class Enemy {
       const isBlocked = blockingTextures.includes(texture)
 
       if (isBlocked) {
+        if (direction === this._backDirection) {
+          isBackBlocked = true
+        }
+
         return
       }
 
@@ -214,7 +223,12 @@ class Enemy {
       }
     })
 
-    if (isBlockedFromAllSides) {
+    if (isBlockedFromAllSides && !this._wallpass) {
+      if (this._changeTextureInterval) {
+        this._changeTextureInterval = null
+      }
+
+      clearInterval(this._changeTextureInterval)
       return
     }
 
@@ -222,12 +236,18 @@ class Enemy {
     const isAbleToMove = !blockingTextures.includes(nextTile)
 
     if (!isAbleToMove) {
-      this._changeDirection(_direction)
-    } else if (freeDirectionsForTurn.length && this._canRandomlyChangeDirection) {
+      this._changeDirection(isBackBlocked)
+    } else if (freeDirectionsForTurn.length > 0 && this._canRandomlyChangeDirection) {
       const newDirection = this._getRandomDirection(freeDirectionsForTurn)
       this._setDirection(newDirection)
     } else {
       this._moveFurther()
+    }
+
+    if (!this._changeTextureInterval) {
+      this._currentTextureIndex = 0
+      this._changeTextureInterval = setInterval(this._updateTexture, this._textures.interval)
+      this._updateTexture()
     }
   }
 }

@@ -8,11 +8,15 @@ import {
   MAP_TILES_COUNT_X,
   MAP_TILES_COUNT_Y,
   TILE_SIZE,
-  TEXTURE_COLUMN,
-  TEXTURE_GRASS,
+  textures,
 } from './const.js'
 
 import { canvasStatic } from './canvas.js'
+
+const {
+  TEXTURE_COLUMN,
+  TEXTURE_GRASS,
+} = textures
 
 class Map {
   _drawHorizondalBorders() {
