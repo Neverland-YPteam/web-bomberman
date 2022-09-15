@@ -25,7 +25,11 @@ const FormContainer = ({ onFormSubmit, children, title }: Props) => {
         }}
       >
         {title && (
-          <Typography component="h2" variant="h5">
+          <Typography
+            component="h2"
+            variant="h5"
+            sx={{ marginBottom: 2 }}
+          >
             {title}
           </Typography>
         )}
