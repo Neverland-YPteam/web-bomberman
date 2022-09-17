@@ -4,6 +4,7 @@ import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
 import { TextField } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
+import { routes } from '@organisms/app-routes';
 
 const Signup = () => {
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -63,7 +64,7 @@ const Signup = () => {
         type="password"
       />
       <SubmitButton>Зарегистрироваться</SubmitButton>
-      <FormLink to="/" text="Уже есть аккаунт? Войти" />
+      <FormLink to={routes.auth.path} text="Уже есть аккаунт? Войти" />
     </FormContainer>
   )
 }
