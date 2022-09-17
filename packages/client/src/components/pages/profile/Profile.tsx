@@ -2,6 +2,7 @@ import React from 'react'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { Avatar, Box, TextField } from '@mui/material'
+import { withNavbar } from '@services/withNavbar'
 
 const Profile = () => {
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -110,4 +111,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default withNavbar(Profile, 'profile')

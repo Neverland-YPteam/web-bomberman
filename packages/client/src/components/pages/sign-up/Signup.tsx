@@ -3,6 +3,7 @@ import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
 import { TextField } from '@mui/material'
+import { withNavbar } from '@services/withNavbar'
 
 const Signup = () => {
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -67,4 +68,4 @@ const Signup = () => {
   )
 }
 
-export default Signup
+export default withNavbar(Signup, 'signUp')

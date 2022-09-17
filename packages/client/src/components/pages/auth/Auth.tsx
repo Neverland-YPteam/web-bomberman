@@ -3,6 +3,7 @@ import { TextField } from '@mui/material'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
+import { withNavbar } from '@services/withNavbar'
 
 const Auth = () => {
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -42,4 +43,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default withNavbar(Auth, 'auth');
