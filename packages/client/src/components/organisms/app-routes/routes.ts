@@ -1,6 +1,3 @@
-// @TODO: После появления лендинга по роуту / перенести auth на /auth (или /sign-in)
-// И поправить configOptions в withNavbar
-
 export interface IRoute {
   title: string
   path: string
@@ -9,7 +6,11 @@ export interface IRoute {
 type TRoutes = Record<string, IRoute>
 
 const routes: TRoutes = {
-  auth: {
+  landing: {
+    title: 'Об игре',
+    path: '/',
+  },
+  auth: { // @TODO: После появления лендинга по роуту / перенести auth на /auth (или /sign-in)
     title: 'Авторизация',
     path: '/',
   },

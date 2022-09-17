@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { IRoute } from '@organisms/app-routes'
+import { IRoute, routes } from '@organisms/app-routes'
 import { Container, Box } from '@mui/material'
 import { theme } from '@services/AppThemeProvider/theme'
 import './Navbar.css'
@@ -20,7 +20,7 @@ const Navbar = ({ showLogo, links }: Props) => {
       <Container>
         <Box className="navbar__content">
           {showLogo &&
-            <Link to="/" title="Об игре">
+            <Link to={routes.landing.path} title="Об игре">
               <img src={logo} width="120" />
             </Link>
           }
