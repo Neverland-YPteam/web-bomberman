@@ -1,6 +1,12 @@
-.App {
-    background-image: url('public/background.png');
-    background-repeat: no-repeat;
-    background-position: 50% 0;
-    background-size: cover;
+.app {
+  flex: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app__wrapper {
+  flex: 100%;
+  display: flex;
+  flex-direction: column;
+  background: url('public/background.png') no-repeat 0 0 / cover fixed;
 }
