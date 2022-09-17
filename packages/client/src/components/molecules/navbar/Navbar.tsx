@@ -18,7 +18,10 @@ const Navbar = ({ showLogo, links }: Props) => {
       sx={{ zIndex: theme.zIndex.appBar, boxShadow: 2 }}
     >
       <Container>
-        <Box className="navbar__content">
+        <Box
+          className="navbar__content"
+          sx={{ gap: 8 }}
+        >
           {showLogo &&
             <Link to={routes.landing.path} title="Об игре">
               <img src={logo} width="120" />
