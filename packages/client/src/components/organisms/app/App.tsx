@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import './App.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from '@organisms/app-routes'
+import { Box } from '@mui/material';
 
 function App() {
   useEffect(() => {
@@ -15,11 +16,9 @@ function App() {
   }, [])
   return (
     <BrowserRouter>
-      <div className="App">
-        <div className="wrapper">
-          <AppRoutes />
-        </div>
-      </div>
+      <Box className="app__wrapper">
+        <AppRoutes />
+      </Box>
     </BrowserRouter>
   )
 }

@@ -5,15 +5,16 @@ import { SignupPage } from '@pages/sign-up'
 import Leaderboard from '@pages/Leaderboard'
 import { ProfilePage } from '@pages/profile'
 import { ErrorBoundary } from '@organisms/error-boundary'
+import { routes } from './routes'
 
 const AppRoutes = () => {
   return (
     <ErrorBoundary>
       <Routes>
-        <Route path="/" element={<AuthPage />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/sign-up" element={<SignupPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path={routes.auth.path} element={<AuthPage />} />
+        <Route path={routes.signUp.path} element={<SignupPage />} />
+        <Route path={routes.profile.path} element={<ProfilePage />} />
+        <Route path={routes.leaderboard.path} element={<Leaderboard />} />
       </Routes>
     </ErrorBoundary>
   )

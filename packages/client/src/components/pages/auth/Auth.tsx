@@ -3,6 +3,8 @@ import { TextField } from '@mui/material'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
+import { withNavbar } from '@services/withNavbar'
+import { routes } from '@organisms/app-routes';
 
 const Auth = () => {
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -37,9 +39,9 @@ const Auth = () => {
         autoComplete="current-password"
       />
       <SubmitButton>Войти</SubmitButton>
-      <FormLink to="/sign-up" text="Нет аккаунта? Регистрация" />
+      <FormLink to={routes.signUp.path} text="Нет аккаунта? Регистрация" />
     </FormContainer>
   );
 };
 
-export default Auth;
+export default withNavbar(Auth, 'auth');

@@ -6,27 +6,26 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Paper, Box, Avatar, Typography
+  Container, Box, Avatar, Typography
 } from '@mui/material'
 import mockData from '@pages/Leaderboard/mockData';
 import { ILeaderboard } from '@src/types/leaderboard'
+import { withNavbar } from '@services/withNavbar'
 
 const Leaderboard = () => {
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
-      minWidth="100vh"
+    <Container
+      sx={{
+        flex: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
     >
       <Box
-        sx={{backgroundColor: 'white'}}
+        sx={{ backgroundColor: 'white' }}
+        flex="100%"
         display="flex"
         flexDirection="column"
-        justifyContent="center"
-        minHeight="80vh"
-        minWidth="100vh"
         padding="48px"
       >
         <Typography variant="h5" sx={{ marginBottom: '40px' }}>Таблица лидеров</Typography>
@@ -62,8 +61,8 @@ const Leaderboard = () => {
           </Table>
         </TableContainer>
       </Box>
-    </Box>
+    </Container>
   );
 };
 
-export default Leaderboard;
+export default withNavbar(Leaderboard, 'leaderboard');
