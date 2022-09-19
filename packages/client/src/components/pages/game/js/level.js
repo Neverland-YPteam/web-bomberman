@@ -13,7 +13,7 @@ import {
   TEXT_COLOR,
   FONT_SIZE,
   textures,
-} from './const.js'
+} from './const'
 
 import {
   delay,
@@ -21,7 +21,7 @@ import {
   getRandomNumberBetween,
   limitFrames,
 } from './utils.js'
-import { canvasStatic, canvas } from './canvas.js'
+import { canvasStatic, canvas } from './canvas'
 import { map } from './map.js'
 import { hero } from './hero.js'
 import { Enemy } from './enemy.js'

@@ -12,9 +12,9 @@ import {
   SCORE_INITIAL,
   LIVES_INITIAL,
   textures,
-} from './const.js'
+} from './const'
 
-import { canvasStatic } from './canvas.js'
+import { canvasStatic } from './canvas'
 
 const { TEXTURE_HEART } = textures
 

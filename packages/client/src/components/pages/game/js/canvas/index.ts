@@ -1,39 +1,45 @@
+import { TCanvasSelector } from './types'
+
 import {
   TILE_SIZE,
   SPRITE_TEXTURE_SIZE,
   FONT_FAMILY,
-} from './const.js'
+} from '../const'
 
-import { getImageCoords, sprite } from './images.js'
+import { getImageCoords, sprite } from '../images'
 
 /**
  * Используем два канваса — один для статики, другой для текстур с перемещением и анимацией
  * Можно упороться и вместо нижнего холста вовсе использовать фон на CSS
  */
- export const CANVAS_SELECTOR_STATIC = '#game_static'
- export const CANVAS_SELECTOR_DYNAMIC = '#game_dynamic'
+export const CANVAS_SELECTOR_STATIC = '#game_static'
+export const CANVAS_SELECTOR_DYNAMIC = '#game_dynamic'
 
 class Canvas {
-  _canvas
-  _context
-  _offscreenCanvas
-  _offscreenContext
-  _allowAutomaticUpdate
+  _canvas: HTMLCanvasElement
+  _context: CanvasRenderingContext2D
+  _offscreenCanvas: OffscreenCanvas
+  _offscreenContext: OffscreenCanvasRenderingContext2D
 
-  constructor(selector, alpha = false) {
-    this._canvas = document.querySelector(selector)
-    this._context = this._canvas.getContext('2d', { alpha })
+  // Альфа-канал не нужен для статического канваса, экономим ресурсы
+  constructor(selector: TCanvasSelector, alpha = false) {
+    const canvasEl = document.querySelector(selector)
+
+    if (!canvasEl) {
+      throw new Error(`Cannot find canvas element with selector: ${selector}`)
+    }
+
+    this._canvas = document.querySelector(selector) as HTMLCanvasElement
+    this._context = this._canvas.getContext('2d', { alpha }) as CanvasRenderingContext2D
 
     /**
      * Используем offscreenCanvas, чтобы рисовать объекты вне DOM и потом рендерить в один заход
      * Фича не кроссбраузерная, можно добавить полифил, на крайняк вернемся к обычному контексту
      */
-    this._offscreenCanvas = document.createElement('canvas')
+    this._offscreenCanvas = new OffscreenCanvas(this.width, this.height)
     this._offscreenCanvas.width = this.width
     this._offscreenCanvas.height = this.height
-    this._offscreenContext = this._offscreenCanvas.getContext('2d')
-
-    this._canvas.offscreenCanvas = this._offscreenCanvas
+    this._offscreenContext = this._offscreenCanvas.getContext('2d') as OffscreenCanvasRenderingContext2D
   }
 
   get width() {
@@ -56,51 +62,56 @@ class Canvas {
     this._context.clearRect(0, 0, this.width, this.height)
   }
 
-  measureText(text) {
+  measureText(text: string) {
     const { width } = this._offscreenContext.measureText(text)
     return Math.floor(width)
   }
 
-  setFontSize(size) {
+  setFontSize(size: number) {
     this._offscreenContext.font = `${size}px '${FONT_FAMILY}'`
   }
 
-  text(text, x, y, size, color, align = 'left') {
-    this._offscreenContext.fillStyle = color
+  text(
+    text: string,
+    x: number,
+    y: number,
+    size: number,
+    color: string,
+    align: CanvasTextAlign = 'left',
+  ) {
     this.setFontSize(size)
+    this._offscreenContext.fillStyle = color
     this._offscreenContext.textAlign = align
     this._offscreenContext.textBaseline = 'middle'
     this._offscreenContext.fillText(text.toUpperCase(), x, y)
   }
 
-  rect(topLeftX, topLeftY, width, height, fillColor) {
+  rect(
+    topLeftX: number,
+    topLeftY: number,
+    width: number,
+    height: number,
+    fillColor: string,
+  ) {
     this._offscreenContext.fillStyle = fillColor
     this._offscreenContext.fillRect(topLeftX, topLeftY, width, height)
   }
 
-  image(texture, x, y, width = TILE_SIZE, height = TILE_SIZE) {
+  image(
+    texture: number,
+    x: number,
+    y: number,
+    width = TILE_SIZE,
+    height = TILE_SIZE,
+  ) {
     const [spriteX, spriteY] = getImageCoords(texture)
+
     this._offscreenContext.drawImage(
       sprite,
-      spriteX,
-      spriteY,
-      SPRITE_TEXTURE_SIZE,
-      SPRITE_TEXTURE_SIZE,
-      x,
-      y,
-      width,
-      height,
+      spriteX, spriteY, SPRITE_TEXTURE_SIZE, SPRITE_TEXTURE_SIZE,
+      x, y, width, height,
     )
   }
-
-  // Старое. Пока не требуется
-  // colorCell(col, row, color) {
-  //   const x = col * TILE_SIZE
-  //   const y = row * TILE_SIZE
-
-  //   this.context.fillStyle = color
-  //   this.context.fillRect(x, y, TILE_SIZE, TILE_SIZE)
-  // }
 }
 
 const canvasStatic = new Canvas(CANVAS_SELECTOR_STATIC)
