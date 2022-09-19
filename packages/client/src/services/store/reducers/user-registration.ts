@@ -4,12 +4,16 @@ interface userRegistrationState {
   registrationRequest: boolean;
   registrationFailed: boolean;
   registrationSuccess: boolean;
+
+  userId: number | null;
 }
 
 const initialState: userRegistrationState = {
   registrationRequest: false,
   registrationFailed: false,
   registrationSuccess: false,
+
+  userId: null,
 }
 
 export const userRegistrationReducer = (state = initialState, action: TUserRegistrationActions) => {
@@ -25,6 +29,8 @@ export const userRegistrationReducer = (state = initialState, action: TUserRegis
         ...state,
         registrationRequest: false,
         registrationSuccess: true,
+
+        userId: action.payload.id
       }
     }
     case 'USER_REGISTRATION_FAILED': {
