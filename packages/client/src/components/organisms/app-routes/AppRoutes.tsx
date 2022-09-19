@@ -6,6 +6,7 @@ import Leaderboard from '@pages/Leaderboard'
 import { ProfilePage } from '@pages/profile'
 import { ErrorBoundary } from '@organisms/error-boundary'
 import { routes } from './routes'
+import { BeginGamePage } from '@pages/begin-game'
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const AppRoutes = () => {
         <Route path={routes.signUp.path} element={<SignupPage />} />
         <Route path={routes.profile.path} element={<ProfilePage />} />
         <Route path={routes.leaderboard.path} element={<Leaderboard />} />
+        <Route path={routes.main.path} element={<BeginGamePage />} />
       </Routes>
     </ErrorBoundary>
   )
