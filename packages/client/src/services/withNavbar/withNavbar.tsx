@@ -8,7 +8,7 @@ interface ConfigOption {
 }
 
 type configOptions = Record<string, ConfigOption>
-type ConfigKey = 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'forum'
+export type ConfigKey = 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'forum'
 
 const handleLinks = (key: string) => routes[key]
 
@@ -29,6 +29,10 @@ const configOptions: configOptions = {
     showLogo: true,
     links: ['main', 'profile', 'forum'],
   },
+  main: {
+    showLogo: false,
+    links: ['forum']
+  }
 }
 
 const withNavbar = (WrappedComponent: React.ComponentType, configKey: ConfigKey) => ({ ...props }) => {

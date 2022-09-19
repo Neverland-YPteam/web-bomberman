@@ -25,6 +25,19 @@ const paletteOptions: PaletteOptions = {
 const defaultThemeOptions: ThemeOptions = {
   palette: paletteOptions,
 
+  typography: {
+    subtitle1: {
+      fontSize: '32px',
+      lineHeight: '40px',
+      color: 'white',
+      textTransform: 'uppercase',
+      fontFamily: '"Press Start 2P"',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
+    },
+  },
+
   // тут можно стилизовать материаловские компоненты сразу для всего приложения
   components: {},
 
