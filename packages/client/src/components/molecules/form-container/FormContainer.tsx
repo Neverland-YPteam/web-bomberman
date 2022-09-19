@@ -11,8 +11,9 @@ const FormContainer = ({ onFormSubmit, children, title }: Props) => {
   return (
     <Box
       sx={{
-        height: '100vh',
-        display: 'flex',
+        marginTop: 4,
+        paddingBottom: 4,
+        borderRadius: 2,
       }}
     >
       <Paper

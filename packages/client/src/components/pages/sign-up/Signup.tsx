@@ -3,6 +3,8 @@ import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
 import { TextField } from '@mui/material'
+import { withNavbar } from '@services/withNavbar'
+import { routes } from '@organisms/app-routes';
 import { useDispatch } from 'react-redux'
 import { registerUser } from '@services/store/actions/user-registration'
 
@@ -69,9 +71,9 @@ const Signup = () => {
         type="password"
       />
       <SubmitButton>Зарегистрироваться</SubmitButton>
-      <FormLink to="/" text="Уже есть аккаунт? Войти" />
+      <FormLink to={routes.auth.path} text="Уже есть аккаунт? Войти" />
     </FormContainer>
   )
 }
 
-export default Signup
+export default withNavbar(Signup, 'signUp')

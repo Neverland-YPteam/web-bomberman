@@ -18,6 +18,7 @@ export default defineConfig({
       '@atoms': path.resolve(__dirname, './src/components/atoms'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@services': path.resolve(__dirname, './src/services'),
+      '@assets': path.resolve(__dirname, './src/assets'),
     }
   },
   plugins: [react()],
