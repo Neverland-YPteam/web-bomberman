@@ -1,15 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
 import { TextField } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
 import { routes } from '@organisms/app-routes';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { registerUser } from '@services/store/actions/user-registration'
+import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
   const dispatch: any = useDispatch();
+  const navigate = useNavigate();
+
+  const { userId } = useSelector(state => (state as any).userRegistration);
 
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -17,6 +21,12 @@ const Signup = () => {
 
     dispatch(registerUser(data))
   }
+
+  useEffect(() => {
+    if (userId) {
+      navigate(routes.profile.path);
+    }
+  })
 
   return (
     <FormContainer

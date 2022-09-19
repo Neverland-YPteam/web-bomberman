@@ -1,4 +1,3 @@
-import { redirect } from "react-router-dom";
 import { AppDispatch } from '@src/types/store'
 import { API_URL } from '@utils/constants'
 import { checkResponseStatus } from '@utils/helpers'
@@ -12,6 +11,7 @@ interface IGetRegistrationAction {
 }
 interface IGetRegistrationSuccessAction {
   readonly type: typeof USER_REGISTRATION_SUCCESS;
+  readonly payload: { id: number};
 }
 interface IGetRegistrationFailedAction {
   readonly type: typeof USER_REGISTRATION_FAILED;
@@ -38,11 +38,10 @@ export const registerUser = (data: FormData) => {
       .then(res => checkResponseStatus(res))
       .then(res => res.json())
       .then(result => {
-        console.log(result)
         dispatch({
           type: USER_REGISTRATION_SUCCESS,
+          payload: result,
         })
-        // redirect('/profile')
       })
       .catch(() => {
         dispatch({
