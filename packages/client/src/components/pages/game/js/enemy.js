@@ -4,11 +4,11 @@
  * Если в поле зрения врага есть главный герой, меняем врагу направление движения
  */
 
- import {
+import {
   PANEL_HEIGHT_PX,
   TILE_SIZE,
   textures,
-} from './const.js'
+} from './const'
 
 import {
   omit,
@@ -17,7 +17,7 @@ import {
   getBooleanWithProbability,
   floatNum,
 } from './utils.js'
-import { canvas } from './canvas.js'
+import { canvas } from './canvas'
 import { level } from './level.js'
 import { enemies } from './enemies-list.js'
 

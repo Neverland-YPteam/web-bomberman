@@ -1,4 +1,4 @@
-import { textures } from './const.js'
+import { textures } from './const'
 
 const {
   TEXTURE_BALLOON_DEAD,

@@ -9,9 +9,9 @@ import {
   PANEL_HEIGHT_PX,
   TILE_SIZE,
   textures,
-} from './const.js'
+} from './const'
 
-import { canvas } from './canvas.js'
+import { canvas } from './canvas'
 import { level } from './level.js'
 import { Controls } from './controls.js'
 
@@ -22,7 +22,7 @@ const {
 } = textures
 
 const HERO_SPEED_DEFAULT = 3 // Скорость героя по умолчанию
-const HERO_SPEED_IMPROVED = 4 // Скорость героя при активном бонусе
+// const HERO_SPEED_IMPROVED = 4 // Скорость героя при активном бонусе
 const HERO_TOLERANCE_PX = 9 // Допустимое отклонение от границ COLUMN или WALL для прохода героя между текстурами
 const HERO_LIVES_DEFAULT = 3
 

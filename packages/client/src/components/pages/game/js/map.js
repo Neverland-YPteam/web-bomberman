@@ -9,9 +9,9 @@ import {
   MAP_TILES_COUNT_Y,
   TILE_SIZE,
   textures,
-} from './const.js'
+} from './const'
 
-import { canvasStatic } from './canvas.js'
+import { canvasStatic } from './canvas'
 
 const {
   TEXTURE_COLUMN,

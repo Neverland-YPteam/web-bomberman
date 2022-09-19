@@ -2,15 +2,19 @@
  * Ждем загрузки спрайта, затем вызываем onLoad
  */
 
+import { TCoords } from './types'
+
 import {
   RESOURCE_BASE_URL,
   SPRITE_TEXTURE_SIZE,
   textures,
-} from './const.js'
+} from '../const'
 
-import { onLoad } from './index.js'
+import { onLoad } from '../index.js'
 
-const spriteTextureCoords = {
+const SPRITE_PATH = '/images/sprite.webp'
+
+const spriteTextureCoords: TCoords = {
   [textures.TEXTURE_HEART]:               [7, 1],
   [textures.TEXTURE_COLUMN]:              [0, 0],
   [textures.TEXTURE_COLUMN_DAMAGED_1]:    [1, 0],
@@ -78,16 +82,14 @@ const spriteTextureCoords = {
   [textures.TEXTURE_COIN_SIDE]:           [5, 12],
 }
 
-let sprite
+const sprite = document.createElement('img')
 
 const loadSprite = () => {
-  sprite = document.createElement('img')
-
   sprite.onload = onLoad
-  sprite.src = `${RESOURCE_BASE_URL}/images/sprite.webp`
+  sprite.src = `${RESOURCE_BASE_URL}${SPRITE_PATH}`
 }
 
-const getImageCoords = (texture) => {
+const getImageCoords = (texture: number) => {
   const [col, row] = spriteTextureCoords[texture]
 
   const x = col * SPRITE_TEXTURE_SIZE
