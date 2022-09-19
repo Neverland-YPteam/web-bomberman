@@ -3,18 +3,17 @@ import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
 import { TextField } from '@mui/material'
+import { useDispatch } from 'react-redux'
+import { registerUser } from '@services/store/actions/user-registration'
 
 const Signup = () => {
+  const dispatch: any = useDispatch();
+
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     const data = new FormData(evt.currentTarget);
-    console.log({
-      first_name: data.get('first_name'),
-      second_name: data.get('second_name'),
-      email: data.get('email'),
-      login: data.get('login'),
-      password: data.get('password'),
-    });
+
+    dispatch(registerUser(data))
   }
 
   return (
@@ -44,6 +43,14 @@ const Signup = () => {
         label="Email"
         name="email"
         type="email"
+      />
+      <TextField
+        margin="normal"
+        required
+        fullWidth
+        label="Телефон"
+        name="phone"
+        type="tel"
       />
       <TextField
         margin="normal"
