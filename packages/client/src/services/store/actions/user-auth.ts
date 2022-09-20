@@ -1,3 +1,7 @@
+import { AppDispatch, AppThunk } from '@src/types/store'
+import { API_URL } from '@utils/constants'
+import { checkResponseStatus } from '@utils/helpers'
+
 export const USER_LOGIN_REQUEST = 'USER_LOGIN_REQUEST';
 export const USER_LOGIN_SUCCESS = 'USER_LOGIN_SUCCESS';
 export const USER_LOGIN_FAILED = 'USER_LOGIN_FAILED';
@@ -38,3 +42,29 @@ export type TUserAuthActions =
   | IUserLogoutSuccessAction
   | IUserLogoutFailedAction
 
+export const loginUser: AppThunk = (data: FormData) => {
+  return function(dispatch: AppDispatch) {
+    dispatch({
+      type: USER_LOGIN_REQUEST,
+    })
+    fetch(`${API_URL}/auth/signin`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(Object.fromEntries(data)),
+    })
+      .then(res => checkResponseStatus(res))
+      .then(() => {
+        dispatch({
+          type: USER_LOGIN_SUCCESS
+        })
+      })
+      .catch(() => {
+        dispatch({
+          type: USER_LOGIN_FAILED
+        })
+      })
+  }
+}
