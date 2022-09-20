@@ -5,7 +5,7 @@ import { FormLink } from '@atoms/form-link'
 import { TextField } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
 import { routes } from '@organisms/app-routes';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from '@utils/hooks'
 import { registerUser } from '@services/store/actions/user-registration'
 import { useNavigate } from 'react-router-dom'
 
@@ -13,7 +13,7 @@ const Signup = () => {
   const dispatch: any = useDispatch();
   const navigate = useNavigate();
 
-  const { userId } = useSelector(state => (state as any).userRegistration);
+  const { userId } = useSelector(state => state.userRegistration);
 
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -26,7 +26,7 @@ const Signup = () => {
     if (userId) {
       navigate(routes.profile.path);
     }
-  })
+  }, [userId])
 
   return (
     <FormContainer
