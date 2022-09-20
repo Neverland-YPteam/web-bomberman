@@ -4,13 +4,20 @@ import { Container, Box } from '@mui/material'
 import { theme } from '@services/AppThemeProvider/theme'
 import './Navbar.css'
 import logo from './images/logo.png'
+import { SyntheticEvent } from 'react'
 
 interface Props {
   showLogo?: boolean
-  links: IRoute[]
+  links: IRoute[],
+  protectedRoute: boolean,
 }
 
-const Navbar = ({ showLogo, links }: Props) => {
+const Navbar = ({ showLogo, links, protectedRoute }: Props) => {
+  const handleExitClick = (evt: SyntheticEvent) => {
+    evt.preventDefault()
+
+  }
+
   return (
     <Box
       component="nav"
@@ -58,6 +65,19 @@ const Navbar = ({ showLogo, links }: Props) => {
             )}
 
             {/* @TODO Кнопка «Выйти» */}
+            {protectedRoute && (
+              <Box
+                onClick={handleExitClick}
+                sx={{
+                  cursor: 'pointer',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                Выход
+              </Box>
+            )}
           </Box>
         </Box>
       </Container>
