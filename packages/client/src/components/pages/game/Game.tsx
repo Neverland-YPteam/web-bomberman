@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 const Game = () => {
   useEffect(() => {
     (async () => {
-      const { loadResources } = await import('./js')
+      const { loadResources } = await import('./scripts')
       loadResources()
     })()
   }, [])
