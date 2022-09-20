@@ -1,9 +1,10 @@
-import { RESOURCE_BASE_URL } from './const'
 import { canvasStatic } from './canvas'
 import { loadSprite } from './images'
 import { panel } from './panel'
 import { map } from './map'
 import { level } from './level'
+
+const FONT_PATH = '/src/assets/fonts/PressStart2P.ttf'
 
 const drawStaticTextures = () => {
   panel.init()
@@ -18,7 +19,7 @@ const onLoad = async () => {
 
 // Без этого метода на канвасе не хочет рендериться кастомный шрифт
 const loadFont = async () => {
-  const font = new FontFace('Press Start 2P', `url(${RESOURCE_BASE_URL}/fonts/PressStart2P.ttf)`)
+  const font = new FontFace('Press Start 2P', `url(${FONT_PATH})`)
 
   // @FIXME Разобраться, почему здесь орет Firefox
   await font.load()
