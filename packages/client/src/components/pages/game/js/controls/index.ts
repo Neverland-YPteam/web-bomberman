@@ -8,25 +8,27 @@
  * @TODO Вызывать removeListeners при смене роута
  */
 
+import { Hero } from '../hero'
+
 const KEY_LEFT = 'ArrowLeft'
 const KEY_RIGHT = 'ArrowRight'
 const KEY_UP = 'ArrowUp'
 const KEY_DOWN = 'ArrowDown'
-const KEY_BOMB_PLACE = ' ' // @TODO Будем размещать бомбы пробелом
-const KEY_BOMB_DETONATE = 'd' // @TODO Будем взрывать бомбы другой клавишей
+// const KEY_BOMB_PLACE = ' ' // @TODO Будем размещать бомбы пробелом
+// const KEY_BOMB_DETONATE = 'd' // @TODO Будем взрывать бомбы другой клавишей
 
 /**
  * @TODO Можно запилить выход из игры с клавиатуры
  * Допустим, будет появляться всплывашка с предупреждением, и надо будет нажать Escape или Enter
  */
-const KEY_EXIT = 'Escape'
-const KEY_EXIT_CANCEL = 'Escape'
-const KEY_EXIT_CONFIRM = 'Enter'
+// const KEY_EXIT = 'Escape'
+// const KEY_EXIT_CANCEL = 'Escape'
+// const KEY_EXIT_CONFIRM = 'Enter'
 
 export class Controls {
   _instance
 
-  constructor(instance) {
+  constructor(instance: Hero) {
     this._instance = instance
   }
 
@@ -45,7 +47,7 @@ export class Controls {
     this._instance.isMovingDown = false
   }
 
-  _keySet(evt, value) {
+  _keySet(evt: KeyboardEvent, value: boolean) {
     const { key } = evt
 
     if (key === KEY_LEFT) {
@@ -66,11 +68,11 @@ export class Controls {
     }
   }
 
-  _onKeyPressed = (evt) => {
+  _onKeyPressed = (evt: KeyboardEvent) => {
     this._keySet(evt, true)
   }
 
-  _onKeyReleased = (evt) => {
+  _onKeyReleased = (evt: KeyboardEvent) => {
     this._keySet(evt, false)
   }
 }

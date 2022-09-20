@@ -1,9 +1,11 @@
 /**
- * Класс отвечает за начало уровня, генерирование WALL и персонажей и прочих плюшек
+ * Класс отвечает за начало уровня, генерирование WALL, персонажей и прочих плюшек
  *
  * @TODO Добавлять под случайными стенами BONUS и EXIT
  * @TODO Сделать окончание уровня
  */
+
+import { TField, TCellCoords, TEnemyEntry } from './types'
 
 import {
   FPS,
@@ -13,18 +15,19 @@ import {
   TEXT_COLOR,
   FONT_SIZE,
   textures,
-} from './const'
+} from '../const'
 
 import {
   delay,
   getBooleanWithProbability,
   getRandomNumberBetween,
   limitFrames,
-} from './utils.js'
-import { canvasStatic, canvas } from './canvas'
-import { map } from './map'
-import { hero } from './hero.js'
-import { Enemy } from './enemy.js'
+} from '../utils'
+import { canvasStatic, canvas } from '../canvas'
+import { map } from '../map'
+import { hero } from '../hero'
+import { Enemy } from '../enemy'
+import { levelList } from './levelList'
 
 const {
   TEXTURE_COLUMN,
@@ -37,28 +40,11 @@ const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена
 const SAFE_TILES_ENEMY_COUNT = 8 // И враги тоже
 const WALL_PROBABILITY_PCT = 40 // Вероятность появления стены
 
-// @TODO Подумать, как прятать бонус под WALL, чтобы он появлялся при уничтожении WALL
-const levels = {
-  1: {
-    enemies: {
-      balloon: 2,
-      beaker: 2,
-      lantern: 2,
-      face: 2,
-      jelly: 2,
-      ghost: 2,
-      bear: 2,
-      coin: 2,
-    },
-    // bonus: 'bomb',
-  },
-}
-
 class Level {
   _currentLevel = 0
-  _field
-  _enemies = []
-  _enemiesIndexes = []
+  _field: TField = []
+  _enemies: Enemy[] = []
+  _enemiesIndexes: string[] = []
 
   _showIntro() {
     canvas.rect(0, 0, canvas.width, canvas.height, BG_COLOR)
@@ -113,11 +99,13 @@ class Level {
   }
 
   _setEnemies() {
-    const { enemies } = levels[this._currentLevel]
-    Object.entries(enemies).forEach(this._setEnemy)
+    const { enemies } = levelList[this._currentLevel]
+    const enemyEntries = Object.entries(enemies) as TEnemyEntry[]
+
+    enemyEntries.forEach(this._setEnemy)
   }
 
-  _setEnemy = ([name, count]) => {
+  _setEnemy = ([name, count]: TEnemyEntry) => {
     let counter = 0
 
     while (counter < count) {
@@ -139,7 +127,7 @@ class Level {
     hero.draw()
   }
 
-  _findFreeCell(safeTilesCount) {
+  _findFreeCell(safeTilesCount: number): TCellCoords {
     const row = getRandomNumberBetween(0, MAP_TILES_COUNT_Y - 3)
     const col = getRandomNumberBetween(0, MAP_TILES_COUNT_X - 3)
 
@@ -160,11 +148,15 @@ class Level {
     canvas.update()
   }
 
-  async goToNextLevel() {
+  startGame() {
+    this.goToNextLevel(1)
+  }
+
+  async goToNextLevel(level = this._currentLevel + 1) {
     // @TODO Вызов метода, который генерит бонус и его расположение
     // @TODO Вызов метода, который генерит расположение выхода
 
-    this._currentLevel++ // Перешли на новый уровень
+    this._currentLevel = level // Перешли на новый уровень
 
     this._showIntro() // Показали заставку
     canvas.update() // Обновили canvas
@@ -188,7 +180,7 @@ class Level {
     limitFrames(this._updateDynamicTextures, FPS)
   }
 
-  getTileType(col, row) {
+  getTileType(col: number, row: number) {
     if (
       col >= 0 && col < MAP_TILES_COUNT_X - 2 &&
       row >= 0 && row < MAP_TILES_COUNT_Y - 2

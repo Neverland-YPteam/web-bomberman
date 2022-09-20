@@ -5,15 +5,17 @@
  * @TODO Добавить анимацию в спокойном состоянии и при движении
  */
 
+import { TDirectionX, TDirectionY, IVertexCoords } from './types'
+
 import {
   PANEL_HEIGHT_PX,
   TILE_SIZE,
   textures,
-} from './const'
+} from '../const'
 
-import { canvas } from './canvas'
-import { level } from './level.js'
-import { Controls } from './controls.js'
+import { canvas } from '../canvas'
+import { level } from '../level'
+import { Controls } from '../controls'
 
 const {
   TEXTURE_COLUMN,
@@ -26,9 +28,9 @@ const HERO_SPEED_DEFAULT = 3 // Скорость героя по умолчан�
 const HERO_TOLERANCE_PX = 9 // Допустимое отклонение от границ COLUMN или WALL для прохода героя между текстурами
 const HERO_LIVES_DEFAULT = 3
 
-class Hero {
-  x
-  y
+export class Hero {
+  x = 0
+  y = 0
 
   lives = HERO_LIVES_DEFAULT // Пока не используется, но будет
   speed = HERO_SPEED_DEFAULT // Либо HERO_SPEED_DEFAULT
@@ -37,7 +39,7 @@ class Hero {
     bombs: 1, // Сколько бомб одновременно может размещать
     flame: 1, // Радиус взрыва, не считая центральной клетки
     detonator: false, // Взрывает самую старую бомбу вручную
-    wallpass: false, // Может ходить сквозь стены
+    wallPass: false, // Может ходить сквозь стены
     bombpass: false, // Может ходить сквозь бомбы
     flamepass: false, // Взрывы не причиняют вреда
     immortal: false, // Враги и взрывы не причиняют вреда, выключается по таймауту
@@ -53,7 +55,7 @@ class Hero {
     controls.addListeners()
   }
 
-  get _coords() {
+  get _coords(): IVertexCoords {
     const x = this.x - TILE_SIZE
     const y = this.y - PANEL_HEIGHT_PX - TILE_SIZE
 
@@ -72,7 +74,7 @@ class Hero {
     return isXKeyPressed && isYKeyPressed ? 0 : HERO_TOLERANCE_PX
   }
 
-  _moveX(direction) {
+  _moveX(direction: TDirectionX) {
     const { _coords } = this
     const moduloTop = _coords.topLeft.y % TILE_SIZE
     const moduloBottom = TILE_SIZE - _coords.bottomLeft.y % TILE_SIZE
@@ -99,7 +101,7 @@ class Hero {
     }
   }
 
-  _moveY(direction) {
+  _moveY(direction: TDirectionY) {
     const { _coords } = this
     const moduloLeft = _coords.topLeft.x % TILE_SIZE
     const moduloRight = TILE_SIZE - _coords.topRight.x % TILE_SIZE
@@ -127,7 +129,7 @@ class Hero {
     }
   }
 
-  _isAbleToMove(tile) {
+  _isAbleToMove(tile: number) {
     const blockingTextures = [TEXTURE_COLUMN, TEXTURE_WALL]
     return !blockingTextures.includes(tile)
   }

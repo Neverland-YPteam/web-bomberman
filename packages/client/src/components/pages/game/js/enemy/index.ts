@@ -4,11 +4,13 @@
  * Если в поле зрения врага есть главный герой, меняем врагу направление движения
  */
 
+import { TEnemyName, TDirection, TDirectionX } from './types'
+
 import {
   PANEL_HEIGHT_PX,
   TILE_SIZE,
   textures,
-} from './const'
+} from '../const'
 
 import {
   omit,
@@ -16,50 +18,52 @@ import {
   getRandomArrayValue,
   getBooleanWithProbability,
   floatNum,
-} from './utils.js'
-import { canvas } from './canvas'
-import { level } from './level.js'
-import { enemies } from './enemies-list.js'
+} from '../utils'
+import { canvas } from '../canvas'
+import { level } from '../level'
+import { enemyList } from './enemyList'
 
 const { TEXTURE_COLUMN, TEXTURE_WALL } = textures
 
-const DIRECTIONS = ['left', 'right', 'up', 'down']
-const DIRECTION_DEFAULT = 'right'
+const DIRECTIONS: TDirection[] = ['left', 'right', 'up', 'down']
+const DIRECTION_DEFAULT: TDirectionX = 'right'
 const DIRECTION_CHANGE_PROBABILITY_PTC = 40
 
 class Enemy {
-  x
-  y
+  x = 0
+  y = 0
 
-  _lastDirectionX = DIRECTION_DEFAULT
-  _direction
-  _directionAxis
+  _lastDirectionX: TDirectionX = DIRECTION_DEFAULT
+  _direction: TDirection = DIRECTION_DEFAULT
+  _directionAxis = ''
 
   _textures
   _speed
-  _wallpass
+  _wallPass
   _canTurn
   _unpredictable
 
-  _changeTextureInterval
+  _changeTextureInterval: null | ReturnType<typeof setInterval> = null
   _currentTextureIndex = 0
 
-  constructor(name) {
+  constructor(name: TEnemyName) {
     const {
       textures,
       speed,
-      wallpass,
+      wallPass,
       canTurn,
       unpredictable,
-    } = enemies[name]
+    } = enemyList[name]
 
     this._textures = textures
     this._speed = speed
-    this._wallpass = wallpass ?? false
+    this._wallPass = wallPass ?? false
     this._canTurn = canTurn ?? false
     this._unpredictable = unpredictable ?? false
 
-    this._setDirection(this._getRandomDirection(DIRECTIONS))
+    const randomDirection = this._getRandomDirection(DIRECTIONS) as TDirection
+
+    this._setDirection(randomDirection)
   }
 
   get _coords() {
@@ -83,26 +87,22 @@ class Enemy {
   }
 
   get _blockingTextures() {
-    if (this._wallpass && getRandomBoolean()) {
+    if (this._wallPass && getRandomBoolean()) {
       return [TEXTURE_COLUMN]
     }
 
     return [TEXTURE_COLUMN, TEXTURE_WALL]
   }
 
-  // get _texture() {
-  //   return this._textures[this._lastDirectionX]
-  // }
-
   get _canRandomlyChangeDirection() {
     return this._unpredictable && getBooleanWithProbability(DIRECTION_CHANGE_PROBABILITY_PTC)
   }
 
-  _getRandomDirection(directions) {
+  _getRandomDirection(directions: TDirection[]) {
     return getRandomArrayValue(directions)
   }
 
-  _changeDirection(isBackBlocked) {
+  _changeDirection(isBackBlocked: boolean) {
     const omittedDirections = [this._direction]
 
     if (!this._canTurn && !isBackBlocked) {
@@ -113,11 +113,13 @@ class Enemy {
       }
     }
 
-    const directionsFiltered = omit(DIRECTIONS, omittedDirections)
-    this._setDirection(this._getRandomDirection(directionsFiltered))
+    const directionsFiltered = omit(DIRECTIONS, omittedDirections) as TDirection[]
+    const randomDirection = this._getRandomDirection(directionsFiltered) as TDirection
+
+    this._setDirection(randomDirection)
   }
 
-  _setDirection(direction) {
+  _setDirection(direction: TDirection) {
     const isDirectionX = direction === 'left' || direction === 'right'
 
     this._direction = direction
@@ -148,7 +150,7 @@ class Enemy {
       : this._currentTextureIndex + 1
   }
 
-  setPosition(row, col) {
+  setPosition(row: number, col: number) {
     this.x = TILE_SIZE + col * TILE_SIZE
     this.y = PANEL_HEIGHT_PX + TILE_SIZE + row * TILE_SIZE
   }
@@ -194,12 +196,14 @@ class Enemy {
     }
 
     const blockingTextures = this._blockingTextures
-    const freeDirectionsForTurn = []
+    const freeDirectionsForTurn: TDirection[] = []
 
     let isBackBlocked = false
     let isBlockedFromAllSides = true
 
-    Object.keys(adjacentTileTypes).forEach((direction) => {
+    const adjacentTileTypeKeys = Object.keys(adjacentTileTypes) as TDirection[]
+
+    adjacentTileTypeKeys.forEach((direction: TDirection) => {
       const texture = adjacentTileTypes[direction]
       const isBlocked = blockingTextures.includes(texture)
 
@@ -223,12 +227,12 @@ class Enemy {
       }
     })
 
-    if (isBlockedFromAllSides && !this._wallpass) {
+    if (isBlockedFromAllSides && !this._wallPass) {
       if (this._changeTextureInterval) {
+        clearInterval(this._changeTextureInterval)
         this._changeTextureInterval = null
       }
 
-      clearInterval(this._changeTextureInterval)
       return
     }
 
