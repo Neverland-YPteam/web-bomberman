@@ -5,6 +5,8 @@ import { theme } from '@services/AppThemeProvider/theme'
 import './Navbar.css'
 import logo from './images/logo.png'
 import { SyntheticEvent } from 'react'
+import { useDispatch } from '@utils/hooks'
+import { logoutUser } from '@services/store/actions/user-auth'
 
 interface Props {
   showLogo?: boolean
@@ -13,9 +15,11 @@ interface Props {
 }
 
 const Navbar = ({ showLogo, links, protectedRoute }: Props) => {
+  const dispatch: any = useDispatch()
+
   const handleExitClick = (evt: SyntheticEvent) => {
     evt.preventDefault()
-
+    dispatch(logoutUser())
   }
 
   return (

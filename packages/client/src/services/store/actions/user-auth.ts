@@ -53,6 +53,7 @@ export const loginUser: AppThunk = (data: FormData) => {
       headers: {
         'content-type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(Object.fromEntries(data)),
     })
       .then(res => checkResponseStatus(res))
@@ -64,6 +65,33 @@ export const loginUser: AppThunk = (data: FormData) => {
       .catch(() => {
         dispatch({
           type: USER_LOGIN_FAILED
+        })
+      })
+  }
+}
+
+export const logoutUser: AppThunk = () => {
+  return function (dispatch: AppDispatch) {
+    dispatch({
+      type: USER_LOGOUT_REQUEST
+    })
+    fetch(`${API_URL}/auth/logout`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+      headers: {
+        accept: 'application/json'
+      },
+    })
+      .then(res => checkResponseStatus(res))
+      .then(() => {
+        dispatch({
+          type: USER_LOGOUT_SUCCESS
+        })
+      })
+      .catch(() => {
+        dispatch({
+          type: USER_LOGOUT_FAILED
         })
       })
   }

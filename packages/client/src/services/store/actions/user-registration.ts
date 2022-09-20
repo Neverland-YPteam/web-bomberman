@@ -33,6 +33,7 @@ export const registerUser: AppThunk = (data: FormData) => {
       headers: {
         'content-type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(Object.fromEntries(data)),
     })
       .then(res => checkResponseStatus(res))

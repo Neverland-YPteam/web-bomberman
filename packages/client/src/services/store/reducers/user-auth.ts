@@ -42,6 +42,26 @@ export const userAuthReducer = (state = initialState, actions: TUserAuthActions)
         loginFailed: true
       }
     }
+    case 'USER_LOGOUT_REQUEST': {
+      return {
+        ...state,
+        logoutRequest: true,
+      }
+    }
+    case 'USER_LOGOUT_SUCCESS': {
+      return {
+        ...state,
+        logoutRequest: false,
+        isUserAuth: false,
+      }
+    }
+    case 'USER_LOGOUT_FAILED': {
+      return {
+        ...state,
+        ...initialState,
+        logoutFailed: true
+      }
+    }
     default: {
       return state;
     }
