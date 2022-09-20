@@ -89,7 +89,7 @@ const loadSprite = () => {
   sprite.src = `${RESOURCE_BASE_URL}${SPRITE_PATH}`
 }
 
-const getImageCoords = (texture: number) => {
+const getImageCoords = (texture: number): [number, number] => {
   const [col, row] = spriteTextureCoords[texture]
 
   const x = col * SPRITE_TEXTURE_SIZE

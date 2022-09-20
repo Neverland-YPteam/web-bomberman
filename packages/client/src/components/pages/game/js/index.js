@@ -1,8 +1,8 @@
 import { RESOURCE_BASE_URL } from './const'
 import { canvasStatic } from './canvas'
 import { loadSprite } from './images'
-import { panel } from './panel.js'
-import { map } from './map.js'
+import { panel } from './panel'
+import { map } from './map'
 import { level } from './level.js'
 
 const drawStaticTextures = () => {

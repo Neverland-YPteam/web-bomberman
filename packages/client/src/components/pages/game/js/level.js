@@ -22,7 +22,7 @@ import {
   limitFrames,
 } from './utils.js'
 import { canvasStatic, canvas } from './canvas'
-import { map } from './map.js'
+import { map } from './map'
 import { hero } from './hero.js'
 import { Enemy } from './enemy.js'
 
