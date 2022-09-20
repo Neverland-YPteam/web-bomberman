@@ -41,17 +41,17 @@ const SAFE_TILES_ENEMY_COUNT = 8 // И враги тоже
 const WALL_PROBABILITY_PCT = 40 // Вероятность появления стены
 
 class Level {
-  _currentLevel = 0
-  _field: TField = []
-  _enemies: Enemy[] = []
-  _enemiesIndexes: string[] = []
+  private _currentLevel = 0
+  private _field: TField = []
+  private _enemies: Enemy[] = []
+  private _enemiesIndexes: string[] = []
 
-  _showIntro() {
+  private _showIntro() {
     canvas.rect(0, 0, canvas.width, canvas.height, BG_COLOR)
     canvas.text(`Уровень ${this._currentLevel}`, canvas.width / 2, canvas.height / 2, FONT_SIZE, TEXT_COLOR, 'center')
   }
 
-  _resetField() {
+  private _resetField() {
     const newField = []
     let rowIndex = 0
 
@@ -86,26 +86,26 @@ class Level {
     this._field = newField
   }
 
-  _setHero() {
+  private _setHero() {
     hero.resetPosition()
     hero.draw()
   }
 
-  _updateEnemies() {
+  private _updateEnemies() {
     this._enemies.forEach((enemy) => {
       enemy.move()
       enemy.draw()
     })
   }
 
-  _setEnemies() {
+  private _setEnemies() {
     const { enemies } = levelList[this._currentLevel]
     const enemyEntries = Object.entries(enemies) as TEnemyEntry[]
 
     enemyEntries.forEach(this._setEnemy)
   }
 
-  _setEnemy = ([name, count]: TEnemyEntry) => {
+  private _setEnemy = ([name, count]: TEnemyEntry) => {
     let counter = 0
 
     while (counter < count) {
@@ -122,12 +122,12 @@ class Level {
     }
   }
 
-  _updateHero() {
+  private _updateHero() {
     hero.move()
     hero.draw()
   }
 
-  _findFreeCell(safeTilesCount: number): TCellCoords {
+  private _findFreeCell(safeTilesCount: number): TCellCoords {
     const row = getRandomNumberBetween(0, MAP_TILES_COUNT_Y - 3)
     const col = getRandomNumberBetween(0, MAP_TILES_COUNT_X - 3)
 
@@ -141,7 +141,7 @@ class Level {
   }
 
   // Очередность текстур играет роль, последние будут выше по контексту наложения
-  _updateDynamicTextures = () => {
+  private _updateDynamicTextures = () => {
     canvas.clear()
     this._updateEnemies()
     this._updateHero()

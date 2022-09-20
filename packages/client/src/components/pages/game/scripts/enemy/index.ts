@@ -27,24 +27,24 @@ const { TEXTURE_COLUMN, TEXTURE_WALL } = textures
 
 const DIRECTIONS: TDirection[] = ['left', 'right', 'up', 'down']
 const DIRECTION_DEFAULT: TDirectionX = 'right'
-const DIRECTION_CHANGE_PROBABILITY_PTC = 40
+const DIRECTION_CHANGE_PROBABILITY_PTC = 20
 
 class Enemy {
+  private _lastDirectionX: TDirectionX = DIRECTION_DEFAULT
+  private _direction: TDirection = DIRECTION_DEFAULT
+  private _directionAxis = ''
+
+  private _textures
+  private _speed
+  private _wallPass
+  private _canTurn
+  private _unpredictable
+
+  private _currentTextureIndex = 0
+  private _changeTextureInterval: null | ReturnType<typeof setInterval> = null
+
   x = 0
   y = 0
-
-  _lastDirectionX: TDirectionX = DIRECTION_DEFAULT
-  _direction: TDirection = DIRECTION_DEFAULT
-  _directionAxis = ''
-
-  _textures
-  _speed
-  _wallPass
-  _canTurn
-  _unpredictable
-
-  _changeTextureInterval: null | ReturnType<typeof setInterval> = null
-  _currentTextureIndex = 0
 
   constructor(name: TEnemyName) {
     const {
@@ -66,7 +66,7 @@ class Enemy {
     this._setDirection(randomDirection)
   }
 
-  get _coords() {
+  private get _coords() {
     const x = this.x - TILE_SIZE
     const y = this.y - PANEL_HEIGHT_PX - TILE_SIZE
 
@@ -78,7 +78,7 @@ class Enemy {
     }
   }
 
-  get _backDirection() {
+  private get _backDirection() {
     if (this._directionAxis === 'x') {
       return this._direction === 'left' ? 'right' : 'left'
     }
@@ -86,7 +86,7 @@ class Enemy {
     return this._direction === 'up' ? 'down' : 'up'
   }
 
-  get _blockingTextures() {
+  private get _blockingTextures() {
     if (this._wallPass && getRandomBoolean()) {
       return [TEXTURE_COLUMN]
     }
@@ -94,15 +94,15 @@ class Enemy {
     return [TEXTURE_COLUMN, TEXTURE_WALL]
   }
 
-  get _canRandomlyChangeDirection() {
+  private get _canRandomlyChangeDirection() {
     return this._unpredictable && getBooleanWithProbability(DIRECTION_CHANGE_PROBABILITY_PTC)
   }
 
-  _getRandomDirection(directions: TDirection[]) {
+  private _getRandomDirection(directions: TDirection[]) {
     return getRandomArrayValue(directions)
   }
 
-  _changeDirection(isBackBlocked: boolean) {
+  private _changeDirection(isBackBlocked: boolean) {
     const omittedDirections = [this._direction]
 
     if (!this._canTurn && !isBackBlocked) {
@@ -119,7 +119,7 @@ class Enemy {
     this._setDirection(randomDirection)
   }
 
-  _setDirection(direction: TDirection) {
+  private _setDirection(direction: TDirection) {
     const isDirectionX = direction === 'left' || direction === 'right'
 
     this._direction = direction
@@ -131,18 +131,18 @@ class Enemy {
     }
   }
 
-  _moveFurther() {
+  private _moveFurther() {
     const axis = this._direction === 'left' || this._direction === 'right' ? 'x' : 'y'
     const shift = this._direction === 'left' || this._direction === 'up' ? -this._speed : this._speed
 
     this[axis] = floatNum(this[axis] + shift)
   }
 
-  get _texture() {
+  private get _texture() {
     return this._textures[this._lastDirectionX][this._currentTextureIndex]
   }
 
-  _updateTexture = () => {
+  private _updateTexture = () => {
     const textures = this._textures[this._lastDirectionX]
 
     this._currentTextureIndex = this._currentTextureIndex === textures.length - 1

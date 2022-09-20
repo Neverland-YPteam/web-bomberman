@@ -13,12 +13,11 @@ const Game = () => {
   }, [])
 
   return (
-    <Box sx={{ height: '100vh' }} >
+    <Box sx={{ height: '100vh' }}>
       <Box
         sx={{
           position: 'relative',
           width: 'min(100vw, calc(100vh * 4 / 3))',
-          maxWidth: 800,
           aspectRatio: '4 / 3',
           margin: '0 auto',
         }}
