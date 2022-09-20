@@ -5,14 +5,13 @@
 import { TCoords } from './types'
 
 import {
-  RESOURCE_BASE_URL,
   SPRITE_TEXTURE_SIZE,
   textures,
 } from '../const'
 
-import { onLoad } from '../index.js'
+import { onLoad } from '../'
 
-const SPRITE_PATH = '/images/sprite.webp'
+const SPRITE_PATH = '/src/components/pages/game/images/sprite.webp'
 
 const spriteTextureCoords: TCoords = {
   [textures.TEXTURE_HEART]:               [7, 1],
@@ -101,7 +100,7 @@ const sprite = document.createElement('img')
 
 const loadSprite = () => {
   sprite.onload = onLoad
-  sprite.src = `${RESOURCE_BASE_URL}${SPRITE_PATH}`
+  sprite.src = SPRITE_PATH
 }
 
 const getImageCoords = (texture: number): [number, number] => {
