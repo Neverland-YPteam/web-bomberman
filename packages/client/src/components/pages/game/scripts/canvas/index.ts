@@ -16,10 +16,10 @@ export const CANVAS_SELECTOR_STATIC = '#game_static'
 export const CANVAS_SELECTOR_DYNAMIC = '#game_dynamic'
 
 class Canvas {
-  _canvas: HTMLCanvasElement
-  _context: CanvasRenderingContext2D
-  _offscreenCanvas: OffscreenCanvas
-  _offscreenContext: OffscreenCanvasRenderingContext2D
+  private _canvas: HTMLCanvasElement
+  private _context: CanvasRenderingContext2D
+  private _offscreenCanvas: OffscreenCanvas
+  private _offscreenContext: OffscreenCanvasRenderingContext2D
 
   // Альфа-канал не нужен для статического канваса, экономим ресурсы
   constructor(selector: TCanvasSelector, alpha = false) {

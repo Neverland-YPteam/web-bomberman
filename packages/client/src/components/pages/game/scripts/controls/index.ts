@@ -26,10 +26,39 @@ const KEY_DOWN = 'ArrowDown'
 // const KEY_EXIT_CONFIRM = 'Enter'
 
 export class Controls {
-  _instance
+  protected _instance
 
   constructor(instance: Hero) {
     this._instance = instance
+  }
+
+  private _keySet(evt: KeyboardEvent, value: boolean) {
+    const { key } = evt
+
+    if (key === KEY_LEFT) {
+      evt.preventDefault()
+      this._instance.isTryingToMoveLeft = value
+    }
+    if (key === KEY_RIGHT) {
+      evt.preventDefault()
+      this._instance.isTryingToMoveRight = value
+    }
+    if (key === KEY_UP) {
+      evt.preventDefault()
+      this._instance.isTryingToMoveUp = value
+    }
+    if (key === KEY_DOWN) {
+      evt.preventDefault()
+      this._instance.isTryingToMoveDown = value
+    }
+  }
+
+  private _onKeyPressed = (evt: KeyboardEvent) => {
+    this._keySet(evt, true)
+  }
+
+  private _onKeyReleased = (evt: KeyboardEvent) => {
+    this._keySet(evt, false)
   }
 
   addListeners() {
@@ -41,38 +70,9 @@ export class Controls {
     document.removeEventListener('keydown', this._onKeyPressed)
     document.removeEventListener('keyup', this._onKeyReleased)
 
-    this._instance.isMovingLeft = false
-    this._instance.isMovingRight = false
-    this._instance.isMovingUp = false
-    this._instance.isMovingDown = false
-  }
-
-  _keySet(evt: KeyboardEvent, value: boolean) {
-    const { key } = evt
-
-    if (key === KEY_LEFT) {
-      evt.preventDefault()
-      this._instance.isMovingLeft = value
-    }
-    if (key === KEY_RIGHT) {
-      evt.preventDefault()
-      this._instance.isMovingRight = value
-    }
-    if (key === KEY_UP) {
-      evt.preventDefault()
-      this._instance.isMovingUp = value
-    }
-    if (key === KEY_DOWN) {
-      evt.preventDefault()
-      this._instance.isMovingDown = value
-    }
-  }
-
-  _onKeyPressed = (evt: KeyboardEvent) => {
-    this._keySet(evt, true)
-  }
-
-  _onKeyReleased = (evt: KeyboardEvent) => {
-    this._keySet(evt, false)
+    this._instance.isTryingToMoveLeft = false
+    this._instance.isTryingToMoveRight = false
+    this._instance.isTryingToMoveUp = false
+    this._instance.isTryingToMoveDown = false
   }
 }
