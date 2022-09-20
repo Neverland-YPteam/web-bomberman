@@ -3,7 +3,7 @@ import { canvasStatic } from './canvas'
 import { loadSprite } from './images'
 import { panel } from './panel'
 import { map } from './map'
-import { level } from './level.js'
+import { level } from './level'
 
 const drawStaticTextures = () => {
   panel.init()
@@ -13,8 +13,7 @@ const drawStaticTextures = () => {
 
 const onLoad = async () => {
   drawStaticTextures()
-  await level.goToNextLevel()
-  // @TODO Если здесь ничего не будет, убираем async/await
+  level.startGame()
 }
 
 // Без этого метода на канвасе не хочет рендериться кастомный шрифт

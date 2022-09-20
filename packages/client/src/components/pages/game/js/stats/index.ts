@@ -8,3 +8,9 @@
  *
  * И тому подобное
  */
+
+class Stats {
+
+}
+
+export const stats = new Stats()

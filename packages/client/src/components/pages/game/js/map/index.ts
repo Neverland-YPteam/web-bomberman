@@ -3,7 +3,7 @@
  * Используется level'ом
  */
 
- import {
+import {
   PANEL_HEIGHT_PX,
   MAP_TILES_COUNT_X,
   MAP_TILES_COUNT_Y,

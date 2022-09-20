@@ -1,4 +1,6 @@
-import { textures } from './const'
+import { TEnemyList } from './types'
+
+import { textures } from '../const'
 
 const {
   TEXTURE_BALLOON_DEAD,
@@ -32,7 +34,7 @@ const {
   TEXTURE_COIN_RIGHT_1, TEXTURE_COIN_RIGHT_2,
 } = textures
 
-const enemies = {
+const enemyList: TEnemyList = {
   balloon: {
     textures: {
       left: [TEXTURE_BALLOON_LEFT_1, TEXTURE_BALLOON_LEFT_2, TEXTURE_BALLOON_LEFT_3, TEXTURE_BALLOON_LEFT_2],
@@ -80,7 +82,7 @@ const enemies = {
       interval: 100,
     },
     speed: 0.5,
-    wallpass: true,
+    wallPass: true,
     canTurn: true,
     unpredictable: true,
   },
@@ -92,7 +94,7 @@ const enemies = {
       interval: 200,
     },
     speed: 1.5,
-    wallpass: true,
+    wallPass: true,
     canTurn: true,
     unpredictable: true,
   },
@@ -115,10 +117,10 @@ const enemies = {
       interval: 150,
     },
     speed: 3.2,
-    wallpass: true,
+    wallPass: true,
     canTurn: true,
     unpredictable: true,
   },
 }
 
-export { enemies }
+export { enemyList }

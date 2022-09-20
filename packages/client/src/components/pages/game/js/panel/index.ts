@@ -2,7 +2,7 @@
  * Верхняя панелька с информацией о времени, набранных очках и доступных жизнях
  */
 
- import {
+import {
   PANEL_HEIGHT_PX,
   BG_COLOR,
   TEXT_COLOR,
