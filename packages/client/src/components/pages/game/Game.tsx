@@ -3,7 +3,6 @@ import {
 } from '@mui/material'
 import { useEffect } from 'react'
 
-
 const Game = () => {
   useEffect(() => {
     (async () => {
