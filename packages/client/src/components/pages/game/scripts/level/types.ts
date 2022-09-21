@@ -1,11 +1,12 @@
 import { TEnemyName } from '../enemy/types'
 
-type TEnemies = Record<TEnemyName, number>
+type TEnemies = Partial<Record<TEnemyName, number>>
 export type TEnemyEntry = [TEnemyName, number]
 
 interface ILevel {
   enemies: TEnemies
 }
+
 export type TLevelList = Record<number, ILevel>
 
 type TFieldRow = number[]
