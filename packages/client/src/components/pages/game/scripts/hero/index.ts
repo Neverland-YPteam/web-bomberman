@@ -3,27 +3,18 @@
  */
 
 import {
-  TAxis,
-  TCondition,
-  TDirection,
-  TDirectionX,
-  TDirectionY,
-  TFreeDirections,
-  IVertexCoords,
+  TAxis, TCondition, TDirection, TDirectionX, TDirectionY, TFreeDirections, IVertexCoords,
 } from './types'
 
-import {
-  PANEL_HEIGHT_PX,
-  TILE_SIZE,
-  textures,
-} from '../const'
+import { PANEL_HEIGHT_PX, TILE_SIZE, textures } from '../const'
 
+import { PausableInterval } from '../utils'
 import { canvas } from '../canvas'
 import { level } from '../level'
-import { Controls } from '../controls'
+import { Control } from '../Control'
 
 const {
-  TEXTURE_COLUMN, TEXTURE_WALL,
+  TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE,
   TEXTURE_HERO_RIGHT_STANDING, TEXTURE_HERO_RIGHT_SITTING,
   TEXTURE_HERO_RIGHT_MOVING_1, TEXTURE_HERO_RIGHT_MOVING_2,
   TEXTURE_HERO_LEFT_STANDING, TEXTURE_HERO_LEFT_SITTING,
@@ -48,15 +39,29 @@ const heroTextures = {
     down: [TEXTURE_HERO_DOWN_MOVING_1, TEXTURE_HERO_DOWN_MOVING_2],
   },
 }
+const KEY_LEFT = 'ArrowLeft'
+const KEY_RIGHT = 'ArrowRight'
+const KEY_UP = 'ArrowUp'
+const KEY_DOWN = 'ArrowDown'
 
 const SPEED_DEFAULT = 3 // Скорость героя по умолчанию
 // const SPEED_IMPROVED = 4 // Скорость героя при активном бонусе
-const TOLERANCE_PX = 6 // Допустимое отклонение от границ COLUMN или WALL для прохода героя между текстурами
+const TOLERANCE_PX = 9 // Допустимое отклонение от границ COLUMN или WALL для прохода героя между текстурами
 const DIRECTION_DEFAULT: TDirectionX = 'right'
 const CHANGE_TEXTURE_STANDING_INTERVAL_MS = 400 // Скорость анимации standing
 const CHANGE_TEXTURE_MOVING_INTERVAL_MS = 150 // Скорость анимации moving
 
 export class Hero {
+  private _controlLeft: null | Control = null
+  private _controlRight: null | Control = null
+  private _controlUp: null | Control = null
+  private _controlDown: null | Control = null
+
+  private _isTryingToMoveLeft = false
+  private _isTryingToMoveRight = false
+  private _isTryingToMoveUp = false
+  private _isTryingToMoveDown = false
+
   private _isMovingX = false
   private _isMovingY = false
 
@@ -72,7 +77,7 @@ export class Hero {
   }
 
   private _currentTextureIndex = 0
-  private _changeTextureInterval: ReturnType<typeof setInterval>
+  private _changeTextureInterval: PausableInterval
 
   x = 0
   y = 0
@@ -89,16 +94,9 @@ export class Hero {
     immortal: false, // Враги и взрывы не причиняют вреда, выключается по таймауту
   }
 
-  isTryingToMoveLeft = false
-  isTryingToMoveRight = false
-  isTryingToMoveUp = false
-  isTryingToMoveDown = false
-
   constructor() {
-    const controls = new Controls(this)
-    controls.addListeners()
-
-    this._changeTextureInterval = setInterval(this._updateTexture, CHANGE_TEXTURE_STANDING_INTERVAL_MS)
+    this._changeTextureInterval = new PausableInterval(this._updateTexture, CHANGE_TEXTURE_STANDING_INTERVAL_MS)
+    this._changeTextureInterval.start()
   }
 
   private get _coords(): IVertexCoords {
@@ -142,8 +140,8 @@ export class Hero {
   }
 
   private get _tolerance() {
-    const isXKeyPressed = this.isTryingToMoveLeft || this.isTryingToMoveRight
-    const isYKeyPressed = this.isTryingToMoveUp || this.isTryingToMoveDown
+    const isXKeyPressed = this._isTryingToMoveLeft || this._isTryingToMoveRight
+    const isYKeyPressed = this._isTryingToMoveUp || this._isTryingToMoveDown
 
     return isXKeyPressed && isYKeyPressed ? 0 : TOLERANCE_PX
   }
@@ -219,7 +217,7 @@ export class Hero {
   }
 
   private _isAbleToMove(tile: number) {
-    const blockingTextures = [TEXTURE_COLUMN, TEXTURE_WALL]
+    const blockingTextures = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE]
     return !blockingTextures.includes(tile)
   }
 
@@ -240,6 +238,20 @@ export class Hero {
     canvas.image(this._texture, this.x, this.y)
   }
 
+  allowControl() {
+    this._controlLeft = new Control(KEY_LEFT, (isPressed) => this._isTryingToMoveLeft = isPressed)
+    this._controlRight = new Control(KEY_RIGHT, (isPressed) => this._isTryingToMoveRight = isPressed)
+    this._controlUp = new Control(KEY_UP, (isPressed) => this._isTryingToMoveUp = isPressed)
+    this._controlDown = new Control(KEY_DOWN, (isPressed) => this._isTryingToMoveDown = isPressed)
+  }
+
+  removeControl() {
+    this._controlLeft?.removeListeners()
+    this._controlRight?.removeListeners()
+    this._controlUp?.removeListeners()
+    this._controlDown?.removeListeners()
+  }
+
   move() {
     this._isMovingX = false
     this._isMovingY = false
@@ -249,16 +261,16 @@ export class Hero {
     this._freeDirections.up = false
     this._freeDirections.down = false
 
-    if (this.isTryingToMoveLeft && !this.isTryingToMoveRight) {
+    if (this._isTryingToMoveLeft && !this._isTryingToMoveRight) {
       this._tryToMoveX('left')
     }
-    if (this.isTryingToMoveRight && !this.isTryingToMoveLeft) {
+    if (this._isTryingToMoveRight && !this._isTryingToMoveLeft) {
       this._tryToMoveX('right')
     }
-    if (this.isTryingToMoveUp && !this.isTryingToMoveDown) {
+    if (this._isTryingToMoveUp && !this._isTryingToMoveDown) {
       this._tryToMoveY('up')
     }
-    if (this.isTryingToMoveDown && !this.isTryingToMoveUp) {
+    if (this._isTryingToMoveDown && !this._isTryingToMoveUp) {
       this._tryToMoveY('down')
     }
 
@@ -266,12 +278,22 @@ export class Hero {
       this._currentTextureIndex = 0
 
       const interval = this._isMoving ? CHANGE_TEXTURE_MOVING_INTERVAL_MS : CHANGE_TEXTURE_STANDING_INTERVAL_MS
-      clearInterval(this._changeTextureInterval)
-      this._changeTextureInterval = setInterval(this._updateTexture, interval)
+
+      this._changeTextureInterval.stop()
+      this._changeTextureInterval = new PausableInterval(this._updateTexture, interval)
+      this._changeTextureInterval.start()
 
       this._lastCondition = this._condition
       this._lastDirection = this._direction
     }
+  }
+
+  pauseAnimation() {
+    this._changeTextureInterval.pause()
+  }
+
+  resumeAnimation() {
+    this._changeTextureInterval.resume()
   }
 }
 

@@ -1,6 +1,5 @@
-import { TCanvasSelector } from './types'
-
 import {
+  canvasSelectors,
   TILE_SIZE,
   SPRITE_TEXTURE_SIZE,
   FONT_FAMILY,
@@ -12,8 +11,6 @@ import { getImageCoords, sprite } from '../images'
  * Используем два канваса — один для статики, другой для текстур с перемещением и анимацией
  * Можно упороться и вместо нижнего холста вовсе использовать фон на CSS
  */
-export const CANVAS_SELECTOR_STATIC = '#game_static'
-export const CANVAS_SELECTOR_DYNAMIC = '#game_dynamic'
 
 class Canvas {
   private _canvas: HTMLCanvasElement
@@ -22,7 +19,7 @@ class Canvas {
   private _offscreenContext: OffscreenCanvasRenderingContext2D
 
   // Альфа-канал не нужен для статического канваса, экономим ресурсы
-  constructor(selector: TCanvasSelector, alpha = false) {
+  constructor(selector: canvasSelectors, alpha = false) {
     const canvasEl = document.querySelector(selector)
 
     if (!canvasEl) {
@@ -114,8 +111,9 @@ class Canvas {
   }
 }
 
-const canvasStatic = new Canvas(CANVAS_SELECTOR_STATIC)
-const canvasDynamic = new Canvas(CANVAS_SELECTOR_DYNAMIC, true)
+const canvasStatic = new Canvas(canvasSelectors.static)
+const canvasDynamic = new Canvas(canvasSelectors.dynamic, true)
+const canvasModal = new Canvas(canvasSelectors.modal, true)
 
 // Экспортируем динамический канвас как canvas, чтобы не писать везде canvasDynamic
-export { canvasStatic, canvasDynamic as canvas }
+export { canvasStatic, canvasDynamic as canvas, canvasModal }

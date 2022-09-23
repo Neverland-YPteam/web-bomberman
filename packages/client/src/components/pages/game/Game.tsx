@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Box } from '@mui/material'
+import { canvasSelectors } from './scripts/const'
 
 const Game = () => {
   useEffect(() => {
@@ -19,33 +20,22 @@ const Game = () => {
           margin: '0 auto',
         }}
       >
-        <canvas
-          id="game_static"
-          className="game__canvas"
-          width="1200"
-          height="900"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-          }}
-        ></canvas>
-
-        <canvas
-          id="game_dynamic"
-          className="game__canvas"
-          width="1200"
-          height="900"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-          }}
-        ></canvas>
+        {Object.values(canvasSelectors).map((canvasSelector) =>
+          <canvas
+            key={canvasSelector}
+            id={canvasSelector.slice(1)}
+            className={canvasSelector.slice(1)}
+            width="1200"
+            height="900"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+            }}
+          ></canvas>
+        )}
       </Box>
     </Box>
   )
