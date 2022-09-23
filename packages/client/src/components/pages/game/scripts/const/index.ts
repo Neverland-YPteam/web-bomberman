@@ -1,5 +1,11 @@
 import { TTextures } from './types'
 
+export enum canvasSelectors {
+  static = '#game_static',
+  dynamic = '#game_dynamic',
+  modal = '#game_modal',
+}
+
 /**
  * Трудно гармонично подобрать размеры канваса с нужными пропорциями и значения констант ниже
  * Помимо прочего, нужно избежать использования координат с плавающей точкой
@@ -25,11 +31,12 @@ export const TIME_INITIAL_S = 200
 
 // Числовые коды запоминать необязательно, в коде смотрим на имена констант
 export const textures: TTextures = {
-  TEXTURE_COLUMN: 1,
-  TEXTURE_COLUMN_DAMAGED_1: 2,
-  TEXTURE_COLUMN_DAMAGED_2: 3,
-  TEXTURE_COLUMN_DAMAGED_3: 4,
-  TEXTURE_WALL: 5,
+  TEXTURE_COLUMN: 0,
+  TEXTURE_COLUMN_DAMAGED_1: 1,
+  TEXTURE_COLUMN_DAMAGED_2: 2,
+  TEXTURE_COLUMN_DAMAGED_3: 3,
+  TEXTURE_WALL: 4,
+  TEXTURE_WALL_SAFE: 5,
   TEXTURE_GRASS: 6,
   TEXTURE_HEART: 7,
   TEXTURE_BOMB_SMALL: 8,

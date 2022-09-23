@@ -14,13 +14,14 @@ import { onLoad } from '../'
 const SPRITE_PATH = '/src/components/pages/game/images/sprite.webp'
 
 const spriteTextureCoords: TCoords = {
-  [textures.TEXTURE_HEART]:                [7, 1],
+  [textures.TEXTURE_HEART]:                [8, 1],
   [textures.TEXTURE_COLUMN]:               [0, 0],
   [textures.TEXTURE_COLUMN_DAMAGED_1]:     [1, 0],
   [textures.TEXTURE_COLUMN_DAMAGED_2]:     [2, 0],
   [textures.TEXTURE_COLUMN_DAMAGED_3]:     [3, 0],
   [textures.TEXTURE_WALL]:                 [4, 0],
-  [textures.TEXTURE_GRASS]:                [5, 0],
+  [textures.TEXTURE_WALL_SAFE]:            [5, 0],
+  [textures.TEXTURE_GRASS]:                [6, 0],
   [textures.TEXTURE_HERO_RIGHT_STANDING]:  [0, 1],
   [textures.TEXTURE_HERO_RIGHT_SITTING]:   [0, 2],
   [textures.TEXTURE_HERO_RIGHT_MOVING_1]:  [0, 3],

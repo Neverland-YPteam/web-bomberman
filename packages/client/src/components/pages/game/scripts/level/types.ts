@@ -1,4 +1,4 @@
-import { TEnemyName } from '../enemy/types'
+import { TEnemyName } from '../Enemy/types'
 
 type TEnemies = Partial<Record<TEnemyName, number>>
 export type TEnemyEntry = [TEnemyName, number]

@@ -18,12 +18,13 @@ import {
   getRandomArrayValue,
   getBooleanWithProbability,
   floatNum,
+  PausableInterval,
 } from '../utils'
 import { canvas } from '../canvas'
 import { level } from '../level'
 import { enemyList } from './enemyList'
 
-const { TEXTURE_COLUMN, TEXTURE_WALL } = textures
+const { TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE } = textures
 
 const DIRECTIONS: TDirection[] = ['left', 'right', 'up', 'down']
 const DIRECTION_DEFAULT: TDirectionX = 'right'
@@ -41,7 +42,7 @@ class Enemy {
   private _unpredictable
 
   private _currentTextureIndex = 0
-  private _changeTextureInterval: null | ReturnType<typeof setInterval> = null
+  private _changeTextureInterval: null | PausableInterval = null
 
   x = 0
   y = 0
@@ -88,10 +89,10 @@ class Enemy {
 
   private get _blockingTextures() {
     if (this._wallPass && getRandomBoolean()) {
-      return [TEXTURE_COLUMN]
+      return [TEXTURE_COLUMN, TEXTURE_WALL_SAFE]
     }
 
-    return [TEXTURE_COLUMN, TEXTURE_WALL]
+    return [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE]
   }
 
   private get _canRandomlyChangeDirection() {
@@ -229,7 +230,7 @@ class Enemy {
 
     if (isBlockedFromAllSides && !this._wallPass) {
       if (this._changeTextureInterval) {
-        clearInterval(this._changeTextureInterval)
+        this._changeTextureInterval.stop()
         this._changeTextureInterval = null
       }
 
@@ -250,9 +251,18 @@ class Enemy {
 
     if (!this._changeTextureInterval) {
       this._currentTextureIndex = 0
-      this._changeTextureInterval = setInterval(this._updateTexture, this._textures.interval)
+      this._changeTextureInterval = new PausableInterval(this._updateTexture, this._textures.interval)
+      this._changeTextureInterval.start()
       this._updateTexture()
     }
+  }
+
+  pauseAnimation() {
+    this._changeTextureInterval?.pause()
+  }
+
+  resumeAnimation() {
+    this._changeTextureInterval?.resume()
   }
 }
 
