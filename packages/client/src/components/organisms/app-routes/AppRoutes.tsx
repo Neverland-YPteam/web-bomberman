@@ -1,4 +1,3 @@
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { AuthPage } from '@pages/auth'
 import { SignupPage } from '@pages/sign-up'
@@ -7,6 +6,7 @@ import { ProfilePage } from '@pages/profile'
 import { ErrorBoundary } from '@organisms/error-boundary'
 import { routes } from './routes'
 import { BeginGamePage } from '@pages/begin-game'
+import { GamePage } from '@pages/game'
 
 const AppRoutes = () => {
   return (
@@ -17,6 +17,7 @@ const AppRoutes = () => {
         <Route path={routes.profile.path} element={<ProfilePage />} />
         <Route path={routes.leaderboard.path} element={<Leaderboard />} />
         <Route path={routes.main.path} element={<BeginGamePage />} />
+        <Route path={routes.game.path} element={<GamePage />} />
       </Routes>
     </ErrorBoundary>
   )
