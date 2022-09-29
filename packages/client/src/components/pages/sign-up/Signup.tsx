@@ -1,23 +1,32 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
 import { TextField } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
 import { routes } from '@organisms/app-routes';
+import { useDispatch, useSelector } from '@utils/hooks'
+import { registerUser } from '@services/store/actions/user-registration'
+import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
+  const dispatch: any = useDispatch();
+  const navigate = useNavigate();
+
+  const { userId } = useSelector(state => state.userRegistration);
+
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     const data = new FormData(evt.currentTarget);
-    console.log({
-      first_name: data.get('first_name'),
-      second_name: data.get('second_name'),
-      email: data.get('email'),
-      login: data.get('login'),
-      password: data.get('password'),
-    });
+
+    dispatch(registerUser(data))
   }
+
+  useEffect(() => {
+    if (userId) {
+      navigate(routes.profile.path);
+    }
+  }, [userId])
 
   return (
     <FormContainer
@@ -46,6 +55,14 @@ const Signup = () => {
         label="Email"
         name="email"
         type="email"
+      />
+      <TextField
+        margin="normal"
+        required
+        fullWidth
+        label="Телефон"
+        name="phone"
+        type="tel"
       />
       <TextField
         margin="normal"

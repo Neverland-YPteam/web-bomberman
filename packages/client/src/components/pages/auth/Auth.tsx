@@ -1,20 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react'
 import { TextField } from '@mui/material'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
 import { withNavbar } from '@services/withNavbar'
 import { routes } from '@organisms/app-routes';
+import { useDispatch, useSelector } from '@utils/hooks'
+import { loginUser } from '@services/store/actions/user-auth'
+import { useNavigate } from 'react-router-dom'
 
 const Auth = () => {
+  const dispatch: any = useDispatch()
+  const navigate = useNavigate()
+
+  const { isUserAuth } = useSelector(state => state.userAuth)
+
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     const data = new FormData(evt.currentTarget);
-    console.log({
-      login: data.get('login'),
-      password: data.get('password'),
-    });
+
+    dispatch(loginUser(data))
   }
+
+  useEffect(() => {
+    if (isUserAuth) {
+      navigate(routes.main.path)
+    }
+  }, [isUserAuth])
 
   return (
     <FormContainer
