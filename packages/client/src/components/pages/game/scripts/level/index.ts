@@ -435,13 +435,13 @@ class Level {
     hero.stopIntervals()
     stats.stopIntervals()
     stats.addScore(LEVEL_COMPLETE_SCORE_BASE * this.currentLevel + stats.timeLeft)
-    stats.addLife()
     Object.values(this.bombs).forEach((bomb) => bomb.stopIntervals())
 
     this.limitFrames?.stop()
 
     setTimeout(() => {
       if (Object.keys(levelList).length > this.currentLevel) {
+        stats.addLife()
         this.goToNextLevel()
       } else {
         this._endGame(true)
