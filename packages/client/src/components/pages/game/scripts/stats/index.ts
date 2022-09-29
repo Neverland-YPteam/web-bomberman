@@ -50,6 +50,10 @@ class Stats {
     }
   }
 
+  get timeLeft() {
+    return this._time
+  }
+
   addScore(score: number) {
     this._score += score
     this._updatePanel()

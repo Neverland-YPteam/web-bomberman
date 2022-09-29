@@ -37,8 +37,8 @@ const { TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_GRASS, TEXTURE_
 const LEVEL_INTRO_TIMEOUT_MS = 2000 // На этапе разработки большое значение не нужно
 const LEVEL_CHANGE_TIMEOUT_MS = 3000
 const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена образовалась прямо возле героя
-const SAFE_TILES_ENEMY_COUNT = 8 // И враги тоже
-const WALL_PROBABILITY_PCT = 3 // Вероятность появления стены
+const SAFE_TILES_ENEMY_COUNT = 5 // И враги тоже
+const WALL_PROBABILITY_PCT = 40 // Вероятность появления стены
 const LEVEL_COMPLETE_SCORE_BASE = 1000
 const KEY_PAUSE = 'Escape'
 
@@ -434,7 +434,7 @@ class Level {
     hero.removeControl()
     hero.stopIntervals()
     stats.stopIntervals()
-    stats.addScore(LEVEL_COMPLETE_SCORE_BASE * this.currentLevel)
+    stats.addScore(LEVEL_COMPLETE_SCORE_BASE * this.currentLevel + stats.timeLeft)
     stats.addLife()
     Object.values(this.bombs).forEach((bomb) => bomb.stopIntervals())
 
