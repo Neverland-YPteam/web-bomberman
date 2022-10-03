@@ -17,7 +17,7 @@ const MainMenuItem = ({ item }: Props) => {
         position: 'relative',
         ':hover::before': {
           position: 'absolute',
-          content: 'url("public/bomb.png")',
+          content: 'url("@images/bomb.png")',
           left: '-60px',
         }
       }}
