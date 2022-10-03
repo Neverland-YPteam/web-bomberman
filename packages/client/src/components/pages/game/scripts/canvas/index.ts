@@ -36,7 +36,7 @@ class Canvas {
      */
     this._offscreenCanvas = window.OffscreenCanvas
       ? new OffscreenCanvas(this.width, this.height) as OffscreenCanvas
-      : document.querySelector(selector) as HTMLCanvasElement
+      : document.createElement('canvas') as HTMLCanvasElement
 
     this._offscreenCanvas.width = this.width
     this._offscreenCanvas.height = this.height
