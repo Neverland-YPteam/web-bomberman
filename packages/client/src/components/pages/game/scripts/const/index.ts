@@ -23,7 +23,7 @@ export const SPRITE_TEXTURE_SIZE = 128 // Размер текстуры в сп�
 export const BG_COLOR = '#11264D'
 export const TEXT_COLOR = '#FFFFFF'
 export const FONT_SIZE = 28
-export const FONT_FAMILY = 'Press Start 2P'
+export const FONT_FAMILY = 'PressStart2P'
 
 export const LIVES_INITIAL = 3
 export const SCORE_INITIAL = 0
