@@ -8,7 +8,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: url('public/background.png') no-repeat 0 0 / cover fixed;
+  background: url('@images/background.png') no-repeat 0 0 / cover fixed;
 }
 
 .navbar::after {
