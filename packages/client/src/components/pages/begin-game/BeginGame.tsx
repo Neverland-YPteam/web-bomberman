@@ -22,7 +22,7 @@ const BeginGame = () => {
         alignItems="center"
         spacing={2}
       >
-        {menuItems.map((item) => <MainMenuItem item={item} />)}
+        {menuItems.map((item) => <MainMenuItem item={item} key={item.path} />)}
       </Stack>
     </Stack>
   )
