@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { AuthPage } from '@pages/auth'
 import { SignupPage } from '@pages/sign-up'
 import Leaderboard from '@pages/Leaderboard'
@@ -10,13 +10,9 @@ import { GamePage } from '@pages/game'
 import { ProtectedRoute } from '@molecules/protected-route'
 
 const AppRoutes = () => {
-  //
-  const location = useLocation()
-  const state = location.state
-
   return (
     <ErrorBoundary>
-      <Routes location={state?.backgroundLocation || location}>
+      <Routes>
         <Route path={routes.auth.path} element={<AuthPage />} />
         <Route path={routes.signUp.path} element={<SignupPage />} />
         <Route element={<ProtectedRoute />}>
