@@ -30,6 +30,10 @@ const routes: TRoutes = {
     title: 'Новая игра',
     path: '/game',
   },
+  score: {
+    title: '',
+    path: '/score',
+  },
   leaderboard: {
     title: 'Лидеры',
     path: '/leaderboard',

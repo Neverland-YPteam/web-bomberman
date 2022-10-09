@@ -2,7 +2,7 @@ import React from 'react'
 import { routes } from '@organisms/app-routes'
 import { Navbar } from '@molecules/navbar'
 
-export type ConfigKey = 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'forum'
+export type ConfigKey = 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'forum' | 'score'
 
 interface ConfigOption {
   showLogo?: boolean
@@ -38,6 +38,11 @@ const configOptions: configOptions = {
   main: {
     showLogo: false,
     links: ['forum'],
+    protectedRoute: true,
+  },
+  score: {
+    showLogo: true,
+    links: ['profile', 'leaderboard', 'forum'],
     protectedRoute: true,
   }
 }
