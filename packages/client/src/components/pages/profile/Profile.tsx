@@ -1,14 +1,26 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { Avatar, Box, TextField } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
+import { useDispatch } from '@utils/hooks'
+import { loadProfile, updateAvatar, updateProfile } from '@services/store/actions/profile'
+import { API_RESOURCE_URL } from '@utils/constants'
 
 const Profile = () => {
-  const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
+  const dispatch: any = useDispatch();
 
+  const handleAvatarUpdate = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const [file] = evt.target.files as FileList
+    const data = new FormData()
+    data.append('avatar', file)
+    dispatch(updateAvatar(data))
+  }
+
+  const handleProfileUpdate = (evt: React.FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
     const data = new FormData(evt.currentTarget);
+    dispatch(updateProfile(data))
 
     /**
      * По ТЗ пароль нужен на странице профиля
@@ -25,9 +37,13 @@ const Profile = () => {
     });
   }
 
+  useEffect(() => {
+    dispatch(loadProfile())
+  }, [])
+
   return (
     <FormContainer
-      onFormSubmit={handleSubmit}
+      onFormSubmit={handleProfileUpdate}
       title="Профиль"
     >
       <Avatar
@@ -44,6 +60,8 @@ const Profile = () => {
         <input
           type="file"
           hidden
+          accept="image/*"
+          onChange={(event) => handleAvatarUpdate(event)}
         />
         <Box
           sx={{
@@ -61,6 +79,13 @@ const Profile = () => {
         />
       </Avatar>
 
+      <TextField
+        name="login"
+        label="Логин"
+        required
+        fullWidth
+        margin="normal"
+      />
       <TextField
         name="first_name"
         label="Имя"
@@ -84,7 +109,7 @@ const Profile = () => {
       />
       <TextField
         name="email"
-        label="Никнейм"
+        label="Email"
         type="email"
         required
         fullWidth
