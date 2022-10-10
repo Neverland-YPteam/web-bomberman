@@ -3,17 +3,16 @@ import './App.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from '@organisms/app-routes'
 import { Box } from '@mui/material';
+import { useDispatch } from '@utils/hooks'
+import { loadUser } from '@services/store/actions/user'
 
 function App() {
-  useEffect(() => {
-    const fetchServerData = async () => {
-      const response = await fetch('http://localhost:3001')
-      const data = await response.json()
-      console.log(data)
-    }
+  const dispatch: any = useDispatch()
 
-    fetchServerData()
+  useEffect(() => {
+    dispatch(loadUser())
   }, [])
+
   return (
     <BrowserRouter>
       <Box className="app__wrapper">
