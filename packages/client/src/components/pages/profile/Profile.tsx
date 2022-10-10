@@ -1,10 +1,12 @@
 import React from 'react'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
-import { Avatar, Box, TextField } from '@mui/material'
+import { Avatar, Box, Skeleton, TextField } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
 import { useDispatch, useSelector } from '@utils/hooks'
 import { updateAvatar, updateProfile, updatePassword } from '@services/store/actions/profile'
+
+const SKELETON_COUNT = 8
 
 const Profile = () => {
   const dispatch: any = useDispatch()
@@ -83,73 +85,82 @@ const Profile = () => {
         />
       </Box>
 
-      <TextField
-        name="login"
-        label="Логин"
-        required
-        fullWidth
-        margin="normal"
-        defaultValue={user.login}
-      />
-      <TextField
-        name="first_name"
-        label="Имя"
-        required
-        fullWidth
-        margin="normal"
-        defaultValue={user.first_name}
-      />
-      <TextField
-        name="second_name"
-        label="Фамилия"
-        required
-        fullWidth
-        margin="normal"
-        defaultValue={user.second_name}
-      />
-      <TextField
-        name="display_name"
-        label="Никнейм"
-        required
-        fullWidth
-        margin="normal"
-        defaultValue={user.display_name}
-      />
-      <TextField
-        name="email"
-        label="Email"
-        type="email"
-        required
-        fullWidth
-        margin="normal"
-        defaultValue={user.email}
-      />
-      <TextField
-        name="phone"
-        label="Телефон"
-        type="tel"
-        required
-        fullWidth
-        margin="normal"
-        defaultValue={user.phone}
-      />
-      <TextField
-        name="oldPassword"
-        label="Текущий пароль"
-        type="password"
-        required
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        name="newPassword"
-        label="Новый пароль"
-        type="password"
-        required
-        fullWidth
-        margin="normal"
-      />
-      <SubmitButton>Сохранить</SubmitButton>
+      {user.login
+
+        ? <>
+          <TextField
+            name="login"
+            label="Логин"
+            required
+            fullWidth
+            margin="normal"
+            defaultValue={user.login}
+          />
+          <TextField
+            name="first_name"
+            label="Имя"
+            required
+            fullWidth
+            margin="normal"
+            defaultValue={user.first_name}
+          />
+          <TextField
+            name="second_name"
+            label="Фамилия"
+            required
+            fullWidth
+            margin="normal"
+            defaultValue={user.second_name}
+          />
+          <TextField
+            name="display_name"
+            label="Никнейм"
+            required
+            fullWidth
+            margin="normal"
+            defaultValue={user.display_name}
+          />
+          <TextField
+            name="email"
+            label="Email"
+            type="email"
+            required
+            fullWidth
+            margin="normal"
+            defaultValue={user.email}
+          />
+          <TextField
+            name="phone"
+            label="Телефон"
+            type="tel"
+            required
+            fullWidth
+            margin="normal"
+            defaultValue={user.phone}
+          />
+          <TextField
+            name="oldPassword"
+            label="Текущий пароль"
+            type="password"
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="newPassword"
+            label="Новый пароль"
+            type="password"
+            required
+            fullWidth
+            margin="normal"
+          />
+          <SubmitButton>Сохранить</SubmitButton>
+        </>
+
+        : Array.from(Array(SKELETON_COUNT)).map(() => (
+          <Skeleton variant="rectangular" width={210} height={60} sx={{ margin: 1 }} />
+        ))
+      }
     </FormContainer>
   )
 }
