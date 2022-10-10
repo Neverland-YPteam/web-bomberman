@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { Avatar, Box, TextField } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
-import { useDispatch } from '@utils/hooks'
-import { loadProfile, updateAvatar, updateProfile } from '@services/store/actions/profile'
-import { API_RESOURCE_URL } from '@utils/constants'
+import { useDispatch, useSelector } from '@utils/hooks'
+import { updateAvatar, updateProfile, updatePassword } from '@services/store/actions/profile'
 
 const Profile = () => {
-  const dispatch: any = useDispatch();
+  const dispatch: any = useDispatch()
+
+  const user = useSelector(state => state.user)
 
   const handleAvatarUpdate = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const [file] = evt.target.files as FileList
@@ -18,45 +19,48 @@ const Profile = () => {
   }
 
   const handleProfileUpdate = (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-    const data = new FormData(evt.currentTarget);
+    evt.preventDefault()
+
+    let data = new FormData(evt.currentTarget)
+    data.delete('oldPassword')
+    data.delete('newPassword')
     dispatch(updateProfile(data))
 
-    /**
-     * По ТЗ пароль нужен на странице профиля
-     * Эндпоинты для профиля и пароля у нас отдельные
-     * Вероятно, придется слать два запроса через Promise.all
-     */
-    console.log({
-      first_name: data.get('first_name'),
-      second_name: data.get('second_name'),
-      display_name: data.get('display_name'),
-      email: data.get('email'),
-      phone: data.get('phone'),
-      password: data.get('password'),
-    });
+    data = new FormData()
+    data.append('oldPassword', evt.currentTarget.oldPassword.value)
+    data.append('newPassword', evt.currentTarget.newPassword.value)
+    dispatch(updatePassword(data))
   }
-
-  useEffect(() => {
-    dispatch(loadProfile())
-  }, [])
 
   return (
     <FormContainer
       onFormSubmit={handleProfileUpdate}
       title="Профиль"
     >
-      <Avatar
+      <Box
         component="label"
-        alt="Ваш аватар"
         sx={{
           position: 'relative',
           width: 120,
           height: 120,
+          overflow: 'hidden',
+          borderRadius: '50%',
           cursor: 'pointer',
         }}
       >
-        В
+        {user.avatar
+          ? <Avatar
+              component="label"
+              src={user.avatar}
+              alt="Ваш аватар"
+              sx={{
+                width: '100%',
+                height: '100%',
+              }}
+            />
+          : user.display_name?.slice(0, 1).toUpperCase()
+        }
+
         <input
           type="file"
           hidden
@@ -77,7 +81,7 @@ const Profile = () => {
             transition: 'background-color 200ms ease-out'
           }}
         />
-      </Avatar>
+      </Box>
 
       <TextField
         name="login"
@@ -85,6 +89,7 @@ const Profile = () => {
         required
         fullWidth
         margin="normal"
+        defaultValue={user.login}
       />
       <TextField
         name="first_name"
@@ -92,6 +97,7 @@ const Profile = () => {
         required
         fullWidth
         margin="normal"
+        defaultValue={user.first_name}
       />
       <TextField
         name="second_name"
@@ -99,6 +105,7 @@ const Profile = () => {
         required
         fullWidth
         margin="normal"
+        defaultValue={user.second_name}
       />
       <TextField
         name="display_name"
@@ -106,6 +113,7 @@ const Profile = () => {
         required
         fullWidth
         margin="normal"
+        defaultValue={user.display_name}
       />
       <TextField
         name="email"
@@ -114,6 +122,7 @@ const Profile = () => {
         required
         fullWidth
         margin="normal"
+        defaultValue={user.email}
       />
       <TextField
         name="phone"
@@ -122,10 +131,19 @@ const Profile = () => {
         required
         fullWidth
         margin="normal"
+        defaultValue={user.phone}
       />
       <TextField
-        name="password"
-        label="Пароль"
+        name="oldPassword"
+        label="Текущий пароль"
+        type="password"
+        required
+        fullWidth
+        margin="normal"
+      />
+      <TextField
+        name="newPassword"
+        label="Новый пароль"
         type="password"
         required
         fullWidth
