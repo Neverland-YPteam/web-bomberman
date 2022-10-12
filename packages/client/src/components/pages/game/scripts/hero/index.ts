@@ -50,7 +50,7 @@ const KEY_LEFT = 'ArrowLeft'
 const KEY_RIGHT = 'ArrowRight'
 const KEY_UP = 'ArrowUp'
 const KEY_DOWN = 'ArrowDown'
-const KEY_BOMB_PLACE = ' '
+const KEY_BOMB_PLACE = 'Space'
 const KEY_BOMB_DETONATE = 'Control'
 
 const SPEED_DEFAULT = 3 // Скорость героя по умолчанию

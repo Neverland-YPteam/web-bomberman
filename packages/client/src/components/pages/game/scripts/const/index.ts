@@ -1,9 +1,9 @@
 import { TTextures } from './types'
 
-export enum canvasSelectors {
-  static = '#game_static',
-  dynamic = '#game_dynamic',
-  modal = '#game_modal',
+export enum CanvasSelectors {
+  Static = '#game_static',
+  Dynamic = '#game_dynamic',
+  Modal = '#game_modal',
 }
 
 /**

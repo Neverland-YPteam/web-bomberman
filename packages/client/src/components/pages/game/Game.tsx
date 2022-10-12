@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Box } from '@mui/material'
-import { canvasSelectors } from './scripts/const'
+import { CanvasSelectors } from './scripts/const'
 
 const Game = () => {
   useEffect(() => {
@@ -20,7 +20,7 @@ const Game = () => {
           margin: '0 auto',
         }}
       >
-        {Object.values(canvasSelectors).map((canvasSelector) =>
+        {Object.values(CanvasSelectors).map((canvasSelector) =>
           <canvas
             key={canvasSelector}
             id={canvasSelector.slice(1)}
