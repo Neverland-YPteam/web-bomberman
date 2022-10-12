@@ -13,3 +13,4 @@ type TFieldRow = number[]
 export type TField = TFieldRow[]
 
 export type TCellCoords = [number, number]
+export type TCellColRow = Record<'col' | 'row', number>

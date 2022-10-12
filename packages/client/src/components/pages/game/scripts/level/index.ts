@@ -1,46 +1,64 @@
 /**
- * Класс отвечает за начало уровня, генерирование WALL, персонажей и прочих плюшек
+ * Класс отвечает за начало уровня, генерирование WALL, персонажей, проигрыш, выигрыш и разные прочие плюшки
  *
- * @TODO Добавлять под случайными стенами BONUS и EXIT
- * @TODO Сделать окончание уровня
+ * @TODO Добавлять под случайной стеной BONUS
  */
 
-import { TField, TCellCoords, TEnemyEntry } from './types'
+import { TField, TCellCoords, TEnemyEntry, TCellColRow } from './types'
 
 import {
-  FPS, MAP_TILES_COUNT_X, MAP_TILES_COUNT_Y, BG_COLOR, TEXT_COLOR, FONT_SIZE, textures,
+  FPS, MAP_TILES_COUNT_X, MAP_TILES_COUNT_Y, BG_COLOR, FONT_SIZE,
+  TEXT_COLOR_DEFAULT, TEXT_COLOR_SUCCESS, TEXT_COLOR_ERROR, textures,
 } from '../const'
 
 import {
-  delay, getBooleanWithProbability, getRandomNumberBetween, LimitFrames,
+  delay,
+  getBooleanWithProbability,
+  getRandomArrayValue,
+  getRandomNumberBetween,
+  LimitFrames,
 } from '../utils'
+
 import { canvasStatic, canvas, canvasModal } from '../canvas'
 import { Control } from '../Control'
+import { panel } from '../panel'
 import { map } from '../map'
 import { hero } from '../hero'
+import { Bomb } from '../Bomb'
+import { Flame } from '../Flame'
 import { Enemy } from '../Enemy'
+import { Score } from '../Score'
 import { levelList } from './levelList'
+import { stats } from '../stats'
+import { pause } from '../pause'
 
-const {
-  TEXTURE_COLUMN,
-  TEXTURE_WALL,
-  TEXTURE_WALL_SAFE,
-  TEXTURE_GRASS,
-} = textures
+const { TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_GRASS, TEXTURE_DOOR } = textures
 
-const KEY_PAUSE = 'Escape'
-const LEVEL_INTRO_TIMEOUT_MS = 500 // На этапе разработки большое значение не нужно
+const LEVEL_INTRO_TIMEOUT_MS = 2000 // На этапе разработки большое значение не нужно
+const LEVEL_CHANGE_TIMEOUT_MS = 3000
 const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена образовалась прямо возле героя
-const SAFE_TILES_ENEMY_COUNT = 8 // И враги тоже
+const SAFE_TILES_ENEMY_COUNT = 5 // И враги тоже
 const WALL_PROBABILITY_PCT = 40 // Вероятность появления стены
+const LEVEL_COMPLETE_SCORE_BASE = 1000
+const KEY_PAUSE = 'Escape'
 
 class Level {
-  private _currentLevel = 0
   private _field: TField = []
-  private _enemies: Enemy[] = []
+  private _walls: [number, number][] = []
   private _enemiesIndexes: string[] = []
-  private _limitFrames: null | LimitFrames = null
+  private _isPauseAllowed = false
   private _isPaused = false
+
+  limitFrames: null | LimitFrames = null
+  currentLevel = 0
+  showHero = true
+  doorCoords: Partial<TCellCoords> = []
+  canExit = false
+  bombs: Record<string, Bomb> = {}
+  flames: Record<string, Flame> = {}
+  burningCells: [number, number][] = []
+  enemies: Enemy[] = []
+  scorePopups: Record<number, Score> = {}
 
   constructor() {
     new Control(KEY_PAUSE, this.togglePause)
@@ -49,16 +67,18 @@ class Level {
   private _showIntro() {
     canvasModal.rect(0, 0, canvasModal.width, canvasModal.height, BG_COLOR)
     canvasModal.text(
-      `Уровень ${this._currentLevel}`,
+      `Уровень ${this.currentLevel}`,
       canvasModal.width / 2,
       canvasModal.height / 2,
       FONT_SIZE,
-      TEXT_COLOR,
+      TEXT_COLOR_DEFAULT,
       'center'
     )
   }
 
   private _resetField() {
+    this._walls = []
+
     const newField = []
     let rowIndex = 0
 
@@ -81,9 +101,11 @@ class Level {
 
           if (isSafeWallRight || isSafeWallBottom) {
             texture = TEXTURE_WALL_SAFE
+            this._walls.push([colIndex, rowIndex])
             map.drawTexture(TEXTURE_WALL_SAFE, colIndex + 1, rowIndex + 1)
           } else if (isWall) {
             texture = TEXTURE_WALL
+            this._walls.push([colIndex, rowIndex])
             map.drawTexture(TEXTURE_WALL, colIndex + 1, rowIndex + 1)
           } else {
             texture = TEXTURE_GRASS
@@ -101,21 +123,27 @@ class Level {
     this._field = newField
   }
 
+  private _setDoorColRow() {
+    this.doorCoords = getRandomArrayValue(this._walls)
+  }
+
   private _setHero() {
-    hero.resetPosition()
+    hero.reset()
     hero.draw()
     hero.allowControl()
   }
 
   private _updateEnemies() {
-    this._enemies.forEach((enemy) => {
+    this.enemies.forEach((enemy) => {
       enemy.move()
       enemy.draw()
     })
   }
 
   private _setEnemies() {
-    const { enemies } = levelList[this._currentLevel]
+    this.enemies = []
+
+    const { enemies } = levelList[this.currentLevel]
     const enemyEntries = Object.entries(enemies) as TEnemyEntry[]
 
     enemyEntries.forEach(this._setEnemy)
@@ -132,12 +160,14 @@ class Level {
       }
 
       const [row, col] = freeCellCoords
-      const enemy = new Enemy(name)
+      const id = `${col}-${row}`
+
+      const enemy = new Enemy(name, id)
 
       enemy.setPosition(row, col)
       enemy.draw()
 
-      this._enemies.push(enemy)
+      this.enemies.push(enemy)
       this._enemiesIndexes.push(`${row}-${col}`)
 
       counter++
@@ -145,8 +175,22 @@ class Level {
   }
 
   private _updateHero() {
-    hero.move()
-    hero.draw()
+    if (this.showHero) {
+      hero.move()
+      hero.draw()
+    }
+  }
+
+  private _updateBombs() {
+    Object.values(this.bombs).forEach((instance) => instance.update())
+  }
+
+  private _updateFlames() {
+    Object.values(this.flames).forEach((instance) => instance.draw())
+  }
+
+  private _updateScorePopups() {
+    Object.values(this.scorePopups).forEach((instance) => instance.draw())
   }
 
   private _findFreeCell(safeTilesCount: number, usedTilesChecked = 0): TCellCoords | null {
@@ -172,8 +216,13 @@ class Level {
 
   // Очередность текстур играет роль, последние будут выше по контексту наложения
   private _updateDynamicTextures = () => {
+    this.burningCells = []
+
     canvas.clear()
+    this._updateFlames()
+    this._updateBombs()
     this._updateEnemies()
+    this._updateScorePopups()
     this._updateHero()
     canvas.update()
   }
@@ -183,26 +232,49 @@ class Level {
     canvasModal.update() // Обновили canvasModal
   }
 
-  private _showPauseModal() {
-    const modalWidth = 320
-    const modalHeight = 150
+  // Подчищаем разные штуки для перезапуска уровня
+  private _tieUpLooseEnds() {
+    panel.init()
+    map.draw()
+
+    this._isPauseAllowed = false
+    this.canExit = false
+    this.showHero = true
+    this.bombs = {}
+  }
+
+  private _endGame(isVictory: boolean) {
+    this._showFinalScreen(isVictory)
+    this.limitFrames?.stop()
+  }
+
+  private _showFinalScreen(isVictory: boolean) {
+    const emoji = isVictory ? '🎉' : '😞'
+    const text = isVictory ? 'Поздравляем с победой!' : 'Вы проиграли'
+    const color = isVictory ? TEXT_COLOR_SUCCESS : TEXT_COLOR_ERROR
+
+    const textWidth = canvasModal.measureText(text)
+    const modalWidth = textWidth + FONT_SIZE * 4
+    const modalHeight = FONT_SIZE * 8
 
     canvasModal.rect(0, 0, canvasModal.width, canvasModal.height, 'rgba(0, 0, 0, 0.2')
+
     canvasModal.rect(
       canvasModal.width / 2 - modalWidth / 2,
       canvasModal.height / 2 - modalHeight / 2,
-      modalWidth,
-      modalHeight,
-      BG_COLOR,
+      modalWidth, modalHeight, BG_COLOR,
     )
+
     canvasModal.text(
-      `Пауза`,
-      canvasModal.width / 2,
-      canvasModal.height / 2,
-      FONT_SIZE,
-      TEXT_COLOR,
-      'center',
+      emoji, canvasModal.width / 2, canvasModal.height / 2 - FONT_SIZE,
+      FONT_SIZE * 2, color, 'center',
     )
+
+    canvasModal.text(
+      text, canvasModal.width / 2, canvasModal.height / 2 + FONT_SIZE * 2,
+      FONT_SIZE, color, 'center',
+    )
+
     canvasModal.update()
   }
 
@@ -210,60 +282,171 @@ class Level {
     this.goToNextLevel(1)
   }
 
-  async goToNextLevel(level = this._currentLevel + 1) {
+  goToNextLevel = async (level = this.currentLevel + 1) => {
     // @TODO Вызов метода, который генерит бонус и его расположение
-    // @TODO Вызов метода, который генерит расположение выхода
 
-    this._currentLevel = level // Перешли на новый уровень
+    this._tieUpLooseEnds()
+    this.currentLevel = level // Перешли на новый уровень
 
     this._showIntro() // Показали заставку
     canvasModal.update() // Обновили canvas
 
     this._resetField() // Поместили стены
+    this._setDoorColRow() // Добавили дверь
     canvasStatic.update() // Обновили canvasStatic
 
     await delay(LEVEL_INTRO_TIMEOUT_MS) // Ждем новый уровень…
+
+    stats.resetTime()
 
     canvas.clear() // Очистили canvas
     this._setHero() // Поместили героя
     this._setEnemies() // Поместили врагов
     canvas.update() // Обновили canvas
-    this._clearCanvasModal()
+    this._clearCanvasModal() // Убрали модалку
 
     // Запускаем апдейт фреймов
-    this._limitFrames = new LimitFrames(this._updateDynamicTextures, FPS)
-    this._limitFrames.start()
+    this.limitFrames?.stop()
+    this.limitFrames = new LimitFrames(this._updateDynamicTextures, FPS)
+    this.limitFrames.start()
+
+    this._isPauseAllowed = true
   }
 
   getTileType(col: number, row: number) {
-    if (
-      col >= 0 && col < MAP_TILES_COUNT_X - 2 &&
-      row >= 0 && row < MAP_TILES_COUNT_Y - 2
-    ) {
-      return this._field[row][col]
-    }
+    const isInnerCol = col >= 0 && col < MAP_TILES_COUNT_X - 2
+    const isInnerRow = row >= 0 && row < MAP_TILES_COUNT_Y - 2
 
-    return TEXTURE_COLUMN
+    return isInnerCol && isInnerRow ? this._field[row][col] : TEXTURE_COLUMN
   }
 
   togglePause = (isKeydown: boolean) => {
-    if (!isKeydown) {
+    if (!isKeydown || !this._isPauseAllowed) {
       return
     }
 
     this._isPaused = !this._isPaused
 
     if (this._isPaused) {
-      this._showPauseModal()
-      this._limitFrames?.pause()
-      hero.pauseAnimation()
-      this._enemies.forEach((enemy) => enemy.pauseAnimation())
+      pause.show()
     } else {
-      this._limitFrames?.resume()
-      hero.resumeAnimation()
-      this._enemies.forEach((enemy) => enemy.resumeAnimation())
+      pause.hide()
       this._clearCanvasModal()
     }
+  }
+
+  updateTexture(texture: number, col: number, row: number) {
+    this._field[row][col] = texture
+  }
+
+  addBomb(instance: Bomb) {
+    this.bombs[instance.id] = instance
+  }
+
+  removeBomb(id: string) {
+    delete this.bombs[id]
+  }
+
+  explodeOldestBomb() {
+    const [oldestBombKey] = Object.keys(this.bombs)
+
+    if (oldestBombKey) {
+      this.bombs[oldestBombKey].explode()
+      this.removeBomb(oldestBombKey)
+    }
+  }
+
+  addFlame(instance: Flame) {
+    this.flames[instance.id] = instance
+  }
+
+  removeFlame(id: string) {
+    delete this.flames[id]
+  }
+
+  addBurningCell = ({ col, row }: TCellColRow) => {
+    this.burningCells.push([col, row])
+  }
+
+  updateWall = (texture: number, { col, row }: TCellColRow) => {
+    const currentTexture = map.getTexture(col + 1, row + 1)
+
+    if (currentTexture !== texture) {
+      map.drawTexture(TEXTURE_GRASS, col + 1, row + 1)
+      map.drawTexture(texture, col + 1, row + 1)
+
+      canvasStatic.update()
+    }
+  }
+
+  removeWall = ({ col, row }: TCellColRow) => {
+    // @TODO Обрабатывать бонус
+    this.updateTexture(TEXTURE_GRASS, col, row)
+
+    const [doorCol, doorRow] = this.doorCoords
+    const texture = col === doorCol && row === doorRow ? TEXTURE_DOOR : TEXTURE_GRASS
+
+    map.drawTexture(texture, col + 1, row + 1)
+    canvasStatic.update()
+  }
+
+  removeEnemy(id: string) {
+    this.enemies = this.enemies.filter((enemy) => enemy.id !== id)
+
+    if (this.enemies.length === 0) {
+      this.canExit = true
+    }
+  }
+
+  addScorePopup(instance: Score) {
+    this.scorePopups[instance.id] = instance
+  }
+
+  removeScorePopup(id: number) {
+    delete this.scorePopups[id]
+  }
+
+  onLose = () => {
+    this._isPauseAllowed = false
+
+    hero.removeControl()
+    stats.stopIntervals()
+    Object.values(this.bombs).forEach((bomb) => bomb.stopIntervals())
+
+    setTimeout(() => {
+      if (stats.lives > 0) {
+        hero.stopIntervals()
+        stats.decreaseLife()
+        this.goToNextLevel(this.currentLevel)
+      } else {
+        this._endGame(false)
+      }
+    }, LEVEL_CHANGE_TIMEOUT_MS)
+  }
+
+  onTimeExpiration() {
+    // @TODO Добавлять врагов в наказание
+  }
+
+  complete = () => {
+    this._isPauseAllowed = false
+
+    hero.removeControl()
+    hero.stopIntervals()
+    stats.stopIntervals()
+    stats.addScore(LEVEL_COMPLETE_SCORE_BASE * this.currentLevel + stats.timeLeft)
+    Object.values(this.bombs).forEach((bomb) => bomb.stopIntervals())
+
+    this.limitFrames?.stop()
+
+    setTimeout(() => {
+      if (Object.keys(levelList).length > this.currentLevel) {
+        stats.addLife()
+        this.goToNextLevel()
+      } else {
+        this._endGame(true)
+      }
+    }, LEVEL_CHANGE_TIMEOUT_MS)
   }
 }
 

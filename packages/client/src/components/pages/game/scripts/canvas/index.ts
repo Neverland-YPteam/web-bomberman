@@ -100,14 +100,25 @@ class Canvas {
     y: number,
     width = TILE_SIZE,
     height = TILE_SIZE,
+    angle?: number,
   ) {
     const [spriteX, spriteY] = getImageCoords(texture)
 
-    this._offscreenContext.drawImage(
-      sprite,
-      spriteX, spriteY, SPRITE_TEXTURE_SIZE, SPRITE_TEXTURE_SIZE,
-      x, y, width, height,
-    )
+    if (angle) {
+      this._offscreenContext.save()
+      this._offscreenContext.translate(x + width / 2, y + height / 2)
+      this._offscreenContext.rotate(angle * Math.PI / 180)
+      this._offscreenContext.drawImage(
+        sprite, spriteX, spriteY, SPRITE_TEXTURE_SIZE, SPRITE_TEXTURE_SIZE,
+        -width / 2, -height / 2, width, height,
+      )
+      this._offscreenContext.restore()
+    } else {
+      this._offscreenContext.drawImage(
+        sprite, spriteX, spriteY, SPRITE_TEXTURE_SIZE, SPRITE_TEXTURE_SIZE,
+        x, y, width, height,
+      )
+    }
   }
 }
 
