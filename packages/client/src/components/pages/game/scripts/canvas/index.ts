@@ -15,8 +15,8 @@ import { getImageCoords, sprite } from '../images'
 class Canvas {
   private _canvas: HTMLCanvasElement
   private _context: CanvasRenderingContext2D
-  private _offscreenCanvas: OffscreenCanvas
-  private _offscreenContext: OffscreenCanvasRenderingContext2D
+  private _offscreenCanvas: HTMLCanvasElement | OffscreenCanvas
+  private _offscreenContext: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 
   // Альфа-канал не нужен для статического канваса, экономим ресурсы
   constructor(selector: canvasSelectors, alpha = false) {
@@ -31,12 +31,16 @@ class Canvas {
 
     /**
      * Используем offscreenCanvas, чтобы рисовать объекты вне DOM и потом рендерить в один заход
-     * Фича не кроссбраузерная, можно добавить полифил, на крайняк вернемся к обычному контексту
+     * Поддерживается не везде, поэтому используем фолбэк в виде обычного канваса вне DOM
+     * При этом игра не настолько блокирует основной поток, чтобы задействовать воркер
      */
-    this._offscreenCanvas = new OffscreenCanvas(this.width, this.height)
+    this._offscreenCanvas = window.OffscreenCanvas
+      ? new OffscreenCanvas(this.width, this.height) as OffscreenCanvas
+      : document.createElement('canvas') as HTMLCanvasElement
+
     this._offscreenCanvas.width = this.width
     this._offscreenCanvas.height = this.height
-    this._offscreenContext = this._offscreenCanvas.getContext('2d') as OffscreenCanvasRenderingContext2D
+    this._offscreenContext = this._offscreenCanvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
   }
 
   get width() {
