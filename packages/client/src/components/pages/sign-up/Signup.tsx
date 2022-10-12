@@ -14,6 +14,7 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const { userId } = useSelector(state => state.userRegistration);
+  const { isUserAuth } = useSelector(state => state.userAuth)
 
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -21,6 +22,12 @@ const Signup = () => {
 
     dispatch(registerUser(data))
   }
+
+  useEffect(() => {
+    if (isUserAuth) {
+      navigate(routes.main.path, {replace: true})
+    }
+  }, [isUserAuth])
 
   useEffect(() => {
     if (userId) {

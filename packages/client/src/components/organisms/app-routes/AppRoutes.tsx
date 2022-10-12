@@ -7,6 +7,8 @@ import { ErrorBoundary } from '@organisms/error-boundary'
 import { routes } from './routes'
 import { BeginGamePage } from '@pages/begin-game'
 import { GamePage } from '@pages/game'
+import { ProtectedRoute } from '@molecules/protected-route'
+import { EndGamePage } from '@pages/end-game'
 
 const AppRoutes = () => {
   return (
@@ -14,10 +16,13 @@ const AppRoutes = () => {
       <Routes>
         <Route path={routes.auth.path} element={<AuthPage />} />
         <Route path={routes.signUp.path} element={<SignupPage />} />
-        <Route path={routes.profile.path} element={<ProfilePage />} />
-        <Route path={routes.leaderboard.path} element={<Leaderboard />} />
-        <Route path={routes.main.path} element={<BeginGamePage />} />
-        <Route path={routes.game.path} element={<GamePage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path={routes.profile.path} element={<ProfilePage />} />
+          <Route path={routes.leaderboard.path} element={<Leaderboard />} />
+          <Route path={routes.main.path} element={<BeginGamePage />} />
+          <Route path={routes.game.path} element={<GamePage />} />
+          <Route path={routes.score.path} element={<EndGamePage />} />
+        </Route>
       </Routes>
     </ErrorBoundary>
   )
