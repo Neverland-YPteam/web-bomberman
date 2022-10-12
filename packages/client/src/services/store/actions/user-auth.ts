@@ -61,6 +61,7 @@ export const loginUser: AppThunk = (data: FormData) => {
         dispatch({
           type: USER_LOGIN_SUCCESS
         })
+        localStorage.setItem('Session', 'active')
       })
       .catch(() => {
         dispatch({
@@ -87,7 +88,8 @@ export const logoutUser: AppThunk = () => {
       .then(() => {
         dispatch({
           type: USER_LOGOUT_SUCCESS
-        })
+        });
+        localStorage.removeItem('Session')
       })
       .catch(() => {
         dispatch({
