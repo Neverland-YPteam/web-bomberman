@@ -24,18 +24,18 @@ export class Control {
   }
 
   private _onKeyPressed = (evt: KeyboardEvent) => {
-    const { key } = evt
+    const { code } = evt
 
-    if (key === this._key) {
+    if (code === this._key) {
       evt.preventDefault()
       this._callback(true)
     }
   }
 
   private _onKeyReleased = (evt: KeyboardEvent) => {
-    const { key } = evt
+    const { code } = evt
 
-    if (key === this._key) {
+    if (code === this._key) {
       evt.preventDefault()
       this._callback(false)
     }

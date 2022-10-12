@@ -41,6 +41,7 @@ const SAFE_TILES_ENEMY_COUNT = 5 // И враги тоже
 const WALL_PROBABILITY_PCT = 40 // Вероятность появления стены
 const LEVEL_COMPLETE_SCORE_BASE = 1000
 const KEY_PAUSE = 'Escape'
+const KEY_FULLSCREEN = 'KeyF'
 
 class Level {
   private _field: TField = []
@@ -61,7 +62,8 @@ class Level {
   scorePopups: Record<number, Score> = {}
 
   constructor() {
-    new Control(KEY_PAUSE, this.togglePause)
+    new Control(KEY_FULLSCREEN, this._toggleFullscreen)
+    new Control(KEY_PAUSE, this._togglePause)
   }
 
   private _showIntro() {
@@ -278,6 +280,33 @@ class Level {
     canvasModal.update()
   }
 
+  private _togglePause = (isKeydown: boolean) => {
+    if (!isKeydown || !this._isPauseAllowed) {
+      return
+    }
+
+    this._isPaused = !this._isPaused
+
+    if (this._isPaused) {
+      pause.show()
+    } else {
+      pause.hide()
+      this._clearCanvasModal()
+    }
+  }
+
+  private _toggleFullscreen = (isKeydown: boolean) => {
+    if (!isKeydown) {
+      return
+    }
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      document.documentElement.requestFullscreen()
+    }
+  }
+
   startGame() {
     this.goToNextLevel(1)
   }
@@ -318,21 +347,6 @@ class Level {
     const isInnerRow = row >= 0 && row < MAP_TILES_COUNT_Y - 2
 
     return isInnerCol && isInnerRow ? this._field[row][col] : TEXTURE_COLUMN
-  }
-
-  togglePause = (isKeydown: boolean) => {
-    if (!isKeydown || !this._isPauseAllowed) {
-      return
-    }
-
-    this._isPaused = !this._isPaused
-
-    if (this._isPaused) {
-      pause.show()
-    } else {
-      pause.hide()
-      this._clearCanvasModal()
-    }
   }
 
   updateTexture(texture: number, col: number, row: number) {
