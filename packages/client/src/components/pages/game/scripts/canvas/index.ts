@@ -126,9 +126,15 @@ class Canvas {
   }
 }
 
-const canvasStatic = new Canvas(CanvasSelectors.Static)
-const canvasDynamic = new Canvas(CanvasSelectors.Dynamic, true)
-const canvasModal = new Canvas(CanvasSelectors.Modal, true)
+let canvasStatic: Canvas
+let canvasDynamic: Canvas
+let canvasModal: Canvas
+
+const updateCanvases = () => {
+  canvasStatic = new Canvas(CanvasSelectors.Static)
+  canvasDynamic = new Canvas(CanvasSelectors.Dynamic, true)
+  canvasModal = new Canvas(CanvasSelectors.Modal, true)
+}
 
 // Экспортируем динамический канвас как canvas, чтобы не писать везде canvasDynamic
-export { canvasStatic, canvasDynamic as canvas, canvasModal }
+export { canvasStatic, canvasDynamic as canvas, canvasModal, updateCanvases }
