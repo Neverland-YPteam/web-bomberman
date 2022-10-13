@@ -16,13 +16,14 @@ import { level } from '../level'
 import { panel } from '../panel'
 
 class Stats {
-  private _score = SCORE_INITIAL
-  private _time = TIME_INITIAL_S
+  private _score: number = SCORE_INITIAL
+  private _time: number = TIME_INITIAL_S
   private _timeInterval: null | PausableInterval = null
 
   lives = LIVES_INITIAL
 
   constructor() {
+    this.reset()
     this._resetInterval()
   }
 
@@ -52,6 +53,15 @@ class Stats {
 
   get timeLeft() {
     return this._time
+  }
+
+  get score() {
+    return this._score
+  }
+
+  reset() {
+    this._score = SCORE_INITIAL
+    this._time = TIME_INITIAL_S
   }
 
   addScore(score: number) {
