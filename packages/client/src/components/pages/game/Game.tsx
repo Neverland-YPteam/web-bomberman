@@ -1,13 +1,29 @@
 import { useEffect } from 'react'
 import { Box } from '@mui/material'
+import { routes } from '@organisms/app-routes'
+import { useNavigate } from 'react-router-dom'
 import { CanvasSelectors } from './scripts/const'
 
 const Game = () => {
+  const navigate = useNavigate()
+
   useEffect(() => {
+    let cleanListeners: null | (() => void) = null;
+
     (async () => {
-      const { loadResources } = await import('./scripts')
+      const { loadResources, registerEndGameCallback, removeListeners } = await import('./scripts')
+
+      cleanListeners = removeListeners
+
+      registerEndGameCallback((score: number) => {
+        // @TODO Здесь нужно положить score в стор
+        navigate(routes.score.path)
+      })
+
       loadResources()
     })()
+
+    return () => cleanListeners?.()
   }, [])
 
   return (
