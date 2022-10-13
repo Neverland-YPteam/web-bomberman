@@ -10,8 +10,7 @@ const SKELETON_COUNT = 8
 
 const Profile = () => {
   const dispatch: any = useDispatch()
-
-  const user = useSelector(state => state.user)
+  const { user } = useSelector(state => state)
 
   const handleAvatarUpdate = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const [file] = evt.target.files as FileList
@@ -160,8 +159,14 @@ const Profile = () => {
           <SubmitButton>Сохранить</SubmitButton>
         </>
 
-        : Array.from(Array(SKELETON_COUNT)).map(() => (
-          <Skeleton variant="rectangular" width={210} height={60} sx={{ margin: 1 }} />
+        : Array.from(Array(SKELETON_COUNT)).map((_, index) => (
+          <Skeleton
+            key={index}
+            variant="rectangular"
+            width={210}
+            height={60}
+            sx={{ margin: 1 }}
+          />
         ))
       }
     </FormContainer>
