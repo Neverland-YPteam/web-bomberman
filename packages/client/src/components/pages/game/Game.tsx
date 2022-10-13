@@ -1,3 +1,4 @@
+import { withNavbar } from '@services/withNavbar'
 import { useEffect } from 'react'
 import { Box } from '@mui/material'
 import { routes } from '@organisms/app-routes'
@@ -27,34 +28,29 @@ const Game = () => {
   }, [])
 
   return (
-    <Box sx={{ height: '100vh' }}>
-      <Box
-        sx={{
-          position: 'relative',
-          width: 'min(100vw, calc(100vh * 4 / 3))',
-          aspectRatio: '4 / 3',
-          margin: '0 auto',
-        }}
-      >
-        {Object.values(CanvasSelectors).map((canvasSelector) =>
-          <canvas
-            key={canvasSelector}
-            id={canvasSelector.slice(1)}
-            className={canvasSelector.slice(1)}
-            width="1200"
-            height="900"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-            }}
-          ></canvas>
-        )}
-      </Box>
+    <Box
+      className="game__content"
+      sx={{ flex: 1, position: 'relative', background: 'inherit' }}
+    >
+      {Object.values(CanvasSelectors).map((canvasSelector) =>
+        <canvas
+          key={canvasSelector}
+          id={canvasSelector.slice(1)}
+          className={canvasSelector.slice(1)}
+          width="1200"
+          height="900"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+        ></canvas>
+      )}
     </Box>
   )
 }
 
-export default Game
+export default withNavbar(Game, 'game')
