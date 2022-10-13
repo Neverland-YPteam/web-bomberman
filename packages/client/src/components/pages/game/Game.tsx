@@ -4,9 +4,12 @@ import { Box } from '@mui/material'
 import { routes } from '@organisms/app-routes'
 import { useNavigate } from 'react-router-dom'
 import { CanvasSelectors } from './scripts/const'
+import { useDispatch } from '@utils/hooks'
+import { updateScore } from '@services/store/actions/other'
 
 const Game = () => {
   const navigate = useNavigate()
+  const dispatch: any = useDispatch()
 
   useEffect(() => {
     let cleanListeners: null | (() => void) = null;
@@ -17,7 +20,7 @@ const Game = () => {
       cleanListeners = removeListeners
 
       registerEndGameCallback((score: number) => {
-        // @TODO Здесь нужно положить score в стор
+        dispatch(updateScore(score))
         navigate(routes.score.path)
       })
 
