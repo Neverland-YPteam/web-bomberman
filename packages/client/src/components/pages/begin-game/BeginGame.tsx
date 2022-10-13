@@ -1,7 +1,7 @@
 import React from 'react'
 import { withNavbar } from '@services/withNavbar'
 import { Box, Stack } from '@mui/material'
-import logo from '../../../../public/main_logo.png';
+import logo from '@images/main_logo.png';
 import { routes } from '@organisms/app-routes'
 import { MainMenuItem } from '@atoms/main-menu-item'
 
@@ -22,7 +22,7 @@ const BeginGame = () => {
         alignItems="center"
         spacing={2}
       >
-        {menuItems.map((item) => <MainMenuItem item={item} />)}
+        {menuItems.map((item) => <MainMenuItem item={item} key={item.path} />)}
       </Stack>
     </Stack>
   )
