@@ -44,6 +44,7 @@ const WALL_PROBABILITY_PCT = 40 // Вероятность появления с�
 const LEVEL_COMPLETE_SCORE_BASE = 1000
 const KEY_PAUSE = 'Escape'
 const KEY_FULLSCREEN = 'KeyF'
+const GAME_CONTENT_ELEMENT_SELECTOR = '.game__content'
 
 class Level {
   private _controlFullscreen: null | Control = null
@@ -307,10 +308,12 @@ class Level {
       return
     }
 
+    const element = document.querySelector(GAME_CONTENT_ELEMENT_SELECTOR)
+
     if (document.fullscreenElement) {
       document.exitFullscreen()
     } else {
-      document.documentElement.requestFullscreen()
+      element?.requestFullscreen()
     }
   }
 
