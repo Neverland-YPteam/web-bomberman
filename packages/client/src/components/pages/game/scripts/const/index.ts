@@ -27,7 +27,7 @@ export const TEXT_COLOR_ERROR = '#FF3232'
 export const FONT_SIZE = 28
 export const FONT_FAMILY = 'PressStart2P'
 
-export const LIVES_INITIAL = 3
+export const LIVES_INITIAL = 2
 export const SCORE_INITIAL = 0
 export const TIME_INITIAL_S = 300
 
