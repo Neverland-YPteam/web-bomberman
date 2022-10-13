@@ -42,7 +42,7 @@ const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена
 const SAFE_TILES_ENEMY_COUNT = 5 // И враги тоже
 const WALL_PROBABILITY_PCT = 40 // Вероятность появления стены
 const LEVEL_COMPLETE_SCORE_BASE = 1000
-const KEY_PAUSE = 'Escape'
+const KEYS_PAUSE = ['Escape', 'KeyP']
 const KEY_FULLSCREEN = 'KeyF'
 const GAME_CONTENT_ELEMENT_SELECTOR = '.game__content'
 
@@ -68,7 +68,7 @@ class Level {
 
   constructor() {
     this._controlFullscreen = new Control(KEY_FULLSCREEN, this._toggleFullscreen)
-    this._controlPause = new Control(KEY_PAUSE, this._togglePause)
+    this._controlPause = new Control(KEYS_PAUSE, this._togglePause)
   }
 
   private _showIntro() {
