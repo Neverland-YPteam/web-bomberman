@@ -5,13 +5,13 @@
  * @TODO Вызывать removeListeners при смене роута
  */
 
-import { TCallback } from './types'
+import { TKey, TCallback } from './types'
 
 export class Control {
-  private _key: string
+  private _key: TKey
   private _callback: TCallback
 
-  constructor(key: string, callback: TCallback) {
+  constructor(key: TKey, callback: TCallback) {
     this._key = key
     this._callback = callback
 
@@ -23,10 +23,14 @@ export class Control {
     document.addEventListener('keyup', this._onKeyReleased)
   }
 
+  private _checkForKey(key: string) {
+    return Array.isArray(this._key) ? this._key.includes(key) : this._key === key
+  }
+
   private _onKeyPressed = (evt: KeyboardEvent) => {
     const { code } = evt
 
-    if (code === this._key) {
+    if (this._checkForKey(code)) {
       evt.preventDefault()
       this._callback(true)
     }
@@ -35,7 +39,7 @@ export class Control {
   private _onKeyReleased = (evt: KeyboardEvent) => {
     const { code } = evt
 
-    if (code === this._key) {
+    if (this._checkForKey(code)) {
       evt.preventDefault()
       this._callback(false)
     }
