@@ -55,12 +55,15 @@ const Profile = () => {
               component="label"
               src={user.avatar}
               alt="Ваш аватар"
-              sx={{
-                width: '100%',
-                height: '100%',
-              }}
+              sx={{ width: '100%', height: '100%' }}
             />
-          : user.display_name?.slice(0, 1).toUpperCase()
+          : <Avatar
+              component="label"
+              alt="Аватар отсутствует"
+              sx={{ width: 120, height: 120 }}
+            >
+              { (user.display_name ?? user.login)?.slice(0, 1).toUpperCase() }
+            </Avatar>
         }
 
         <input
