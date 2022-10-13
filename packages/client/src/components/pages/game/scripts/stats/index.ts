@@ -62,6 +62,7 @@ class Stats {
   reset() {
     this._score = SCORE_INITIAL
     this._time = TIME_INITIAL_S
+    this.lives = LIVES_INITIAL
   }
 
   addScore(score: number) {
