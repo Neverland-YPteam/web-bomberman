@@ -21,7 +21,7 @@ const Game = () => {
 
       registerEndGameCallback((score: number) => {
         dispatch(updateScore(score))
-        navigate(routes.score.path)
+        navigate(routes.score.path, { state: 'game' })
       })
 
       loadResources()
