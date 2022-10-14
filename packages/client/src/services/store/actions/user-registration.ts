@@ -1,6 +1,7 @@
 import { AppDispatch, AppThunk } from '@src/types/store'
 import { API_URL } from '@utils/constants'
 import { checkResponseStatus } from '@utils/helpers'
+import { USER_LOGIN_SUCCESS } from '@services/store/actions/user-auth'
 
 export const USER_REGISTRATION_REQUEST = 'USER_REGISTRATION_REQUEST';
 export const USER_REGISTRATION_SUCCESS = 'USER_REGISTRATION_SUCCESS';
@@ -43,6 +44,10 @@ export const registerUser: AppThunk = (data: FormData) => {
           type: USER_REGISTRATION_SUCCESS,
           payload: result,
         })
+        dispatch({
+          type: USER_LOGIN_SUCCESS
+        })
+        localStorage.setItem('Session', 'active')
       })
       .catch(() => {
         dispatch({
