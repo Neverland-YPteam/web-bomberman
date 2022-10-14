@@ -15,12 +15,11 @@ const EndGame = () => {
 
   const { score } = useSelector(state => state.other)
 
-  // временно, чтобы можно было посмотреть
-  // useEffect(() => {
-  //   if (state !== 'game') {
-  //     navigate(routes.main.path, {replace: true})
-  //   }
-  // }, [])
+  useEffect(() => {
+    if (state !== 'game') {
+      navigate(routes.main.path, {replace: true})
+    }
+  }, [])
 
   return (
     <Stack
