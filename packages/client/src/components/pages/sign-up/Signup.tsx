@@ -7,6 +7,7 @@ import { withNavbar } from '@services/withNavbar'
 import { routes } from '@organisms/app-routes';
 import { useDispatch, useSelector } from '@utils/hooks'
 import { registerUser } from '@services/store/actions/user-registration'
+import { loadUser } from '@services/store/actions/user'
 import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
@@ -26,6 +27,7 @@ const Signup = () => {
   useEffect(() => {
     if (isUserAuth) {
       navigate(routes.main.path, {replace: true})
+      dispatch((loadUser()))
     }
   }, [isUserAuth])
 
