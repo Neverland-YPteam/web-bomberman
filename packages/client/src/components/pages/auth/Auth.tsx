@@ -7,6 +7,7 @@ import { withNavbar } from '@services/withNavbar'
 import { routes } from '@organisms/app-routes';
 import { useDispatch, useSelector } from '@utils/hooks'
 import { loginUser } from '@services/store/actions/user-auth'
+import { loadUser } from '@services/store/actions/user'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const Auth = () => {
@@ -28,6 +29,7 @@ const Auth = () => {
   useEffect(() => {
     if (isUserAuth) {
       navigate(state?.from || routes.main.path, {replace: true})
+      dispatch(loadUser())
     }
   }, [isUserAuth])
 
