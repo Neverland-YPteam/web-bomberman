@@ -82,10 +82,16 @@ const Landing = () => {
             <Table>
               <TableBody>
                 {controls.map(({ alt, image, description }) => (
-                  <TableRow key={alt}>
+                  <TableRow key={alt[0]}>
                     <TableCell>{description}</TableCell>
-                    <TableCell align="center">
-                      <img src={image} alt={alt} style={{ height: alt === 'Стрелки' ? 64 : 40 }} />
+                    <TableCell sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                      {image.map((image, index) => (
+                        <img
+                          src={image}
+                          alt={alt[index]}
+                          style={{height: alt[0] === 'Стрелки' ? 64 : 40 }}
+                        />
+                      ))}
                     </TableCell>
                   </TableRow>
                 ))}
