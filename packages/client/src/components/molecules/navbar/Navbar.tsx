@@ -5,17 +5,17 @@ import { theme } from '@services/AppThemeProvider/theme'
 import './Navbar.css'
 import logo from './images/logo.png'
 import { SyntheticEvent } from 'react'
-import { useDispatch } from '@utils/hooks'
+import { useDispatch, useSelector } from '@utils/hooks'
 import { logoutUser } from '@services/store/actions/user-auth'
 
 interface Props {
   showLogo?: boolean
-  links: IRoute[],
-  protectedRoute: boolean,
+  links: IRoute[]
 }
 
-const Navbar = ({ showLogo, links, protectedRoute }: Props) => {
+const Navbar = ({ showLogo, links }: Props) => {
   const dispatch: any = useDispatch()
+  const { isUserAuth } = useSelector(state => state.userAuth)
 
   const handleExitClick = (evt: SyntheticEvent) => {
     evt.preventDefault()
@@ -69,7 +69,7 @@ const Navbar = ({ showLogo, links, protectedRoute }: Props) => {
             )}
 
             {/* @TODO Кнопка «Выйти» */}
-            {protectedRoute && (
+            {isUserAuth && (
               <Box
                 onClick={handleExitClick}
                 sx={{
