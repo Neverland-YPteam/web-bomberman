@@ -21,7 +21,8 @@ const LandingSection = (title: string, InnerComponent: React.ComponentType) => (
     sx={{
       marginTop: 4,
       paddingX: 4,
-      paddingY: 2,
+      paddingTop: 2,
+      paddingBottom: 3,
       overflow: 'hidden',
       borderRadius: 4,
     }}
