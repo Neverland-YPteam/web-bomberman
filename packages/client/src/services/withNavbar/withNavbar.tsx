@@ -1,44 +1,41 @@
 import React from 'react'
-import { routes } from '@organisms/app-routes'
+import { useSelector } from '@utils/hooks'
+import { IRoute, routes } from '@organisms/app-routes'
 import { Navbar } from '@molecules/navbar'
 
-export type ConfigKey = 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'forum' | 'score'
+export type ConfigKey = 'landing' | 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'forum' | 'score'
 
 interface ConfigOption {
   showLogo?: boolean
-  links: ConfigKey[],
-  protectedRoute: boolean,
+  links: ConfigKey[]
 }
 
 type configOptions = Record<string, ConfigOption>
 
-const handleLinks = (key: string) => routes[key]
-
 const configOptions: configOptions = {
+  landing: {
+    showLogo: false,
+    links: ['auth', 'signUp', 'main', 'profile', 'leaderboard', 'forum'],
+  },
   auth: {
     showLogo: true,
     links: ['signUp'],
-    protectedRoute: false,
   },
   signUp: {
     showLogo: true,
     links: ['auth'],
-    protectedRoute: false,
   },
   profile: {
     showLogo: true,
     links: ['main', 'leaderboard', 'forum'],
-    protectedRoute: true,
   },
   leaderboard: {
     showLogo: true,
     links: ['main', 'profile', 'forum'],
-    protectedRoute: true,
   },
   main: {
-    showLogo: false,
+    showLogo: true,
     links: ['forum'],
-    protectedRoute: true,
   },
   game: {
     showLogo: true,
@@ -48,18 +45,29 @@ const configOptions: configOptions = {
   score: {
     showLogo: true,
     links: ['profile', 'leaderboard', 'forum'],
-    protectedRoute: true,
   }
 }
 
 const withNavbar = (WrappedComponent: React.ComponentType, configKey: ConfigKey) => ({ ...props }) => {
-  const { showLogo, links, protectedRoute } = configOptions[configKey]
-  const linksHandled = links.map(handleLinks)
+  const { showLogo } = configOptions[configKey]
+  const { isUserAuth } = useSelector(state => state.userAuth)
+
+  const links = configOptions[configKey].links.reduce((arr: IRoute[], key) => {
+    const route = routes[key]
+    const showToUnauth = !isUserAuth && !route.auth
+    const showToAuth = isUserAuth && route.auth
+
+    if (configKey !== 'landing' || showToUnauth || showToAuth) {
+      arr.push(route)
+    }
+
+    return arr
+  }, [])
 
   return (
     <>
       { (showLogo || links?.length > 0) &&
-        <Navbar showLogo={showLogo} links={linksHandled} protectedRoute={protectedRoute} />
+        <Navbar showLogo={showLogo} links={links} />
       }
 
       <WrappedComponent {...props} />
