@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { TextField } from '@mui/material'
+import { Box, TextField } from '@mui/material'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { FormLink } from '@atoms/form-link'
@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from '@utils/hooks'
 import { loginUser } from '@services/store/actions/user-auth'
 import { loadUser } from '@services/store/actions/user'
 import { useLocation, useNavigate } from 'react-router-dom'
+import ImageYandexId from './yandex_id.svg'
+import { getOAuthYandexAppId, getOAuthYandexUrl } from '@services/OAuth'
 
 const Auth = () => {
   const dispatch: any = useDispatch()
@@ -24,6 +26,13 @@ const Auth = () => {
     const data = new FormData(evt.currentTarget);
 
     dispatch(loginUser(data))
+  }
+
+  const initOAuth = async () => {
+    const { service_id } = await getOAuthYandexAppId()
+    const { href } = getOAuthYandexUrl(service_id)
+
+    window.location.replace(href)
   }
 
   useEffect(() => {
@@ -57,6 +66,14 @@ const Auth = () => {
       />
       <SubmitButton>Войти</SubmitButton>
       <FormLink to={routes.signUp.path} text="Нет аккаунта? Регистрация" />
+
+      <Box
+        component="img"
+        src={ImageYandexId}
+        marginTop={3}
+        sx={{ cursor: 'pointer' }}
+        onClick={initOAuth}
+      />
     </FormContainer>
   );
 };
