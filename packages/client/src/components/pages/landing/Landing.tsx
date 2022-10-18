@@ -1,6 +1,6 @@
 import React from 'react'
 import { withNavbar } from '@services/withNavbar'
-import { Box, Container } from '@mui/material'
+import { Box, Container, Stack } from '@mui/material'
 import logo from '@images/main_logo.png'
 import { controls } from './controls'
 import { enemies } from './enemies'
@@ -16,14 +16,12 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 
 const LandingSection = (title: string, InnerComponent: React.ComponentType) => (
-  <Box
-    component={Paper}
+  <Paper
+    elevation={4}
     sx={{
-      marginTop: 4,
       paddingX: 4,
       paddingTop: 2,
       paddingBottom: 3,
-      overflow: 'hidden',
       borderRadius: 4,
     }}
   >
@@ -36,25 +34,18 @@ const LandingSection = (title: string, InnerComponent: React.ComponentType) => (
     </Box>
 
     <InnerComponent />
-  </Box>
+  </Paper>
 )
 
 const Landing = () => {
   return (
-    <Container
-      sx={{
-        flex: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <Box marginTop={8} sx={{ textAlign: 'center' }}>
+    <Stack spacing={4} marginTop={8}>
+      <Box paddingX={5} sx={{ textAlign: 'center' }}>
         <img src={logo} alt='Логотип игры' />
       </Box>
 
-      <Box flex="100%" alignSelf="center" display="flex" flexDirection="column" padding="48px">
-        {LandingSection('Об игре',
-        () => (
+      <Stack alignSelf="center" spacing={4} padding={5}>
+        {LandingSection('Об игре', () => (
           <div>
             <p>
               Клон <a href="https://ru.wikipedia.org/wiki/Bomberman_(игра, 1983)" target="_blank">оригинальной игры</a>,
@@ -172,8 +163,8 @@ const Landing = () => {
             </Table>
           </TableContainer>
         ))}
-      </Box>
-    </Container>
+      </Stack>
+    </Stack>
   )
 }
 
