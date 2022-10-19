@@ -29,10 +29,10 @@ const Profile = () => {
     dispatch(updateProfile(profileData))
 
     if (!isOAuth) {
-      data = new FormData()
-      data.append('oldPassword', evt.currentTarget.oldPassword.value)
-      data.append('newPassword', evt.currentTarget.newPassword.value)
-      dispatch(updatePassword(data))
+      const passwordData = new FormData()
+      passwordData.append('oldPassword', evt.currentTarget.oldPassword.value)
+      passwordData.append('newPassword', evt.currentTarget.newPassword.value)
+      dispatch(updatePassword(passwordData))
     }
   }
 
