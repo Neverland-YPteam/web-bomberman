@@ -1,6 +1,7 @@
 import { AppDispatch, AppThunk } from '@src/types/store'
 import { checkResponseStatus } from '@utils/helpers'
 import { API_URL } from '@utils/constants'
+import { snackbar } from '@utils/snackbar'
 import { USER_AVATAR_UPDATE } from '@services/store/actions/user'
 
 const enum Path {
@@ -25,7 +26,9 @@ export const updateAvatar: AppThunk = (data: FormData) => {
         type: USER_AVATAR_UPDATE,
         payload: result,
       })
+      snackbar.success('Аватар обновлен')
     })
+    .catch(() => snackbar.error('Не удалось обновить аватар'))
   }
 }
 
@@ -40,6 +43,8 @@ export const updateProfile: AppThunk = (data: FormData) => {
       credentials: 'include',
       body: JSON.stringify(Object.fromEntries(data)),
     })
+    .then(() => snackbar.success('Профиль обновлен'))
+    .catch(() => snackbar.error('Не удалось обновить профиль'))
   }
 }
 
@@ -54,5 +59,7 @@ export const updatePassword: AppThunk = (data: FormData) => {
       credentials: 'include',
       body: JSON.stringify(Object.fromEntries(data)),
     })
+    .then(() => snackbar.success('Пароль изменен'))
+    .catch(() => snackbar.error('Не удалось изменить пароль'))
   }
 }

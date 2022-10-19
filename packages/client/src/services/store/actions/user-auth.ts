@@ -1,6 +1,7 @@
 import { AppDispatch, AppThunk } from '@src/types/store'
 import { API_URL } from '@utils/constants'
 import { checkResponseStatus } from '@utils/helpers'
+import { snackbar } from '@utils/snackbar'
 
 export const USER_LOGIN_REQUEST = 'USER_LOGIN_REQUEST';
 export const USER_LOGIN_SUCCESS = 'USER_LOGIN_SUCCESS';
@@ -69,11 +70,13 @@ export const loginUser: AppThunk = (data: FormData) => {
           type: USER_LOGIN_SUCCESS
         })
         localStorage.setItem('Session', 'active')
+        snackbar.success('Вы успешно авторизовались')
       })
       .catch(() => {
         dispatch({
           type: USER_LOGIN_FAILED
         })
+        snackbar.error('Не удалось авторизоваться')
       })
   }
 }
@@ -97,11 +100,13 @@ export const logoutUser: AppThunk = () => {
           type: USER_LOGOUT_SUCCESS
         });
         localStorage.removeItem('Session')
+        snackbar.success('Вы успешно вышли из аккаунта')
       })
       .catch(() => {
         dispatch({
           type: USER_LOGOUT_FAILED
         })
+        snackbar.error('Не удалось выйти из аккаунта')
       })
   }
 }
