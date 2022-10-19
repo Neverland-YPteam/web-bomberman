@@ -7,6 +7,8 @@ import { useDispatch } from '@utils/hooks'
 import { loadUser } from '@services/store/actions/user'
 import { USER_LOGIN_SUCCESS } from '@services/store/actions/user-auth'
 import { tryOAuth } from '@services/OAuth'
+import { SnackbarProvider } from 'notistack'
+import { SnackbarUtilsConfigurator } from '@utils/snackbar'
 
 function App() {
   const dispatch: any = useDispatch()
@@ -29,7 +31,10 @@ function App() {
   return (
     <BrowserRouter>
       <Box className="app__wrapper">
-        <AppRoutes />
+        <SnackbarProvider>
+          <SnackbarUtilsConfigurator />
+          <AppRoutes />
+        </SnackbarProvider>
       </Box>
     </BrowserRouter>
   )
