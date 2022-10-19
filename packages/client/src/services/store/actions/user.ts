@@ -1,6 +1,7 @@
 import { AppDispatch, AppThunk } from '@src/types/store'
 import { checkResponseStatus } from '@utils/helpers'
 import { API_URL } from '@utils/constants'
+import { snackbar } from '@utils/snackbar'
 import { IUserState } from '@services/store/reducers/user'
 
 export const USER_REQUEST = 'USER_REQUEST'
@@ -39,5 +40,6 @@ export const loadUser: AppThunk = () => {
           payload: result,
         })
       })
+      .catch(() => snackbar.error('Не удалось загрузить данные о пользователе'))
   }
 }
