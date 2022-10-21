@@ -14,3 +14,9 @@ export type TField = TFieldRow[]
 
 export type TCellCoords = [number, number]
 export type TCellColRow = Record<'col' | 'row', number>
+
+export interface IShadowsToCheck {
+  topLeft: boolean
+  top: boolean
+  left: boolean
+}
