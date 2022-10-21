@@ -38,7 +38,7 @@ const LEVEL_INTRO_TIMEOUT_MS = 2000 // На этапе разработки бо
 const LEVEL_CHANGE_TIMEOUT_MS = 3000
 const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена образовалась прямо возле героя
 const SAFE_TILES_ENEMY_COUNT = 5 // И враги тоже
-const WALL_PROBABILITY_PCT = 40 // Вероятность появления стены
+const WALL_PROBABILITY_PCT = 35 // Вероятность появления стены
 const LEVEL_COMPLETE_SCORE_BASE = 1000
 const KEY_PAUSE = 'Escape'
 
