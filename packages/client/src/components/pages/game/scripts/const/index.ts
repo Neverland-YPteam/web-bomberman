@@ -68,6 +68,13 @@ export const textures: TTextures = {
   TEXTURE_FLAME_6_MIDDLE: 32,
   TEXTURE_FLAME_6_END: 33,
 
+  TEXTURE_SHADOW_TL_T_L: 40,
+  TEXTURE_SHADOW_TL_T: 41,
+  TEXTURE_SHADOW_TL_L: 42,
+  TEXTURE_SHADOW_TL: 43,
+  TEXTURE_SHADOW_T: 44,
+  TEXTURE_SHADOW_L: 45,
+
   TEXTURE_HERO_LEFT_STANDING: 100,
   TEXTURE_HERO_LEFT_SITTING: 101,
   TEXTURE_HERO_LEFT_MOVING_1: 102,
@@ -167,5 +174,3 @@ export const textures: TTextures = {
   TEXTURE_ENEMY_DEAD_RED_3: 290,
   TEXTURE_ENEMY_DEAD_RED_4: 291,
 }
-
-// @TODO Подумать, как добавить тени для текстур, если останется время
