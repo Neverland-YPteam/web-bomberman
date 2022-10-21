@@ -4,7 +4,7 @@
  * @TODO Добавлять под случайной стеной BONUS
  */
 
-import { TField, TCellCoords, TEnemyEntry, TCellColRow } from './types'
+import { TField, TCellCoords, TEnemyEntry, TCellColRow, IShadowsToCheck } from './types'
 
 import {
   FPS, MAP_TILES_COUNT_X, MAP_TILES_COUNT_Y, BG_COLOR, FONT_SIZE,
@@ -33,7 +33,11 @@ import { levelList } from './levelList'
 import { stats } from '../stats'
 import { pause } from '../pause'
 
-const { TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_GRASS, TEXTURE_DOOR } = textures
+const {
+  TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_WALL_DAMAGED_2, TEXTURE_GRASS, TEXTURE_DOOR,
+  TEXTURE_SHADOW_TL_T_L, TEXTURE_SHADOW_TL_T, TEXTURE_SHADOW_TL_L,
+  TEXTURE_SHADOW_TL, TEXTURE_SHADOW_T, TEXTURE_SHADOW_L,
+} = textures
 
 const LEVEL_INTRO_TIMEOUT_MS = 2000 // На этапе разработки большое значение не нужно
 const LEVEL_CHANGE_TIMEOUT_MS = 3000
@@ -45,6 +49,8 @@ const LEVEL_COMPLETE_SCORE_BASE = 1000
 const KEYS_PAUSE = ['Escape', 'KeyP']
 const KEY_FULLSCREEN = 'KeyF'
 const GAME_CONTENT_ELEMENT_SELECTOR = '.game__content'
+
+const SOLID_TEXTURES = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_DOOR]
 
 class Level {
   private _controlFullscreen: null | Control = null
@@ -128,6 +134,68 @@ class Level {
     }
 
     this._field = newField
+  }
+
+  private _drawGrassShadows() {
+    this._field.forEach((row, rowIndex) => {
+      row.forEach((col, colIndex) => {
+        const isColumn = rowIndex % 2 !== 0 && colIndex % 2 !== 0
+
+        if (!isColumn && col === TEXTURE_GRASS) {
+          this._drawGrassShadow(colIndex, rowIndex)
+        }
+      })
+    })
+  }
+
+  private _drawGrassShadow(
+    col: number,
+    row: number,
+    shadowsToCheck: IShadowsToCheck = { topLeft: true, top: true, left: true },
+  ) {
+    const isRowFirst = row === 0
+    const isColFirst = col === 0
+
+    const isTopLeftSolid = this._isTextureSolid(row - 1, col - 1)
+    const isTopSolid = this._isTextureSolid(row - 1, col)
+    const isLeftSolid = this._isTextureSolid(row, col - 1)
+
+    const hasShadowTopLeft = shadowsToCheck.topLeft && (isRowFirst && isColFirst || isTopLeftSolid)
+    const hasShadowTop = shadowsToCheck.top && (isRowFirst || isTopSolid)
+    const hasShadowLeft = shadowsToCheck.left && (isColFirst || isLeftSolid)
+
+    const texture = this._getShadowTexture(hasShadowTopLeft, hasShadowTop, hasShadowLeft)
+    map.drawTexture(texture, col + 1, row + 1)
+  }
+
+  private _updateGrass(col: number, row: number, shadowsToCheck: IShadowsToCheck) {
+    const texture = this._field[row]?.[col]
+
+    if (texture === TEXTURE_GRASS) {
+      map.drawTexture(TEXTURE_GRASS, col + 1, row + 1)
+      this._drawGrassShadow(col, row, shadowsToCheck)
+    }
+  }
+
+  private _isTextureSolid(row: number, col: number) {
+    if (row < 0 || col < 0) {
+      return true
+    }
+
+    const texture = this._field[row][col]
+
+    // @TODO Добавить бонус
+    return SOLID_TEXTURES.includes(texture)
+  }
+
+  private _getShadowTexture(topLeft: boolean, top: boolean, left: boolean) {
+    if (topLeft && top && left) return TEXTURE_SHADOW_TL_T_L
+    if (topLeft && top) return TEXTURE_SHADOW_TL_T
+    if (topLeft && left) return TEXTURE_SHADOW_TL_L
+    if (topLeft) return TEXTURE_SHADOW_TL
+    if (top && left) return TEXTURE_SHADOW_TL_T_L
+    if (top) return TEXTURE_SHADOW_T
+    return TEXTURE_SHADOW_L
   }
 
   private _setDoorColRow() {
@@ -332,6 +400,7 @@ class Level {
     canvasModal.update() // Обновили canvas
 
     this._resetField() // Поместили стены
+    this._drawGrassShadows() // Отрисовали тени
     this._setDoorColRow() // Добавили дверь
     canvasStatic.update() // Обновили canvasStatic
 
@@ -394,11 +463,23 @@ class Level {
   }
 
   updateWall = (texture: number, { col, row }: TCellColRow) => {
-    const currentTexture = map.getTexture(col + 1, row + 1)
+    const mapCol = col + 1
+    const mapRow = row + 1
+    const currentTexture = map.getTexture(mapCol, mapRow)
 
     if (currentTexture !== texture) {
-      map.drawTexture(TEXTURE_GRASS, col + 1, row + 1)
-      map.drawTexture(texture, col + 1, row + 1)
+      map.drawTexture(TEXTURE_GRASS, mapCol, mapRow)
+      this._drawGrassShadow(col, row)
+      map.drawTexture(texture, mapCol, mapRow)
+
+      const [doorCol, doorRow] = this.doorCoords
+      const isDoor = col === doorCol && row === doorRow
+
+      if (texture === TEXTURE_WALL_DAMAGED_2 && !isDoor) {
+        this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
+        this._updateGrass(col, row + 1, { topLeft: true, top: false, left: true })
+        this._updateGrass(col + 1, row + 1, { topLeft: false, top: true, left: true })
+      }
 
       canvasStatic.update()
     }
@@ -409,9 +490,15 @@ class Level {
     this.updateTexture(TEXTURE_GRASS, col, row)
 
     const [doorCol, doorRow] = this.doorCoords
-    const texture = col === doorCol && row === doorRow ? TEXTURE_DOOR : TEXTURE_GRASS
+    const isDoor = col === doorCol && row === doorRow
+    const texture = isDoor ? TEXTURE_DOOR : TEXTURE_GRASS
 
     map.drawTexture(texture, col + 1, row + 1)
+
+    if (!isDoor) {
+      this._drawGrassShadow(col, row)
+    }
+
     canvasStatic.update()
   }
 
