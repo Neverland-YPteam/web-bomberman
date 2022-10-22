@@ -35,6 +35,7 @@ import { pause } from '../pause'
 
 const {
   TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_WALL_DAMAGED_2, TEXTURE_GRASS, TEXTURE_DOOR,
+  TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE,
   TEXTURE_SHADOW_TL_T_L, TEXTURE_SHADOW_TL_T, TEXTURE_SHADOW_TL_L,
   TEXTURE_SHADOW_TL, TEXTURE_SHADOW_T, TEXTURE_SHADOW_L,
 } = textures
@@ -50,6 +51,7 @@ const KEYS_PAUSE = ['Escape', 'KeyP']
 const KEY_FULLSCREEN = 'KeyF'
 const GAME_CONTENT_ELEMENT_SELECTOR = '.game__content'
 
+const BOMB_TEXTURES = [TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE]
 const SOLID_TEXTURES = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_DOOR]
 
 class Level {
@@ -165,13 +167,16 @@ class Level {
     const hasShadowLeft = shadowsToCheck.left && (isColFirst || isLeftSolid)
 
     const texture = this._getShadowTexture(hasShadowTopLeft, hasShadowTop, hasShadowLeft)
-    map.drawTexture(texture, col + 1, row + 1)
+
+    if (texture) {
+      map.drawTexture(texture, col + 1, row + 1)
+    }
   }
 
   private _updateGrass(col: number, row: number, shadowsToCheck: IShadowsToCheck) {
     const texture = this._field[row]?.[col]
 
-    if (texture === TEXTURE_GRASS) {
+    if (texture === TEXTURE_GRASS || BOMB_TEXTURES.includes(texture)) {
       map.drawTexture(TEXTURE_GRASS, col + 1, row + 1)
       this._drawGrassShadow(col, row, shadowsToCheck)
     }
@@ -195,7 +200,8 @@ class Level {
     if (topLeft) return TEXTURE_SHADOW_TL
     if (top && left) return TEXTURE_SHADOW_TL_T_L
     if (top) return TEXTURE_SHADOW_T
-    return TEXTURE_SHADOW_L
+    if (left) return TEXTURE_SHADOW_L
+    return null
   }
 
   private _setDoorColRow() {
