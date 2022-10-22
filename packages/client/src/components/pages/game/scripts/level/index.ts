@@ -37,6 +37,8 @@ const {
   TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE,
   TEXTURE_SHADOW_TL_T_L, TEXTURE_SHADOW_TL_T, TEXTURE_SHADOW_TL_L,
   TEXTURE_SHADOW_TL, TEXTURE_SHADOW_T, TEXTURE_SHADOW_L,
+  TEXTURE_FLOWER_1, TEXTURE_FLOWER_2, TEXTURE_FLOWER_3, TEXTURE_FLOWER_4, TEXTURE_FLOWER_5, TEXTURE_FLOWER_6,
+  TEXTURE_FLOWER_7, TEXTURE_FLOWER_8, TEXTURE_FLOWER_9, TEXTURE_FLOWER_10, TEXTURE_FLOWER_11, TEXTURE_FLOWER_12,
 } = textures
 
 const LEVEL_INTRO_TIMEOUT_MS = 2000 // На этапе разработки большое значение не нужно
@@ -44,9 +46,14 @@ const LEVEL_CHANGE_TIMEOUT_MS = 3000
 const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена образовалась прямо возле героя
 const SAFE_TILES_ENEMY_COUNT = 5 // И враги тоже
 const WALL_PROBABILITY_PCT = 35 // Вероятность появления стены
+const FLOWER_PROBABILITY_PCT = 20 // Вероятность появления цветка
 const LEVEL_COMPLETE_SCORE_BASE = 1000
 const KEY_PAUSE = 'Escape'
 
+const FLOWER_TEXTURES = [
+  TEXTURE_FLOWER_1, TEXTURE_FLOWER_2, TEXTURE_FLOWER_3, TEXTURE_FLOWER_4, TEXTURE_FLOWER_5, TEXTURE_FLOWER_6,
+  TEXTURE_FLOWER_7, TEXTURE_FLOWER_8, TEXTURE_FLOWER_9, TEXTURE_FLOWER_10, TEXTURE_FLOWER_11, TEXTURE_FLOWER_12,
+]
 const BOMB_TEXTURES = [TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE]
 const SOLID_TEXTURES = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_DOOR]
 
@@ -131,12 +138,22 @@ class Level {
     this._field = newField
   }
 
-  private _drawGrassShadows() {
+  private _tryToDrawFlower(col: number, row: number) {
+    const drawFlower = getBooleanWithProbability(FLOWER_PROBABILITY_PCT)
+
+    if (drawFlower) {
+      const texture = getRandomArrayValue(FLOWER_TEXTURES)
+      map.drawTexture(texture, col + 1, row + 1)
+    }
+  }
+
+  private _drawGrassShadowsAndFlowers() {
     this._field.forEach((row, rowIndex) => {
       row.forEach((col, colIndex) => {
         const isColumn = rowIndex % 2 !== 0 && colIndex % 2 !== 0
 
         if (!isColumn && col === TEXTURE_GRASS) {
+          this._tryToDrawFlower(colIndex, rowIndex)
           this._drawGrassShadow(colIndex, rowIndex)
         }
       })
@@ -366,7 +383,7 @@ class Level {
     canvasModal.update() // Обновили canvas
 
     this._resetField() // Поместили стены
-    this._drawGrassShadows() // Отрисовали тени
+    this._drawGrassShadowsAndFlowers()
     this._setDoorColRow() // Добавили дверь
     canvasStatic.update() // Обновили canvasStatic
 
