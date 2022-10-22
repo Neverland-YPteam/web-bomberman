@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from '@organisms/app-routes'
@@ -11,7 +11,7 @@ import { tryOAuth } from '@services/OAuth'
 function App() {
   const dispatch: any = useDispatch()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const oAuthCode = new URLSearchParams(window.location.search).get('code')
     const isSessionActive = localStorage.getItem('Session') === 'active'
 
