@@ -40,6 +40,11 @@ const configOptions: configOptions = {
     links: ['forum'],
     protectedRoute: true,
   },
+  game: {
+    showLogo: true,
+    links: ['profile', 'forum', 'leaderboard'],
+    protectedRoute: true,
+  },
   score: {
     showLogo: true,
     links: ['profile', 'leaderboard', 'forum'],

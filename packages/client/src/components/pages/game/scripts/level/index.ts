@@ -19,6 +19,7 @@ import {
   LimitFrames,
 } from '../utils'
 
+import { endGameCallback } from '../'
 import { canvasStatic, canvas, canvasModal } from '../canvas'
 import { Control } from '../Control'
 import { panel } from '../panel'
@@ -36,13 +37,18 @@ const { TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_GRASS, TEXTURE_
 
 const LEVEL_INTRO_TIMEOUT_MS = 2000 // На этапе разработки большое значение не нужно
 const LEVEL_CHANGE_TIMEOUT_MS = 3000
+const END_GAME_TIMEOUT_MS = 2000
 const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена образовалась прямо возле героя
 const SAFE_TILES_ENEMY_COUNT = 5 // И враги тоже
 const WALL_PROBABILITY_PCT = 40 // Вероятность появления стены
 const LEVEL_COMPLETE_SCORE_BASE = 1000
-const KEY_PAUSE = 'Escape'
+const KEYS_PAUSE = ['Escape', 'KeyP']
+const KEY_FULLSCREEN = 'KeyF'
+const GAME_CONTENT_ELEMENT_SELECTOR = '.game__content'
 
 class Level {
+  private _controlFullscreen: null | Control = null
+  private _controlPause: null | Control = null
   private _field: TField = []
   private _walls: [number, number][] = []
   private _enemiesIndexes: string[] = []
@@ -61,7 +67,8 @@ class Level {
   scorePopups: Record<number, Score> = {}
 
   constructor() {
-    new Control(KEY_PAUSE, this.togglePause)
+    this._controlFullscreen = new Control(KEY_FULLSCREEN, this._toggleFullscreen)
+    this._controlPause = new Control(KEYS_PAUSE, this._togglePause)
   }
 
   private _showIntro() {
@@ -248,7 +255,7 @@ class Level {
     this.limitFrames?.stop()
   }
 
-  private _showFinalScreen(isVictory: boolean) {
+  private async _showFinalScreen(isVictory: boolean) {
     const emoji = isVictory ? '🎉' : '😞'
     const text = isVictory ? 'Поздравляем с победой!' : 'Вы проиграли'
     const color = isVictory ? TEXT_COLOR_SUCCESS : TEXT_COLOR_ERROR
@@ -276,9 +283,42 @@ class Level {
     )
 
     canvasModal.update()
+
+    await delay(END_GAME_TIMEOUT_MS)
+    endGameCallback?.(stats.score)
+  }
+
+  private _togglePause = (isKeydown: boolean) => {
+    if (!isKeydown || !this._isPauseAllowed) {
+      return
+    }
+
+    this._isPaused = !this._isPaused
+
+    if (this._isPaused) {
+      pause.show()
+    } else {
+      pause.hide()
+      this._clearCanvasModal()
+    }
+  }
+
+  private _toggleFullscreen = (isKeydown: boolean) => {
+    if (!isKeydown) {
+      return
+    }
+
+    const element = document.querySelector(GAME_CONTENT_ELEMENT_SELECTOR)
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      element?.requestFullscreen()
+    }
   }
 
   startGame() {
+    stats.reset()
     this.goToNextLevel(1)
   }
 
@@ -318,21 +358,6 @@ class Level {
     const isInnerRow = row >= 0 && row < MAP_TILES_COUNT_Y - 2
 
     return isInnerCol && isInnerRow ? this._field[row][col] : TEXTURE_COLUMN
-  }
-
-  togglePause = (isKeydown: boolean) => {
-    if (!isKeydown || !this._isPauseAllowed) {
-      return
-    }
-
-    this._isPaused = !this._isPaused
-
-    if (this._isPaused) {
-      pause.show()
-    } else {
-      pause.hide()
-      this._clearCanvasModal()
-    }
   }
 
   updateTexture(texture: number, col: number, row: number) {
@@ -447,6 +472,11 @@ class Level {
         this._endGame(true)
       }
     }, LEVEL_CHANGE_TIMEOUT_MS)
+  }
+
+  removeControl() {
+    this._controlFullscreen?.removeListeners()
+    this._controlPause?.removeListeners()
   }
 }
 

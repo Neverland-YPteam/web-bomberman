@@ -1,5 +1,5 @@
 import {
-  canvasSelectors,
+  CanvasSelectors,
   TILE_SIZE,
   SPRITE_TEXTURE_SIZE,
   FONT_FAMILY,
@@ -19,7 +19,7 @@ class Canvas {
   private _offscreenContext: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 
   // Альфа-канал не нужен для статического канваса, экономим ресурсы
-  constructor(selector: canvasSelectors, alpha = false) {
+  constructor(selector: CanvasSelectors, alpha = false) {
     const canvasEl = document.querySelector(selector)
 
     if (!canvasEl) {
@@ -126,9 +126,15 @@ class Canvas {
   }
 }
 
-const canvasStatic = new Canvas(canvasSelectors.static)
-const canvasDynamic = new Canvas(canvasSelectors.dynamic, true)
-const canvasModal = new Canvas(canvasSelectors.modal, true)
+let canvasStatic: Canvas
+let canvasDynamic: Canvas
+let canvasModal: Canvas
+
+const updateCanvases = () => {
+  canvasStatic = new Canvas(CanvasSelectors.Static)
+  canvasDynamic = new Canvas(CanvasSelectors.Dynamic, true)
+  canvasModal = new Canvas(CanvasSelectors.Modal, true)
+}
 
 // Экспортируем динамический канвас как canvas, чтобы не писать везде canvasDynamic
-export { canvasStatic, canvasDynamic as canvas, canvasModal }
+export { canvasStatic, canvasDynamic as canvas, canvasModal, updateCanvases }
