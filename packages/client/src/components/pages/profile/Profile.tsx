@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FormContainer } from '@molecules/form-container'
 import { SubmitButton } from '@atoms/submit-button'
 import { Avatar, Box, Skeleton, TextField } from '@mui/material'
@@ -10,7 +10,8 @@ const SKELETON_COUNT = 8
 
 const Profile = () => {
   const dispatch: any = useDispatch()
-  const { user } = useSelector(state => state)
+  const { user, userAuth: { isOAuth } } = useSelector(state => state)
+  const [componentKey, updateComponentKey] = useState(0)
 
   const handleAvatarUpdate = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const [file] = evt.target.files as FileList
@@ -27,14 +28,21 @@ const Profile = () => {
     data.delete('newPassword')
     dispatch(updateProfile(data))
 
-    data = new FormData()
-    data.append('oldPassword', evt.currentTarget.oldPassword.value)
-    data.append('newPassword', evt.currentTarget.newPassword.value)
-    dispatch(updatePassword(data))
+    if (!isOAuth) {
+      data = new FormData()
+      data.append('oldPassword', evt.currentTarget.oldPassword.value)
+      data.append('newPassword', evt.currentTarget.newPassword.value)
+      dispatch(updatePassword(data))
+    }
   }
+
+  useEffect(() => {
+    updateComponentKey(key => key + 1)
+  }, [user])
 
   return (
     <FormContainer
+      key={componentKey}
       onFormSubmit={handleProfileUpdate}
       title="Профиль"
     >
@@ -140,22 +148,28 @@ const Profile = () => {
             margin="normal"
             defaultValue={user.phone}
           />
-          <TextField
-            name="oldPassword"
-            label="Текущий пароль"
-            type="password"
-            required
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            name="newPassword"
-            label="Новый пароль"
-            type="password"
-            required
-            fullWidth
-            margin="normal"
-          />
+
+          {!isOAuth && (
+            <>
+              <TextField
+                name="oldPassword"
+                label="Текущий пароль"
+                type="password"
+                required
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                name="newPassword"
+                label="Новый пароль"
+                type="password"
+                required
+                fullWidth
+                margin="normal"
+              />
+            </>
+          )}
+
           <SubmitButton>Сохранить</SubmitButton>
         </>
 

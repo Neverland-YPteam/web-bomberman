@@ -26,7 +26,7 @@ const Signup = () => {
 
   useEffect(() => {
     if (isUserAuth) {
-      navigate(routes.main.path, {replace: true})
+      navigate(routes.landing.path, {replace: true})
       dispatch((loadUser()))
     }
   }, [isUserAuth])
