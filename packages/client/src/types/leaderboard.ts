@@ -1,7 +1,10 @@
-export interface ILeaderboard {
-  user: {
-    avatar: string;
-    firstName: string;
-    score: number;
-  }
+export interface ILeaderboardItemData {
+  id: number
+  name: string
+  avatar: null | string
+  score: number
+}
+
+export interface ILeaderboardItem {
+  data: ILeaderboardItemData
 }
