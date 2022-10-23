@@ -6,7 +6,7 @@ import { AppThemeProvider } from '@services/AppThemeProvider'
 import { Provider } from 'react-redux'
 import { store } from '@services/store/store'
 
-ReactDOM.createRoot(document.getElementById('App') as HTMLElement).render(
+ReactDOM.hydrateRoot(document.getElementById('App') as HTMLElement,
   <React.StrictMode>
     <Provider store={store}>
       <AppThemeProvider>
