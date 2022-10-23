@@ -2,6 +2,7 @@ import { TUserAuthActions } from '@services/store/actions/user-auth'
 
 export type TUserAuthState = {
   isUserAuth: boolean;
+  isOAuth: boolean
 
   loginRequest: boolean,
   loginFailed: boolean,
@@ -12,6 +13,7 @@ export type TUserAuthState = {
 
 const initialState: TUserAuthState = {
   isUserAuth: false,
+  isOAuth: false,
 
   loginRequest: false,
   loginFailed: false,
@@ -33,6 +35,7 @@ export const userAuthReducer = (state = initialState, actions: TUserAuthActions)
         ...state,
         loginRequest: false,
         isUserAuth: true,
+        isOAuth: false,
       }
     }
     case 'USER_LOGIN_FAILED': {
@@ -60,6 +63,14 @@ export const userAuthReducer = (state = initialState, actions: TUserAuthActions)
         ...state,
         ...initialState,
         logoutFailed: true
+      }
+    }
+    case 'USER_OAUTH_SUCCESS': {
+      return {
+        ...state,
+        loginRequest: false,
+        isUserAuth: true,
+        isOAuth: true,
       }
     }
     default: {

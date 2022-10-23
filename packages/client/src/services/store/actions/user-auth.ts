@@ -10,6 +10,8 @@ export const USER_LOGOUT_REQUEST = 'USER_LOGOUT_REQUEST';
 export const USER_LOGOUT_SUCCESS = 'USER_LOGOUT_SUCCESS';
 export const USER_LOGOUT_FAILED = 'USER_LOGOUT_FAILED';
 
+export const USER_OAUTH_SUCCESS = 'USER_OAUTH_SUCCESS';
+
 interface IUserLoginAction {
   readonly type: typeof USER_LOGIN_REQUEST;
 }
@@ -34,6 +36,10 @@ interface IUserLogoutFailedAction {
   readonly type: typeof USER_LOGOUT_FAILED
 }
 
+interface IUserOAuthSuccessAction {
+  readonly type: typeof USER_OAUTH_SUCCESS
+}
+
 export type TUserAuthActions =
   IUserLoginAction
   | IUserLoginSuccessAction
@@ -41,6 +47,7 @@ export type TUserAuthActions =
   | IUserLogoutAction
   | IUserLogoutSuccessAction
   | IUserLogoutFailedAction
+  | IUserOAuthSuccessAction
 
 export const loginUser: AppThunk = (data: FormData) => {
   return function(dispatch: AppDispatch) {
