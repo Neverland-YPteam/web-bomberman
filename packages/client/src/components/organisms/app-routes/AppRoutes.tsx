@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import { LandingPage } from '@pages/landing'
 import { AuthPage } from '@pages/auth'
 import { SignupPage } from '@pages/sign-up'
 import Leaderboard from '@pages/Leaderboard'
@@ -14,6 +15,7 @@ const AppRoutes = () => {
   return (
     <ErrorBoundary>
       <Routes>
+        <Route path={routes.landing.path} element={<LandingPage />} />
         <Route path={routes.auth.path} element={<AuthPage />} />
         <Route path={routes.signUp.path} element={<SignupPage />} />
         <Route element={<ProtectedRoute />}>
