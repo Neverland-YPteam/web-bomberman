@@ -1,5 +1,5 @@
 export interface ILeaderboardItemData {
-  id: number
+  id: string
   name: string
   avatar: null | string
   score: number

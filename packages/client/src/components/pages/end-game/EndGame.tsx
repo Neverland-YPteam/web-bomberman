@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { withNavbar } from '@services/withNavbar'
 import { Stack, Typography } from '@mui/material'
 import { routes } from '@organisms/app-routes'
@@ -6,6 +6,9 @@ import { MainMenuItem } from '@atoms/main-menu-item'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from '@utils/hooks'
 import { addLeaderboardUser } from '@services/store/actions/leaderboard'
+import { nanoid } from 'nanoid'
+
+const LEADERBOARD_ID_LENGTH = 10
 
 const menuItems = [routes.game, routes.main];
 
@@ -17,7 +20,7 @@ const EndGame = () => {
   const state = location.state
 
   const {
-    user: { id, avatar, display_name, first_name, second_name },
+    user: { avatar, display_name, first_name, second_name },
     other: { score },
   } = useSelector(state => state)
 
@@ -30,7 +33,10 @@ const EndGame = () => {
     const name = display_name || `${first_name} ${second_name}`
 
     dispatch(addLeaderboardUser({
-      id, name, avatar, score,
+      id: nanoid(LEADERBOARD_ID_LENGTH),
+      name,
+      avatar,
+      score,
     }))
   }, [])
 
