@@ -1,4 +1,4 @@
-import React from 'react'
+import { useEffect } from 'react'
 import {
   TableContainer,
   Table,
@@ -8,11 +8,22 @@ import {
   TableBody,
   Container, Box, Avatar, Typography
 } from '@mui/material'
-import mockData from './mockData';
-import { ILeaderboard } from '@src/types/leaderboard'
 import { withNavbar } from '@services/withNavbar'
+import { useDispatch, useSelector } from '@utils/hooks'
+import { getLeaderboardUsers } from '@services/store/actions/leaderboard'
+import { ILeaderboardItem } from '@src/types/leaderboard'
+import { Link } from 'react-router-dom'
+import { routes } from '@organisms/app-routes'
 
 const Leaderboard = () => {
+  const dispatch: any = useDispatch()
+
+  const { items } = useSelector(state => state.leaderboard)
+
+  useEffect(() => {
+    dispatch(getLeaderboardUsers({ cursor: 0, limit: 100 }))
+  }, [])
+
   return (
     <Container
       sx={{
@@ -29,40 +40,49 @@ const Leaderboard = () => {
         padding="48px"
       >
         <Typography variant="h5" sx={{ marginBottom: '40px' }}>Таблица лидеров</Typography>
-        <TableContainer>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="left" sx={{fontWeight: 'bold'}}>Аватар</TableCell>
-                <TableCell align="left" sx={{fontWeight: 'bold'}}>Имя</TableCell>
-                <TableCell align="left" sx={{fontWeight: 'bold'}}>Очки</TableCell>
-                <TableCell align="left" sx={{fontWeight: 'bold'}}>Место</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {mockData.map((user: ILeaderboard, idx: number) => (
-                <TableRow
-                  key={user.user.firstName}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row" padding='normal'>
-                    <Avatar
-                      alt="Remy Sharp"
-                      src={user.user.avatar}
-                      sx={{ width: 40, height: 40 }}
-                    />
-                  </TableCell>
-                  <TableCell align="left">{user.user.firstName}</TableCell>
-                  <TableCell align="left">{user.user.score}</TableCell>
-                  <TableCell align="left">{idx + 1}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+
+        { items.length
+
+          ? <TableContainer>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Аватар</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Имя</TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 'bold' }}>Очки</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>Место</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {items.map(({ data: { id, name, avatar, score }}: ILeaderboardItem, idx: number) => (
+                    <TableRow
+                      key={id}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell align="center">
+                        <Avatar
+                          alt="Remy Sharp"
+                          src={ avatar ?? '' }
+                          sx={{ width: 40, height: 40 }}
+                        />
+                      </TableCell>
+                      <TableCell align="left">{name}</TableCell>
+                      <TableCell align="center">{score}</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>{idx + 1}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+          : <div>
+              Список лидеров пока пуст.<br />
+              <Link to={routes.game.path}>Сыграйте</Link>, чтобы стать первым!
+            </div>
+        }
       </Box>
     </Container>
-  );
-};
+  )
+}
 
-export default withNavbar(Leaderboard, 'leaderboard');
+export default withNavbar(Leaderboard, 'leaderboard')
