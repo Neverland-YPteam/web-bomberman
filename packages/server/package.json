@@ -2,21 +2,27 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "scripts": {
-    "build": "tsc --p ./tsconfig.prod.json",
+    "build": "vite build --ssr entry-server.tsx --outDir ../dist/server",
     "preview": "node ./dist/index.js",
-    "dev": "NODE_ENV=development nodemon index.ts",
+    "dev": "NODE_ENV=development nodemon index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "jest ."
+    "test": "jest .",
+    "serve": "cross-env NODE_ENV=production node --experimental-modules --experimental-specifier-resolution=node index.js"
   },
   "dependencies": {
+    "compression": "^1.7.4",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "eslint-config-prettier": "^8.5.0",
     "express": "^4.18.1",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "serve-static": "^1.15.0"
   },
   "devDependencies": {
+    "@types/compression": "^1.7.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/jest": "^28.1.8",

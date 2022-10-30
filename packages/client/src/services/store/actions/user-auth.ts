@@ -1,6 +1,6 @@
-import { AppDispatch, AppThunk } from '@src/types/store'
-import { API_URL } from '@utils/constants'
-import { checkResponseStatus } from '@utils/helpers'
+import { AppDispatch, AppThunk } from '../../../types/store'
+import { API_URL } from '../../../utils/constants'
+import { checkResponseStatus } from '../../../utils/helpers'
 
 export const USER_LOGIN_REQUEST = 'USER_LOGIN_REQUEST';
 export const USER_LOGIN_SUCCESS = 'USER_LOGIN_SUCCESS';

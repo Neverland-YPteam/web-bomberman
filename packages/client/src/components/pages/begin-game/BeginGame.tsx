@@ -1,9 +1,9 @@
 import React from 'react'
-import { withNavbar } from '@services/withNavbar'
+import { withNavbar } from '../../../services/withNavbar'
 import { Box, Stack } from '@mui/material'
-import logo from '@images/main_logo.png';
-import { routes } from '@organisms/app-routes'
-import { MainMenuItem } from '@atoms/main-menu-item'
+import logo from '../../../assets/images/main_logo.png';
+import { routes } from '../../organisms/app-routes'
+import { MainMenuItem } from '../../atoms/main-menu-item'
 
 const menuItems = [routes.game, routes.profile, routes.leaderboard];
 

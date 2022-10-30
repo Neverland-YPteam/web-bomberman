@@ -1,6 +1,6 @@
 import { applyMiddleware, compose, legacy_createStore as createStore } from 'redux'
 import thunk from 'redux-thunk'
-import { rootReducer } from '@services/store/reducers'
+import { rootReducer } from './reducers'
 
 
 const composeEnhancers = typeof  window === 'object' && (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__

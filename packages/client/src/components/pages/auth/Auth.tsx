@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react'
 import { TextField } from '@mui/material'
-import { FormContainer } from '@molecules/form-container'
-import { SubmitButton } from '@atoms/submit-button'
-import { FormLink } from '@atoms/form-link'
-import { withNavbar } from '@services/withNavbar'
-import { routes } from '@organisms/app-routes';
-import { useDispatch, useSelector } from '@utils/hooks'
-import { loginUser } from '@services/store/actions/user-auth'
-import { loadUser } from '@services/store/actions/user'
+import { FormContainer } from '../../molecules/form-container'
+import { SubmitButton } from '../../atoms/submit-button'
+import { FormLink } from '../../atoms/form-link'
+import { withNavbar } from '../../../services/withNavbar'
+import { routes } from '../../organisms/app-routes';
+import { useDispatch, useSelector } from '../../../utils/hooks'
+import { loginUser } from '../../../services/store/actions/user-auth'
+import { loadUser } from '../../../services/store/actions/user'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const Auth = () => {

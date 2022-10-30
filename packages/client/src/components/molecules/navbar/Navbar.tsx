@@ -1,12 +1,13 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
-import { IRoute, routes } from '@organisms/app-routes'
+import { IRoute, routes } from '../../organisms/app-routes'
 import { Container, Box } from '@mui/material'
-import { theme } from '@services/AppThemeProvider/theme'
+import { theme } from '../../../services/AppThemeProvider/theme'
 import './Navbar.css'
 import logo from './images/logo.png'
 import { SyntheticEvent } from 'react'
-import { useDispatch } from '@utils/hooks'
-import { logoutUser } from '@services/store/actions/user-auth'
+import { useDispatch } from '../../../utils/hooks'
+import { logoutUser } from '../../../services/store/actions/user-auth'
 
 interface Props {
   showLogo?: boolean

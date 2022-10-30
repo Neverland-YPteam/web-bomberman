@@ -1,7 +1,7 @@
-import { AppDispatch, AppThunk } from '@src/types/store'
-import { checkResponseStatus } from '@utils/helpers'
-import { API_URL } from '@utils/constants'
-import { IUserState } from '@services/store/reducers/user'
+import { AppDispatch, AppThunk } from '../../../types/store'
+import { checkResponseStatus } from '../../../utils/helpers'
+import { API_URL } from '../../../utils/constants'
+import { IUserState } from '../reducers/user'
 
 export const USER_REQUEST = 'USER_REQUEST'
 export const USER_AVATAR_UPDATE = 'USER_AVATAR_UPDATE'

@@ -1,4 +1,4 @@
-import { TUserAuthActions } from '@services/store/actions/user-auth'
+import { TUserAuthActions } from '../actions/user-auth'
 
 export type TUserAuthState = {
   isUserAuth: boolean;

@@ -1,4 +1,4 @@
-import { TUserRegistrationActions } from '@services/store/actions/user-registration'
+import { TUserRegistrationActions } from '../actions/user-registration'
 
 interface userRegistrationState {
   registrationRequest: boolean;

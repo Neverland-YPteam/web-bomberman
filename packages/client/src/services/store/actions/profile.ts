@@ -1,7 +1,7 @@
-import { AppDispatch, AppThunk } from '@src/types/store'
-import { checkResponseStatus } from '@utils/helpers'
-import { API_URL } from '@utils/constants'
-import { USER_AVATAR_UPDATE } from '@services/store/actions/user'
+import { AppDispatch, AppThunk } from '../../../types/store'
+import { checkResponseStatus } from '../../../utils/helpers'
+import { API_URL } from '../../../utils/constants'
+import { USER_AVATAR_UPDATE } from './user'
 
 const enum Path {
   Avatar = '/user/profile/avatar',

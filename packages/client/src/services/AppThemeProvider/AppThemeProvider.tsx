@@ -1,6 +1,6 @@
 import { memo, ReactNode } from 'react'
 import { ThemeProvider } from '@mui/material'
-import { theme } from '@services/AppThemeProvider/theme'
+import { theme } from './theme'
 
 
 interface Props {

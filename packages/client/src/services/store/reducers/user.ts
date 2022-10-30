@@ -1,5 +1,5 @@
-import { TUserActions } from '@services/store/actions/user'
-import { API_RESOURCE_URL } from '@utils/constants'
+import { TUserActions } from '../actions/user'
+import { API_RESOURCE_URL } from '../../../utils/constants'
 
 export interface IUserState {
   id: null | number

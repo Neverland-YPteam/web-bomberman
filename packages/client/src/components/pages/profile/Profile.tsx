@@ -1,10 +1,10 @@
 import React from 'react'
-import { FormContainer } from '@molecules/form-container'
-import { SubmitButton } from '@atoms/submit-button'
+import { FormContainer } from '../../molecules/form-container'
+import { SubmitButton } from '../../atoms/submit-button'
 import { Avatar, Box, Skeleton, TextField } from '@mui/material'
-import { withNavbar } from '@services/withNavbar'
-import { useDispatch, useSelector } from '@utils/hooks'
-import { updateAvatar, updateProfile, updatePassword } from '@services/store/actions/profile'
+import { withNavbar } from '../../../services/withNavbar'
+import { useDispatch, useSelector } from '../../../utils/hooks'
+import { updateAvatar, updateProfile, updatePassword } from '../../../services/store/actions/profile'
 
 const SKELETON_COUNT = 8
 

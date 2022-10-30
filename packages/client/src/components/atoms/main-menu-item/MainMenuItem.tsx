@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Box, Typography } from '@mui/material'
-import { IRoute } from '@organisms/app-routes'
+import { IRoute } from '../../organisms/app-routes'
 
 interface Props {
   item: IRoute;

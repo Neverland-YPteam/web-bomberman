@@ -11,18 +11,18 @@ interface Props {
 const FormLink = ({to, text}: Props) => {
   const theme = useTheme();
 
-  const StyledLink = styled(Link)`
-    color: ${theme.palette.info.dark};
-    &:hover {
-      color: ${theme.palette.info.main};
-    }
-  `
+  // const StyledLink = styled(Link)`
+  //   color: ${theme.palette.info.dark};
+  //   &:hover {
+  //     color: ${theme.palette.info.main};
+  //   }
+  // `
   return (
-    <StyledLink
+    <Link
       to={to}
     >
       {text}
-    </StyledLink>
+    </Link>
   )
 }
 

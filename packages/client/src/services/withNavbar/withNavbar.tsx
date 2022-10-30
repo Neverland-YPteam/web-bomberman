@@ -1,6 +1,6 @@
 import React from 'react'
-import { routes } from '@organisms/app-routes'
-import { Navbar } from '@molecules/navbar'
+import { routes } from '../../components/organisms/app-routes'
+import { Navbar } from '../../components/molecules/navbar'
 
 export type ConfigKey = 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'forum' | 'score'
 

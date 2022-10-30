@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import { withNavbar } from '@services/withNavbar'
+import { withNavbar } from '../../../services/withNavbar'
 import { Stack, Typography } from '@mui/material'
-import { routes } from '@organisms/app-routes'
-import { MainMenuItem } from '@atoms/main-menu-item'
+import { routes } from '../../organisms/app-routes'
+import { MainMenuItem } from '../../atoms/main-menu-item'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const menuItems = [routes.game, routes.main];

@@ -8,9 +8,9 @@ import {
   TableBody,
   Container, Box, Avatar, Typography
 } from '@mui/material'
-import mockData from '@pages/Leaderboard/mockData';
-import { ILeaderboard } from '@src/types/leaderboard'
-import { withNavbar } from '@services/withNavbar'
+import mockData from './mockData';
+import { ILeaderboard } from '../../../types/leaderboard'
+import { withNavbar } from '../../../services/withNavbar'
 
 const Leaderboard = () => {
   return (
