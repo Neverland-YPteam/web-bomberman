@@ -1,12 +1,8 @@
-import { applyMiddleware, compose, legacy_createStore as createStore } from 'redux'
-import thunk from 'redux-thunk'
 import { rootReducer } from '@services/store/reducers'
+import * as toolkitRaw from '@reduxjs/toolkit';
+const { configureStore } = ((toolkitRaw as any).default ?? toolkitRaw) as typeof toolkitRaw;
 
-
-const composeEnhancers = typeof  window === 'object' && (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-  ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
-  : compose;
-
-const enhancer = composeEnhancers(applyMiddleware(thunk));
-
-export const store = createStore(rootReducer, enhancer)
+export const store = configureStore({
+  reducer: rootReducer,
+  devTools: true,
+})

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from '@emotion/styled'
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material'
 
 interface Props {
   to: string;
@@ -9,20 +9,20 @@ interface Props {
 }
 
 const FormLink = ({to, text}: Props) => {
-  const theme = useTheme();
+  // const theme = useTheme();
 
-  const StyledLink = styled(Link)`
-    color: ${theme.palette.info.dark};
-    &:hover {
-      color: ${theme.palette.info.main};
-    }
-  `
+  // const StyledLink = styled(Link)`
+  //   color: ${theme.palette.info.dark};
+  //   &:hover {
+  //     color: ${theme.palette.info.main};
+  //   }
+  // `
   return (
-    <StyledLink
+    <Link
       to={to}
     >
       {text}
-    </StyledLink>
+    </Link>
   )
 }
 

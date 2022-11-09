@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import './App.css';
-import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from '@organisms/app-routes'
 import { Box } from '@mui/material';
 import { useDispatch } from '@utils/hooks'
@@ -29,14 +28,12 @@ function App() {
   }, [dispatch])
 
   return (
-    <BrowserRouter>
-      <Box className="app__wrapper">
-        <SnackbarProvider>
-          <SnackbarUtilsConfigurator />
-          <AppRoutes />
-        </SnackbarProvider>
-      </Box>
-    </BrowserRouter>
+    <Box className="app__wrapper">
+      <SnackbarProvider>
+        <SnackbarUtilsConfigurator />
+        <AppRoutes />
+      </SnackbarProvider>
+    </Box>
   )
 }
 

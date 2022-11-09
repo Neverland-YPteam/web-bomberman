@@ -37,7 +37,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (isUserAuth) {
-      navigate(state?.from || routes.main.path, {replace: true})
+      navigate((state as any)?.from || routes.main.path, {replace: true})
       dispatch(loadUser())
     }
   }, [isUserAuth])
