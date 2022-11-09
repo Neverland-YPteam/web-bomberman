@@ -54,26 +54,20 @@ class Map {
 
       const isEdge = rowIndex === 0 || rowIndex === MAP_TILES_COUNT_Y - 1
 
-      if (isEdge) {
-        let colIndex = 1
+      let colIndex = 1
 
-        while (colIndex < MAP_TILES_COUNT_X - 1) {
+      while (colIndex < MAP_TILES_COUNT_X - 1) {
+        if (isEdge) {
           this.drawTexture(this._getRandomColumnTexture(), colIndex, rowIndex)
-          colIndex++
-        }
-      }
-
-      if (!isEdge) {
-        let colIndex = 1
-
-        while (colIndex < MAP_TILES_COUNT_X - 1) {
+        } else {
           const texture = rowIndex % 2 === 0 && colIndex % 2 === 0
             ? TEXTURE_COLUMN
             : TEXTURE_GRASS
 
           this.drawTexture(texture, colIndex, rowIndex)
-          colIndex++
         }
+
+        colIndex++
       }
 
       rowIndex++

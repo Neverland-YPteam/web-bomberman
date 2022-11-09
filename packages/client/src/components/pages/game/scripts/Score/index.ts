@@ -1,3 +1,4 @@
+import { TILE_SIZE } from '../const';
 import { PausableInterval } from '../utils';
 import { canvas } from '../canvas';
 import { level } from '../level';
@@ -39,7 +40,6 @@ export class Score {
       return
     }
 
-
     this._y -= COORDS_STEP_PX
     this._updateCount++
   }
@@ -50,7 +50,7 @@ export class Score {
   }
 
   draw() {
-    canvas.text(String(this._score), this._x, this._y, FONT_SIZE, 'white', 'center')
+    canvas.text(String(this._score), this._x + TILE_SIZE / 2, this._y, FONT_SIZE, 'white', 'center')
   }
 
   pauseIntervals() {

@@ -23,16 +23,16 @@ const Profile = () => {
   const handleProfileUpdate = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault()
 
-    let data = new FormData(evt.currentTarget)
-    data.delete('oldPassword')
-    data.delete('newPassword')
-    dispatch(updateProfile(data))
+    const profileData = new FormData(evt.currentTarget)
+    profileData.delete('oldPassword')
+    profileData.delete('newPassword')
+    dispatch(updateProfile(profileData))
 
     if (!isOAuth) {
-      data = new FormData()
-      data.append('oldPassword', evt.currentTarget.oldPassword.value)
-      data.append('newPassword', evt.currentTarget.newPassword.value)
-      dispatch(updatePassword(data))
+      const passwordData = new FormData()
+      passwordData.append('oldPassword', evt.currentTarget.oldPassword.value)
+      passwordData.append('newPassword', evt.currentTarget.newPassword.value)
+      dispatch(updatePassword(passwordData))
     }
   }
 
