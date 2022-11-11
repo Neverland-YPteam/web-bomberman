@@ -16,6 +16,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     '@typescript-eslint/ban-ts-comment': 1,
+    "@typescript-eslint/no-unused-vars": 0,
     "no-restricted-imports": ["error", { "paths": [".", ".."] }],
   },
 }
