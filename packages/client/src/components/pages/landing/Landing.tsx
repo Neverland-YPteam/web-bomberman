@@ -78,6 +78,7 @@ const Landing = () => {
                     <TableCell sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
                       {image.map((image, index) => (
                         <img
+                          key={image}
                           src={image}
                           alt={alt[index]}
                           style={{height: alt[0] === 'Стрелки' ? 64 : 40 }}
