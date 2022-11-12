@@ -423,6 +423,12 @@ class Level {
     }
   }
 
+  private _updateNearestCellsShadows(col: number, row: number) {
+    this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
+    this._updateGrass(col, row + 1, { topLeft: true, top: false, left: true })
+    this._updateGrass(col + 1, row + 1, { topLeft: false, top: true, left: true })
+  }
+
   startGame() {
     stats.reset()
     this.goToNextLevel(1)
@@ -536,9 +542,7 @@ class Level {
       map.drawTexture(texture, mapCol, mapRow)
 
       if (texture === TEXTURE_WALL_DAMAGED_2 && !isDoor && !isBonus) {
-        this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
-        this._updateGrass(col, row + 1, { topLeft: true, top: false, left: true })
-        this._updateGrass(col + 1, row + 1, { topLeft: false, top: true, left: true })
+        this._updateNearestCellsShadows(col, row)
       }
 
       canvasStatic.update()
@@ -568,6 +572,25 @@ class Level {
     canvasStatic.update()
   }
 
+  removeBonus() {
+    const [col, row] = this.bonusCoords as number[]
+
+    this.updateTexture(TEXTURE_GRASS, col, row)
+    map.drawTexture(TEXTURE_GRASS, col + 1, row + 1)
+    this._drawGrassShadow(col, row)
+    this._updateNearestCellsShadows(col, row)
+
+    canvasStatic.update()
+  }
+
+  addEnemies() {
+    /** @TODO Добавлять врагов в наказание:
+     * - за взрыв двери (нужен дебаунс, если взрывы с нескольких сторон)
+     * - за истечение времени
+     */
+    console.log('Добавляем врагов')
+  }
+
   removeEnemy(id: string) {
     this.enemies = this.enemies.filter((enemy) => enemy.id !== id)
 
@@ -592,9 +615,7 @@ class Level {
     this.updateTexture(TEXTURE_GRASS, col, row)
     map.drawTexture(TEXTURE_GRASS, col + 1, row + 1)
     this._drawGrassShadow(col, row)
-    this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
-    this._updateGrass(col, row + 1, { topLeft: true, top: false, left: true })
-    this._updateGrass(col + 1, row + 1, { topLeft: false, top: true, left: true })
+    this._updateNearestCellsShadows(col, row)
     canvasStatic.update()
 
     this._bonus?.callback()
@@ -621,6 +642,7 @@ class Level {
 
   onTimeExpiration() {
     // @TODO Добавлять врагов в наказание
+    this.addEnemies()
   }
 
   complete = () => {

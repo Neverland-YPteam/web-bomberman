@@ -120,6 +120,15 @@ export class Flame {
         return counter
       }
 
+      const isDoor = level.isDoor(col, row)
+      const isBonus = level.isBonus(col, row)
+
+      if (isDoor) {
+        level.addEnemies()
+      } else if (isBonus) {
+        level.removeBonus()
+      }
+
       counter++
     }
 

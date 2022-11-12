@@ -22,11 +22,11 @@ export const levelList: TLevelList = {
   },
   5: {
     enemies: { balloon: 1, beaker: 3, lantern: 2 },
-    bonus: bomb,
+    bonus: fire,
   },
   6: {
     enemies: { beaker: 3, lantern: 2, face: 1 },
-    bonus: fire,
+    bonus: bomb,
   },
   7: {
     enemies: { beaker: 2, lantern: 2, face: 2 },
@@ -34,35 +34,35 @@ export const levelList: TLevelList = {
   },
   8: {
     enemies: { beaker: 1, lantern: 3, face: 2 },
-    bonus: bombpass,
+    bonus: fire,
   },
   9: {
     enemies: { lantern: 3, face: 2, jelly: 1 },
-    bonus: fire,
+    bonus: bomb,
   },
   10: {
     enemies: { lantern: 2, face: 2, jelly: 2 },
-    bonus: detonator,
+    bonus: immortal,
   },
   11: {
     enemies: { lantern: 1, face: 3, jelly: 2 },
-    bonus: bomb,
+    bonus: fire,
   },
   12: {
     enemies: { face: 3, jelly: 2, ghost: 1 },
-    bonus: fire,
+    bonus: wallpass,
   },
   13: {
     enemies: { face: 2, jelly: 2, ghost: 2 },
-    bonus: detonator,
+    bonus: bomb,
   },
   14: {
     enemies: { face: 1, jelly: 3, ghost: 2 },
-    bonus: bomb,
+    bonus: firepass,
   },
   15: {
     enemies: { jelly: 3, ghost: 2, bear: 1 },
-    bonus: immortal,
+    bonus: bombpass,
   },
   16: {
     enemies: { jelly: 2, ghost: 2, bear: 2 },
@@ -70,11 +70,11 @@ export const levelList: TLevelList = {
   },
   17: {
     enemies: { jelly: 1, ghost: 3, bear: 2 },
-    bonus: bombpass,
+    bonus: detonator,
   },
   18: {
     enemies: { ghost: 3, bear: 2, coin: 1 },
-    bonus: detonator,
+    bonus: bombpass,
   },
   19: {
     enemies: { ghost: 2, bear: 2, coin: 2 },
