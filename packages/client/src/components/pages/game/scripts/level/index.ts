@@ -467,6 +467,20 @@ class Level {
     return isInnerCol && isInnerRow ? this._field[row][col] : TEXTURE_COLUMN
   }
 
+  isDoor(col: number, row: number) {
+    const [doorCol, doorRow] = this.doorCoords
+    return col === doorCol && row === doorRow
+  }
+
+  isBonus(col: number, row: number) {
+    if (this.isBonusPickedUp) {
+      return false
+    }
+
+    const [bonusCol, bonusRow] = this.bonusCoords
+    return col === bonusCol && row === bonusRow
+  }
+
   updateTexture(texture: number, col: number, row: number) {
     this._field[row][col] = texture
   }
@@ -510,10 +524,8 @@ class Level {
       this._drawGrassShadow(col, row)
       map.drawTexture(texture, mapCol, mapRow)
 
-      const [doorCol, doorRow] = this.doorCoords
-      const [bonusCol, bonusRow] = this.bonusCoords
-      const isDoor = col === doorCol && row === doorRow
-      const isBonus = !this.isBonusPickedUp && col === bonusCol && row === bonusRow
+      const isDoor = this.isDoor(col, row)
+      const isBonus = this.isBonus(col, row)
 
       if (texture === TEXTURE_WALL_DAMAGED_2 && !isDoor && !isBonus) {
         this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
@@ -528,11 +540,8 @@ class Level {
   removeWall = ({ col, row }: TCellColRow) => {
     this.updateTexture(TEXTURE_GRASS, col, row)
 
-    const [doorCol, doorRow] = this.doorCoords
-    const [bonusCol, bonusRow] = this.bonusCoords
-
-    const isDoor = col === doorCol && row === doorRow
-    const isBonus = !this.isBonusPickedUp && col === bonusCol && row === bonusRow
+    const isDoor = this.isDoor(col, row)
+    const isBonus = this.isBonus(col, row)
 
     let texture = TEXTURE_GRASS
 

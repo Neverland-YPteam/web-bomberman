@@ -457,9 +457,9 @@ export class Hero {
     }
 
     if (level.canExit) {
-      const [doorCol, doorRow] = level.doorCoords
+      const isDoor = level.isDoor(this._coords.mainCol, this._coords.mainRow)
 
-      if (this._coords.mainCol === doorCol && this._coords.mainRow === doorRow) {
+      if (isDoor) {
         level.complete()
         return
       }
