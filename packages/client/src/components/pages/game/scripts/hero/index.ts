@@ -9,7 +9,7 @@ import {
 
 import { PANEL_HEIGHT_PX, TILE_SIZE, textures } from '../const'
 
-import { PausableInterval } from '../utils'
+import { PausableInterval, PausableTimeout } from '../utils'
 import { canvas } from '../canvas'
 import { level } from '../level'
 import { Control } from '../Control'
@@ -64,6 +64,7 @@ const DIRECTION_DEFAULT: TDirectionX = 'right'
 const TEXTURE_STANDING_CHANGE_INTERVAL_MS = 400 // Скорость анимации standing
 const TEXTURE_MOVING_CHANGE_INTERVAL_MS = 150 // Скорость анимации moving
 const TEXTURE_DEAD_CHANGE_INTERVAL_MS = 200 // Скорость анимации dead
+const IMMORTAL_DURATION_S = 30
 
 const globalTextures = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE]
 const bombTextures = [TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE]
@@ -99,6 +100,7 @@ export class Hero {
   private _changeTextureInterval: PausableInterval
 
   private _bombsPlaced: TBombsPlaced = {}
+  private _immortalTimeout: null | PausableTimeout = null
 
   x = 0
   y = 0
@@ -360,6 +362,9 @@ export class Hero {
 
   reset() {
     this.isDead = false
+    this.abilities.immortal = false
+    this._immortalTimeout?.stop()
+    this._immortalTimeout = null
     this._resetPosition()
   }
 
@@ -440,14 +445,14 @@ export class Hero {
 
     const hasFlameContact = this._checkForFlameContact()
 
-    if (hasFlameContact && !this.abilities.firepass) {
+    if (hasFlameContact && !this.abilities.firepass && !this.abilities.immortal) {
       this._die()
       return
     }
 
     const hasEnemyContact = this._checkForEnemyContact()
 
-    if (hasEnemyContact) {
+    if (hasEnemyContact && !this.abilities.immortal) {
       this._die()
     }
 
@@ -475,20 +480,30 @@ export class Hero {
     this.speed = SPEED_IMPROVED
   }
 
-  makeImmortal() {
-    // @TODO Сделать неуязвимым
+  makeImmortal = () => {
+    this.abilities.immortal = true
+
+    this._immortalTimeout = new PausableTimeout(this.makeMortal, IMMORTAL_DURATION_S * 1000)
+    this._immortalTimeout.start()
+  }
+
+  makeMortal = () => {
+    this.abilities.immortal = false
   }
 
   pauseIntervals() {
     this._changeTextureInterval.pause()
+    this._immortalTimeout?.pause()
   }
 
   resumeIntervals() {
     this._changeTextureInterval.resume()
+    this._immortalTimeout?.resume()
   }
 
   stopIntervals() {
     this._changeTextureInterval.stop()
+    this._immortalTimeout?.stop()
   }
 }
 
