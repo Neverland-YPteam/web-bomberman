@@ -51,11 +51,13 @@ const KEY_RIGHT = 'ArrowRight'
 const KEY_UP = 'ArrowUp'
 const KEY_DOWN = 'ArrowDown'
 const KEY_BOMB_PLACE = 'Space'
-const KEY_BOMB_DETONATE = 'Control'
+const KEY_BOMB_DETONATE = 'ControlLeft'
 
 const SPEED_DEFAULT = 3 // Скорость героя по умолчанию
-// const SPEED_IMPROVED = 4 // Скорость героя при активном бонусе
+const SPEED_IMPROVED = 4 // Скорость героя при активном бонусе
 const TOLERANCE_PX = 9 // Допустимое отклонение от границ COLUMN или WALL для прохода героя между текстурами
+const BOMBS_COUNT_DEFAULT = 1
+const FIRE_RADIUS_DEFAULT = 1
 const SAFE_BOUND_X_PX = 9 // Безопасная область HERO при контакте с ENEMY по оси X
 const SAFE_BOUND_Y_PX = 3 // Безопасная область HERO при контакте с ENEMY по оси Y
 const DIRECTION_DEFAULT: TDirectionX = 'right'
@@ -63,7 +65,7 @@ const TEXTURE_STANDING_CHANGE_INTERVAL_MS = 400 // Скорость анимац
 const TEXTURE_MOVING_CHANGE_INTERVAL_MS = 150 // Скорость анимации moving
 const TEXTURE_DEAD_CHANGE_INTERVAL_MS = 200 // Скорость анимации dead
 
-const globalTextures = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE] // @TODO Убрать после добавления wallPass
+const globalTextures = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE]
 const bombTextures = [TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE]
 
 export class Hero {
@@ -105,12 +107,12 @@ export class Hero {
   speed = SPEED_DEFAULT
 
   abilities = {
-    bombs: 5, // Сколько бомб одновременно может размещать
-    flame: 3, // Радиус взрыва, не считая центральной клетки
+    bombs: BOMBS_COUNT_DEFAULT, // Сколько бомб одновременно может размещать
+    fire: FIRE_RADIUS_DEFAULT, // Радиус взрыва, не считая центральной клетки
     detonator: false, // Взрывает самую старую бомбу вручную
-    wallPass: false, // Может ходить сквозь стены
+    wallpass: false, // Может ходить сквозь стены
     bombpass: false, // Может ходить сквозь бомбы
-    flamepass: false, // Взрывы не причиняют вреда
+    firepass: false, // Взрывы не причиняют вреда
     immortal: false, // Враги и взрывы не причиняют вреда, выключается по таймауту
   }
 
@@ -266,7 +268,10 @@ export class Hero {
       return cols.includes(col) && rows.includes(row)
     }
 
-    // @TODO Поправить метод после добавления wallPass
+    if (this.abilities.wallpass) {
+      return tile !== TEXTURE_COLUMN
+    }
+
     return !globalTextures.includes(tile)
   }
 
@@ -314,7 +319,7 @@ export class Hero {
 
   private _onBombExplosion = (col: number, row: number) => {
     delete this._bombsPlaced[`${col}-${row}`]
-    new Flame(col, row, this.abilities.flame)
+    new Flame(col, row, this.abilities.fire)
   }
 
   private _checkForFlameContact() {
@@ -356,6 +361,15 @@ export class Hero {
   reset() {
     this.isDead = false
     this._resetPosition()
+  }
+
+  resetAbilities() {
+    this.speed = SPEED_DEFAULT
+    this.abilities.detonator = false
+    this.abilities.wallpass = false
+    this.abilities.bombpass = false
+    this.abilities.firepass = false
+    this.abilities.immortal = false
   }
 
   draw() {
@@ -426,7 +440,7 @@ export class Hero {
 
     const hasFlameContact = this._checkForFlameContact()
 
-    if (hasFlameContact) {
+    if (hasFlameContact && !this.abilities.firepass) {
       this._die()
       return
     }
@@ -442,8 +456,27 @@ export class Hero {
 
       if (this._coords.mainCol === doorCol && this._coords.mainRow === doorRow) {
         level.complete()
+        return
       }
     }
+
+    const tileType = level.getTileType(this._coords.mainCol, this._coords.mainRow)
+
+    if (!level.isBonusPickedUp && tileType !== TEXTURE_WALL && tileType !== TEXTURE_WALL_SAFE) {
+      const [bonusCol, bonusRow] = level.bonusCoords
+
+      if (this._coords.mainCol === bonusCol && this._coords.mainRow === bonusRow) {
+        level.pickUpBonus()
+      }
+    }
+  }
+
+  increaseSpeed = () => {
+    this.speed = SPEED_IMPROVED
+  }
+
+  makeImmortal() {
+    // @TODO Сделать неуязвимым
   }
 
   pauseIntervals() {

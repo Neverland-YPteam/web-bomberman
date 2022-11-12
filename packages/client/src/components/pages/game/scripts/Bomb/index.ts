@@ -1,5 +1,3 @@
-// @TODO Убирать у бомбы таймер, когда персонаж берет бонус «Детонатор»
-
 import { TExplosionCallback } from './types'
 
 import { PANEL_HEIGHT_PX, TILE_SIZE, textures } from '../const'
@@ -49,17 +47,17 @@ class Bomb {
       : this._currentTextureIndex + 1
   }
 
-  private _clearExplosionTimeout() {
-    this._explosionTimeout?.stop()
-    this._explosionTimeout = null
-  }
-
   private _checkForFlameContact() {
     return level.burningCells.some(([col, row]) => col === this._col && row === this._row)
   }
 
   private get _texture() {
     return bombTextures[this._currentTextureIndex]
+  }
+
+  clearExplosionTimeout = () => {
+    this._explosionTimeout?.stop()
+    this._explosionTimeout = null
   }
 
   update() {
@@ -77,7 +75,7 @@ class Bomb {
   }
 
   explode = () => {
-    this._clearExplosionTimeout()
+    this.clearExplosionTimeout()
 
     level.removeBomb(this.id)
     level.updateTexture(TEXTURE_GRASS, this._col, this._row)

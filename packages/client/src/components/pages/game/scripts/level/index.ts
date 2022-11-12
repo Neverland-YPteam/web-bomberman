@@ -1,10 +1,8 @@
 /**
  * Класс отвечает за начало уровня, генерирование WALL, персонажей, проигрыш, выигрыш и разные прочие плюшки
- *
- * @TODO Добавлять под случайной стеной BONUS
  */
 
-import { TField, TCellCoords, TEnemyEntry, TCellColRow, IShadowsToCheck } from './types'
+import { TField, TCellCoords, TEnemyEntry, TCellColRow, IShadowsToCheck, IBonus } from './types'
 
 import {
   FPS, MAP_TILES_COUNT_X, MAP_TILES_COUNT_Y, BG_COLOR, FONT_SIZE,
@@ -16,6 +14,7 @@ import {
   getBooleanWithProbability,
   getRandomArrayValue,
   getRandomNumberBetween,
+  isEqual,
   LimitFrames,
 } from '../utils'
 
@@ -40,8 +39,6 @@ const {
   TEXTURE_SHADOW_TL, TEXTURE_SHADOW_T, TEXTURE_SHADOW_L,
   TEXTURE_FLOWER_1, TEXTURE_FLOWER_2, TEXTURE_FLOWER_3, TEXTURE_FLOWER_4, TEXTURE_FLOWER_5, TEXTURE_FLOWER_6,
   TEXTURE_FLOWER_7, TEXTURE_FLOWER_8, TEXTURE_FLOWER_9, TEXTURE_FLOWER_10, TEXTURE_FLOWER_11, TEXTURE_FLOWER_12,
-  TEXTURE_BONUS_BOMB, TEXTURE_BONUS_FIRE, TEXTURE_BONUS_SPEED, TEXTURE_BONUS_DETONATOR,
-  TEXTURE_BONUS_WALLPASS, TEXTURE_BONUS_BOMBPASS, TEXTURE_BONUS_FIREPASS, TEXTURE_BONUS_IMMORTAL,
 } = textures
 
 const LEVEL_INTRO_TIMEOUT_MS = 2000 // На этапе разработки большое значение не нужно
@@ -71,17 +68,20 @@ class Level {
   private _enemiesIndexes: string[] = []
   private _isPauseAllowed = false
   private _isPaused = false
+  private _bonus: null | IBonus = null
 
   limitFrames: null | LimitFrames = null
   currentLevel = 0
   showHero = true
   doorCoords: Partial<TCellCoords> = []
+  bonusCoords: Partial<TCellCoords> = []
   canExit = false
   bombs: Record<string, Bomb> = {}
   flames: Record<string, Flame> = {}
   burningCells: [number, number][] = []
   enemies: Enemy[] = []
   scorePopups: Record<number, Score> = {}
+  isBonusPickedUp = false
 
   constructor() {
     this._controlFullscreen = new Control(KEY_FULLSCREEN, this._toggleFullscreen)
@@ -225,6 +225,19 @@ class Level {
 
   private _setDoorColRow() {
     this.doorCoords = getRandomArrayValue(this._walls)
+  }
+
+  private _setBonus() {
+    this.bonusCoords = getRandomArrayValue(this._walls)
+
+    const isBusy = isEqual(this.doorCoords, this.bonusCoords)
+
+    if (isBusy) {
+      this._setBonus()
+      return
+    }
+
+    this._bonus = levelList[this.currentLevel].bonus
   }
 
   private _setHero() {
@@ -416,10 +429,9 @@ class Level {
   }
 
   goToNextLevel = async (level = this.currentLevel + 1) => {
-    // @TODO Вызов метода, который генерит бонус и его расположение
-
     this._tieUpLooseEnds()
     this.currentLevel = level // Перешли на новый уровень
+    this.isBonusPickedUp = false
 
     this._showIntro() // Показали заставку
     canvasModal.update() // Обновили canvas
@@ -427,6 +439,7 @@ class Level {
     this._resetField() // Поместили стены
     this._drawGrassShadowsAndFlowers()
     this._setDoorColRow() // Добавили дверь
+    this._setBonus() // Добавили бонус
     canvasStatic.update() // Обновили canvasStatic
 
     await delay(LEVEL_INTRO_TIMEOUT_MS) // Ждем новый уровень…
@@ -498,9 +511,11 @@ class Level {
       map.drawTexture(texture, mapCol, mapRow)
 
       const [doorCol, doorRow] = this.doorCoords
+      const [bonusCol, bonusRow] = this.bonusCoords
       const isDoor = col === doorCol && row === doorRow
+      const isBonus = !this.isBonusPickedUp && col === bonusCol && row === bonusRow
 
-      if (texture === TEXTURE_WALL_DAMAGED_2 && !isDoor) {
+      if (texture === TEXTURE_WALL_DAMAGED_2 && !isDoor && !isBonus) {
         this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
         this._updateGrass(col, row + 1, { topLeft: true, top: false, left: true })
         this._updateGrass(col + 1, row + 1, { topLeft: false, top: true, left: true })
@@ -511,16 +526,25 @@ class Level {
   }
 
   removeWall = ({ col, row }: TCellColRow) => {
-    // @TODO Обрабатывать бонус
     this.updateTexture(TEXTURE_GRASS, col, row)
 
     const [doorCol, doorRow] = this.doorCoords
+    const [bonusCol, bonusRow] = this.bonusCoords
+
     const isDoor = col === doorCol && row === doorRow
-    const texture = isDoor ? TEXTURE_DOOR : TEXTURE_GRASS
+    const isBonus = !this.isBonusPickedUp && col === bonusCol && row === bonusRow
+
+    let texture = TEXTURE_GRASS
+
+    if (isDoor) {
+      texture = TEXTURE_DOOR
+    } else if (isBonus) {
+      texture = this._bonus?.texture as number
+    }
 
     map.drawTexture(texture, col + 1, row + 1)
 
-    if (!isDoor) {
+    if (!isDoor && !isBonus) {
       this._drawGrassShadow(col, row)
     }
 
@@ -543,6 +567,22 @@ class Level {
     delete this.scorePopups[id]
   }
 
+  pickUpBonus() {
+    this.isBonusPickedUp = true
+
+    const [col, row] = this.bonusCoords as number[]
+
+    this.updateTexture(TEXTURE_GRASS, col, row)
+    map.drawTexture(TEXTURE_GRASS, col + 1, row + 1)
+    this._drawGrassShadow(col, row)
+    this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
+    this._updateGrass(col, row + 1, { topLeft: true, top: false, left: true })
+    this._updateGrass(col + 1, row + 1, { topLeft: false, top: true, left: true })
+    canvasStatic.update()
+
+    this._bonus?.callback()
+  }
+
   onLose = () => {
     this._isPauseAllowed = false
 
@@ -553,6 +593,7 @@ class Level {
     setTimeout(() => {
       if (stats.lives > 0) {
         hero.stopIntervals()
+        hero.resetAbilities()
         stats.decreaseLife()
         this.goToNextLevel(this.currentLevel)
       } else {

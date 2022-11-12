@@ -5,6 +5,7 @@ export type TEnemyEntry = [TEnemyName, number]
 
 interface ILevel {
   enemies: TEnemies
+  bonus: IBonus
 }
 
 export type TLevelList = Record<number, ILevel>
@@ -20,3 +21,12 @@ export interface IShadowsToCheck {
   top: boolean
   left: boolean
 }
+
+export interface IBonus {
+  texture: number
+  callback: () => unknown
+}
+
+type TBonusName = 'bomb' | 'fire' | 'speed' | 'detonator' | 'wallpass' | 'bombpass' | 'firepass' | 'immortal'
+
+export type TBonuses = Record<TBonusName, IBonus>
