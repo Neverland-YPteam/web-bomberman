@@ -520,12 +520,20 @@ class Level {
     const currentTexture = map.getTexture(mapCol, mapRow)
 
     if (currentTexture !== texture) {
-      map.drawTexture(TEXTURE_GRASS, mapCol, mapRow)
-      this._drawGrassShadow(col, row)
-      map.drawTexture(texture, mapCol, mapRow)
+      const isDoor = level.isDoor(col, row)
+      const isBonus = level.isBonus(col, row)
 
-      const isDoor = this.isDoor(col, row)
-      const isBonus = this.isBonus(col, row)
+      map.drawTexture(TEXTURE_GRASS, mapCol, mapRow)
+
+      if (isDoor) {
+        map.drawTexture(TEXTURE_DOOR, mapCol, mapRow)
+      } else if (isBonus) {
+        map.drawTexture(this._bonus?.texture as number, mapCol, mapRow)
+      } else {
+        this._drawGrassShadow(col, row)
+      }
+
+      map.drawTexture(texture, mapCol, mapRow)
 
       if (texture === TEXTURE_WALL_DAMAGED_2 && !isDoor && !isBonus) {
         this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
