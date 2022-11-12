@@ -68,7 +68,6 @@ const Navbar = ({ showLogo, links }: Props) => {
               </li>
             )}
 
-            {/* @TODO Кнопка «Выйти» */}
             {isUserAuth && (
               <Box
                 onClick={handleExitClick}
