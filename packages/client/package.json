@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node --loader ts-node/esm src/server.ts",
     "build:client": "tsc && vite build --outDir dist/client",
     "build:server": "tsc && vite build --outDir dist/server --ssr src/entry-server.tsx",
     "build": "tsc && npm run build:client && npm run build:server",

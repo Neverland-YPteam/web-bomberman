@@ -5,7 +5,7 @@ import logo from '@images/main_logo.png';
 import { routes } from '@organisms/app-routes'
 import { MainMenuItem } from '@atoms/main-menu-item'
 
-const menuItems = [routes.game, routes.profile, routes.leaderboard];
+const menuItems = [routes?.game, routes?.profile, routes?.leaderboard];
 
 const BeginGame = () => {
   return (

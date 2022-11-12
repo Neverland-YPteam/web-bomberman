@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid'
 
 const LEADERBOARD_ID_LENGTH = 10
 
-const menuItems = [routes.game, routes.main];
+const menuItems = [routes?.game, routes?.main];
 
 const EndGame = () => {
   const dispatch: any = useDispatch()
