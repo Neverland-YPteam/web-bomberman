@@ -237,7 +237,14 @@ class Level {
       return
     }
 
-    this._bonus = levelList[this.currentLevel].bonus
+    const { abilityName } = levelList[this.currentLevel].bonus
+    const { bonus, reserveBonus } = levelList[this.currentLevel]
+
+    if (abilityName && hero.abilities[abilityName] && reserveBonus) {
+      this._bonus = reserveBonus
+    } else {
+      this._bonus = bonus
+    }
   }
 
   private _setHero() {
@@ -587,6 +594,8 @@ class Level {
     /** @TODO Добавлять врагов в наказание:
      * - за взрыв двери (нужен дебаунс, если взрывы с нескольких сторон)
      * - за истечение времени
+     *
+     * Проверить, что метод не срабатывает много раз подряд при контакте со взрывной волной
      */
     console.log('Добавляем врагов')
   }

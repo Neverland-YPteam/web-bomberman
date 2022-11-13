@@ -31,6 +31,7 @@ export const levelList: TLevelList = {
   7: {
     enemies: { beaker: 2, lantern: 2, face: 2 },
     bonus: detonator,
+    reserveBonus: fire,
   },
   8: {
     enemies: { beaker: 1, lantern: 3, face: 2 },
@@ -67,18 +68,22 @@ export const levelList: TLevelList = {
   16: {
     enemies: { jelly: 2, ghost: 2, bear: 2 },
     bonus: wallpass,
+    reserveBonus: bomb,
   },
   17: {
     enemies: { jelly: 1, ghost: 3, bear: 2 },
     bonus: detonator,
+    reserveBonus: fire,
   },
   18: {
     enemies: { ghost: 3, bear: 2, coin: 1 },
     bonus: bombpass,
+    reserveBonus: bomb,
   },
   19: {
     enemies: { ghost: 2, bear: 2, coin: 2 },
     bonus: firepass,
+    reserveBonus: fire,
   },
   20: {
     enemies: { ghost: 1, bear: 3, coin: 2 },

@@ -19,6 +19,7 @@ export const bonuses: TBonuses = {
   },
   detonator: {
     texture: textures.TEXTURE_BONUS_DETONATOR,
+    abilityName: 'detonator',
     callback: () => {
       hero.abilities.detonator = true
       Object.values(level.bombs).forEach((bomb) => bomb.clearExplosionTimeout())
@@ -26,14 +27,17 @@ export const bonuses: TBonuses = {
   },
   wallpass: {
     texture: textures.TEXTURE_BONUS_WALLPASS,
+    abilityName: 'wallpass',
     callback: () => hero.abilities.wallpass = true,
   },
   bombpass: {
     texture: textures.TEXTURE_BONUS_BOMBPASS,
+    abilityName: 'bombpass',
     callback: () => hero.abilities.bombpass = true,
   },
   firepass: {
     texture: textures.TEXTURE_BONUS_FIREPASS,
+    abilityName: 'firepass',
     callback: () => hero.abilities.firepass = true,
   },
   immortal: {
