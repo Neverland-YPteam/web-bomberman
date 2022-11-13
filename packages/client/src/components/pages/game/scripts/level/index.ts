@@ -207,8 +207,6 @@ class Level {
     }
 
     const texture = this._field[row][col]
-
-    // @TODO Добавить бонус
     return SOLID_TEXTURES.includes(texture)
   }
 
