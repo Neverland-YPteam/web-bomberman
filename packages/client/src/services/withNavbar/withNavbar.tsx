@@ -43,7 +43,7 @@ const configOptions: configOptions = {
   },
   score: {
     showLogo: true,
-    links: ['profile', 'leaderboard', 'forum'],
+    links: ['profile', 'forum'],
   }
 }
 

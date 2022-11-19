@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom'
 import { IRoute, routes } from '@organisms/app-routes'
-import { Container, Box } from '@mui/material'
-import { theme } from '@services/AppThemeProvider/theme'
+import { Box, Container } from '@mui/material'
+import { useTheme } from '@mui/material'
 import './Navbar.css'
 import logo from './images/logo.png'
-import { SyntheticEvent } from 'react'
+import { ChangeEvent, SyntheticEvent, useContext } from 'react'
 import { useDispatch, useSelector } from '@utils/hooks'
 import { logoutUser } from '@services/store/actions/user-auth'
+import { ColorModeContext } from '@services/AppThemeProvider'
+import { MaterialUISwitch } from './Switch'
 
 interface Props {
   showLogo?: boolean
@@ -15,7 +17,14 @@ interface Props {
 
 const Navbar = ({ showLogo, links }: Props) => {
   const dispatch: any = useDispatch()
-  const { isUserAuth } = useSelector(state => state.userAuth)
+  const theme = useTheme()
+  const { userAuth: { isUserAuth } } = useSelector(state => state)
+  const { darkTheme, setDarkTheme } = useContext(ColorModeContext)
+
+  const changeTheme = (event: ChangeEvent) => {
+    const input = event.target as HTMLInputElement
+    setDarkTheme?.(() => input.checked)
+  }
 
   const handleExitClick = (evt: SyntheticEvent) => {
     evt.preventDefault()
@@ -43,12 +52,13 @@ const Navbar = ({ showLogo, links }: Props) => {
             component="ul"
             sx={{
               display: 'flex',
+              alignItems: 'center',
               gap: 4,
               marginLeft: 'auto',
               padding: 0,
               listStyle: 'none',
               fontFamily: '"Press Start 2P"',
-              color: 'white',
+              color: theme.palette.secondary.main,
             }}
           >
             {links.map(link =>
@@ -68,7 +78,6 @@ const Navbar = ({ showLogo, links }: Props) => {
               </li>
             )}
 
-            {/* @TODO Кнопка «Выйти» */}
             {isUserAuth && (
               <Box
                 onClick={handleExitClick}
@@ -82,6 +91,8 @@ const Navbar = ({ showLogo, links }: Props) => {
                 Выход
               </Box>
             )}
+
+            {isUserAuth && <MaterialUISwitch defaultChecked={!!darkTheme} onChange={changeTheme} />}
           </Box>
         </Box>
       </Container>

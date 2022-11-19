@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   TableContainer, Table, TableHead, TableRow, TableCell, TableBody,
-  Avatar, Box, Container, Pagination, Skeleton, Typography,
+  Avatar, Box, Container, Pagination, Skeleton, Typography, useTheme
 } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
 import { useDispatch, useSelector } from '@utils/hooks'
@@ -18,6 +18,7 @@ const Leaderboard = () => {
   const dispatch: any = useDispatch()
   const [page, setPage] = useState(1)
   const { items, isRequest } = useSelector(state => state.leaderboard)
+  const theme = useTheme()
 
   useEffect(() => {
     dispatch(getLeaderboardUsers({ cursor: 0, limit: ITEMS_TOTAL_COUNT }))
@@ -32,7 +33,10 @@ const Leaderboard = () => {
       }}
     >
       <Box
-        sx={{ backgroundColor: 'white' }}
+        sx={{
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary
+        }}
         flex="100%"
         display="flex"
         flexDirection="column"

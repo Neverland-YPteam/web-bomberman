@@ -49,6 +49,7 @@ const Auth = () => {
     >
       <TextField
         margin="normal"
+        autoFocus
         required
         fullWidth
         label="Логин"
