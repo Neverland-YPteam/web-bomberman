@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   TableContainer, Table, TableHead, TableRow, TableCell, TableBody,
-  Avatar, Box, Container, Pagination, Skeleton, Typography, useTheme
+  Avatar, Container, Pagination, Paper, Skeleton, Typography, useTheme
 } from '@mui/material'
 import { withNavbar } from '@services/withNavbar'
 import { useDispatch, useSelector } from '@utils/hooks'
@@ -32,15 +32,14 @@ const Leaderboard = () => {
         flexDirection: 'column',
       }}
     >
-      <Box
+      <Paper
+        elevation={4}
         sx={{
-          backgroundColor: theme.palette.background.paper,
-          color: theme.palette.text.primary
+          flex: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: 6
         }}
-        flex="100%"
-        display="flex"
-        flexDirection="column"
-        padding={6}
       >
         <Typography variant="h5" sx={{ marginBottom: 4 }}>Таблица лидеров</Typography>
 
@@ -103,7 +102,7 @@ const Leaderboard = () => {
             onChange={(_, page) => setPage(page)}
           />
         }
-      </Box>
+      </Paper>
     </Container>
   )
 }

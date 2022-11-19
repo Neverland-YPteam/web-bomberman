@@ -33,7 +33,11 @@ class UserAPI {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    return await response.json()
+    try {
+      return await response.json()
+    } catch (error) {
+      return null
+    }
   }
 
   update = async ({ id, theme }: IUserUpdateRequest) => {

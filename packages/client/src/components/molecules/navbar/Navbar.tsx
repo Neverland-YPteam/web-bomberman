@@ -92,7 +92,7 @@ const Navbar = ({ showLogo, links }: Props) => {
               </Box>
             )}
 
-            {isUserAuth && <MaterialUISwitch defaultChecked={!!darkTheme} onChange={changeTheme} />}
+            <MaterialUISwitch checked={Boolean(darkTheme)} onChange={changeTheme} />
           </Box>
         </Box>
       </Container>

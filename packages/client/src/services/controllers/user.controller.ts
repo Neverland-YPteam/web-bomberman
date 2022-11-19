@@ -20,7 +20,7 @@ class UserController {
       const response = await userAPI.find(data)
       return response
     } catch (error) {
-      console.error('Пользователь не найден:', error)
+      console.error('Не удалось найти пользователя:', error)
     }
   }
 
