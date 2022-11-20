@@ -64,7 +64,10 @@ const DIRECTION_DEFAULT: TDirectionX = 'right'
 const TEXTURE_STANDING_CHANGE_INTERVAL_MS = 400 // Скорость анимации standing
 const TEXTURE_MOVING_CHANGE_INTERVAL_MS = 150 // Скорость анимации moving
 const TEXTURE_DEAD_CHANGE_INTERVAL_MS = 200 // Скорость анимации dead
-const IMMORTAL_DURATION_S = 30
+const IMMORTAL_DURATION_S = 30 // Длительность бонуса бессмертия
+const BLINKING_FAST_INTERVAL_MS = 20 // Скорость мигания при бессмертии
+const BLINKING_SLOW_INTERVAL_MS = 80 // Скорость мигания перед окончанием бессмертия
+const BLINKING_SLOW_DURATION_S = 3 // Длительность мигания перед окончанием бессмертия
 
 const globalTextures = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE]
 const bombTextures = [TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE]
@@ -96,10 +99,14 @@ export class Hero {
     down: false,
   }
 
+  private _isTextureVisible = true
   private _currentTextureIndex = 0
   private _changeTextureInterval: PausableInterval
 
   private _bombsPlaced: TBombsPlaced = {}
+
+  private _blinkingInterval: null | PausableInterval = null
+  private _blinkingTimeout: null | PausableTimeout = null
   private _immortalTimeout: null | PausableTimeout = null
 
   x = 0
@@ -343,6 +350,26 @@ export class Hero {
     })
   }
 
+  private _toggleTextureVisibility = (isVisible?: boolean) => {
+    this._isTextureVisible = isVisible ?? !this._isTextureVisible
+  }
+
+  private _setFastBlinking = () => {
+    const blinkingDuration = (IMMORTAL_DURATION_S - BLINKING_SLOW_DURATION_S) * 1000
+
+    this._blinkingTimeout = new PausableTimeout(this._setSlowBlinking, blinkingDuration)
+    this._blinkingTimeout.start()
+
+    this._blinkingInterval = new PausableInterval(this._toggleTextureVisibility, BLINKING_FAST_INTERVAL_MS)
+    this._blinkingInterval.start()
+  }
+
+  private _setSlowBlinking = () => {
+    this._blinkingInterval?.stop()
+    this._blinkingInterval = new PausableInterval(this._toggleTextureVisibility, BLINKING_SLOW_INTERVAL_MS)
+    this._blinkingInterval.start()
+  }
+
   private _die() {
     this.isDead = true
 
@@ -362,9 +389,7 @@ export class Hero {
 
   reset() {
     this.isDead = false
-    this.abilities.immortal = false
-    this._immortalTimeout?.stop()
-    this._immortalTimeout = null
+    this.makeMortal()
     this._resetPosition()
   }
 
@@ -374,11 +399,13 @@ export class Hero {
     this.abilities.wallpass = false
     this.abilities.bombpass = false
     this.abilities.firepass = false
-    this.abilities.immortal = false
+    this.makeMortal()
   }
 
   draw() {
-    canvas.image(this._texturesCurrent[this._currentTextureIndex], this.x, this.y)
+    if (this._isTextureVisible) {
+      canvas.image(this._texturesCurrent[this._currentTextureIndex], this.x, this.y)
+    }
   }
 
   allowControl() {
@@ -485,24 +512,39 @@ export class Hero {
 
     this._immortalTimeout = new PausableTimeout(this.makeMortal, IMMORTAL_DURATION_S * 1000)
     this._immortalTimeout.start()
+
+    this._setFastBlinking()
   }
 
   makeMortal = () => {
     this.abilities.immortal = false
+
+    this._toggleTextureVisibility(true)
+    this._blinkingTimeout?.stop()
+    this._blinkingTimeout = null
+    this._blinkingInterval?.stop()
+    this._immortalTimeout?.stop()
+    this._immortalTimeout = null
   }
 
   pauseIntervals() {
     this._changeTextureInterval.pause()
+    this._blinkingTimeout?.pause()
+    this._blinkingInterval?.pause()
     this._immortalTimeout?.pause()
   }
 
   resumeIntervals() {
     this._changeTextureInterval.resume()
+    this._blinkingTimeout?.resume()
+    this._blinkingInterval?.resume()
     this._immortalTimeout?.resume()
   }
 
   stopIntervals() {
     this._changeTextureInterval.stop()
+    this._blinkingTimeout?.stop()
+    this._blinkingInterval?.stop()
     this._immortalTimeout?.stop()
   }
 }
