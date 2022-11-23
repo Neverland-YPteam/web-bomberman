@@ -1,4 +1,3 @@
-import React from 'react'
 import { withNavbar } from '@services/withNavbar'
 import { Box, Stack } from '@mui/material'
 import logo from '@images/main_logo.png';
@@ -20,7 +19,7 @@ const BeginGame = () => {
 
       <Stack
         alignItems="center"
-        spacing={2}
+        spacing={3}
       >
         {menuItems.map((item) => <MainMenuItem item={item} key={item.path} />)}
       </Stack>

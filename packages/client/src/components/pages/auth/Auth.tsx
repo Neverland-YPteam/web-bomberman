@@ -37,7 +37,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (isUserAuth) {
-      navigate(state?.from || routes.main.path, {replace: true})
+      navigate(routes.main.path, {replace: true})
       dispatch(loadUser())
     }
   }, [isUserAuth])
@@ -49,6 +49,7 @@ const Auth = () => {
     >
       <TextField
         margin="normal"
+        autoFocus
         required
         fullWidth
         label="Логин"

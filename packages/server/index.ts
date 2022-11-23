@@ -3,18 +3,26 @@ import cors from 'cors'
 dotenv.config()
 
 import express from 'express'
-import { createClientAndConnect } from './db'
+import { dbConnect } from './db'
+import router from './router'
 
-const app = express()
-app.use(cors())
-const port = Number(process.env.SERVER_PORT) || 3001
+(async () => {
+  await dbConnect()
 
-createClientAndConnect()
+  const app = express()
 
-app.get('/', (_, res) => {
-  res.json('👋 Howdy from the server :)')
-})
+  app.use(cors())
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+  app.use(router)
 
-app.listen(port, () => {
-  console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
-})
+  const port = process.env.SERVER_PORT || 3001
+
+  app.get('/', (_, res) => {
+    res.json('👋 Howdy from the server :)')
+  })
+
+  app.listen(port, () => {
+    console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
+  })
+})()

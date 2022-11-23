@@ -44,6 +44,7 @@ const Signup = () => {
     >
       <TextField
         margin="normal"
+        autoFocus
         required
         fullWidth
         label="Имя"

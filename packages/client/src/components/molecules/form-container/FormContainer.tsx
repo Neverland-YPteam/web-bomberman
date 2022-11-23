@@ -17,7 +17,7 @@ const FormContainer = ({ onFormSubmit, children, title }: Props) => {
       }}
     >
       <Paper
-        variant="outlined"
+        elevation={4}
         sx={{
           maxWidth: '330px',
           margin: 'auto',

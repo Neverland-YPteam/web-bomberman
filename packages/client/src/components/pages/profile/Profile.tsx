@@ -101,6 +101,7 @@ const Profile = () => {
           <TextField
             name="login"
             label="Логин"
+            autoFocus
             required
             fullWidth
             margin="normal"

@@ -48,7 +48,7 @@ const routes: TRoutes = {
   },
   forum: {
     title: 'Форум',
-    path: '/forum',
+    path: '/',
     auth: true,
   },
 }
