@@ -130,20 +130,6 @@ export class Hero {
     this._changeTextureInterval.start()
   }
 
-  private get _coords(): ICoords {
-    const x = this.x - TILE_SIZE
-    const y = this.y - PANEL_HEIGHT_PX - TILE_SIZE
-
-    return {
-      topLeft: { x, y },
-      topRight: { x: x + TILE_SIZE, y },
-      bottomLeft: { x, y: y + TILE_SIZE },
-      bottomRight: { x: x + TILE_SIZE, y: y + TILE_SIZE },
-      mainCol: Math.round(x / TILE_SIZE),
-      mainRow: Math.round(y / TILE_SIZE),
-    }
-  }
-
   private get _isMoving() {
     return this._isMovingX || this._isMovingY
   }
@@ -186,11 +172,25 @@ export class Hero {
     const flooredX = Math.floor(quotientX)
     const cols = Number.isInteger(quotientX) ? [flooredX] : [flooredX, Math.ceil(quotientX)]
 
-    const quotientY = this._coords.topLeft.y / TILE_SIZE
+    const quotientY = this.coords.topLeft.y / TILE_SIZE
     const flooredY = Math.floor(quotientY)
     const rows = Number.isInteger(quotientY) ? [flooredY] : [flooredY, Math.ceil(quotientY)]
 
     return { cols, rows }
+  }
+
+  get coords(): ICoords {
+    const x = this.x - TILE_SIZE
+    const y = this.y - PANEL_HEIGHT_PX - TILE_SIZE
+
+    return {
+      topLeft: { x, y },
+      topRight: { x: x + TILE_SIZE, y },
+      bottomLeft: { x, y: y + TILE_SIZE },
+      bottomRight: { x: x + TILE_SIZE, y: y + TILE_SIZE },
+      mainCol: Math.round(x / TILE_SIZE),
+      mainRow: Math.round(y / TILE_SIZE),
+    }
   }
 
   private _resetPosition() {
@@ -231,17 +231,17 @@ export class Hero {
   }
 
   private _tryToMoveX(direction: TDirectionX) {
-    const { _coords } = this
-    const moduloTop = _coords.topLeft.y % TILE_SIZE
-    const moduloBottom = TILE_SIZE - _coords.bottomLeft.y % TILE_SIZE
+    const { coords } = this
+    const moduloTop = coords.topLeft.y % TILE_SIZE
+    const moduloBottom = TILE_SIZE - coords.bottomLeft.y % TILE_SIZE
     const shiftY = moduloTop <= this._tolerance ? -moduloTop : moduloBottom
 
     if (Math.abs(shiftY) <= this._tolerance) {
       const col = direction === 'left'
-        ? Math.floor((_coords.topLeft.x - this.speed) / TILE_SIZE)
-        : Math.ceil((_coords.topLeft.x + this.speed) / TILE_SIZE)
+        ? Math.floor((coords.topLeft.x - this.speed) / TILE_SIZE)
+        : Math.ceil((coords.topLeft.x + this.speed) / TILE_SIZE)
 
-      const row = Math.floor((_coords.topLeft.y + shiftY) / TILE_SIZE)
+      const row = Math.floor((coords.topLeft.y + shiftY) / TILE_SIZE)
       const shiftX = direction === 'left' ? -this.speed : this.speed
 
       this._tryToMove('x', direction, col, row, shiftX, shiftY)
@@ -249,18 +249,18 @@ export class Hero {
   }
 
   private _tryToMoveY(direction: TDirectionY) {
-    const { _coords } = this
-    const moduloLeft = _coords.topLeft.x % TILE_SIZE
-    const moduloRight = TILE_SIZE - _coords.topRight.x % TILE_SIZE
+    const { coords } = this
+    const moduloLeft = coords.topLeft.x % TILE_SIZE
+    const moduloRight = TILE_SIZE - coords.topRight.x % TILE_SIZE
     const shiftX = moduloLeft <= this._tolerance ? -moduloLeft : moduloRight
     const shiftXPositive = Math.abs(shiftX)
 
     if (shiftXPositive <= this._tolerance) {
       const row = direction === 'up'
-        ? Math.floor((_coords.topLeft.y - this.speed) / TILE_SIZE)
-        : Math.ceil((_coords.topLeft.y + this.speed) / TILE_SIZE)
+        ? Math.floor((coords.topLeft.y - this.speed) / TILE_SIZE)
+        : Math.ceil((coords.topLeft.y + this.speed) / TILE_SIZE)
 
-      const col = Math.floor((_coords.topLeft.x + shiftX) / TILE_SIZE)
+      const col = Math.floor((coords.topLeft.x + shiftX) / TILE_SIZE)
       const shiftY = direction === 'up' ? -this.speed : this.speed
 
       this._tryToMove('y', direction, col, row, shiftX, shiftY)
@@ -310,8 +310,8 @@ export class Hero {
       return
     }
 
-    const col = Math.round(this._coords.topLeft.x / TILE_SIZE)
-    const row = Math.round(this._coords.topLeft.y / TILE_SIZE)
+    const col = Math.round(this.coords.topLeft.x / TILE_SIZE)
+    const row = Math.round(this.coords.topLeft.y / TILE_SIZE)
     const texture = level.getTileType(col, row)
 
     if (bombTextures.includes(texture) || texture !== TEXTURE_GRASS) {
@@ -332,7 +332,7 @@ export class Hero {
   }
 
   private _checkForFlameContact() {
-    return level.burningCells.some(([col, row]) => col === this._coords.mainCol && row === this._coords.mainRow)
+    return level.burningCells.some(([col, row]) => col === this.coords.mainCol && row === this.coords.mainRow)
   }
 
   private _checkForEnemyContact() {
@@ -341,10 +341,10 @@ export class Hero {
         return false
       }
 
-      const hasContactXLeft = enemy.coords.topRight.x - this._coords.topLeft.x > SAFE_BOUND_X_PX
-      const hasContactXRight = this._coords.topRight.x - enemy.coords.topLeft.x > SAFE_BOUND_X_PX
-      const hasContactYTop = enemy.coords.bottomLeft.y - this._coords.topLeft.y > SAFE_BOUND_Y_PX
-      const hasContactYBottom = this._coords.bottomLeft.y - enemy.coords.topLeft.y > SAFE_BOUND_Y_PX
+      const hasContactXLeft = enemy.coords.topRight.x - this.coords.topLeft.x > SAFE_BOUND_X_PX
+      const hasContactXRight = this.coords.topRight.x - enemy.coords.topLeft.x > SAFE_BOUND_X_PX
+      const hasContactYTop = enemy.coords.bottomLeft.y - this.coords.topLeft.y > SAFE_BOUND_Y_PX
+      const hasContactYBottom = this.coords.bottomLeft.y - enemy.coords.topLeft.y > SAFE_BOUND_Y_PX
 
       return hasContactXLeft && hasContactXRight && hasContactYTop && hasContactYBottom
     })
@@ -484,7 +484,7 @@ export class Hero {
     }
 
     if (level.canExit) {
-      const isDoor = level.isDoor(this._coords.mainCol, this._coords.mainRow)
+      const isDoor = level.isDoor(this.coords.mainCol, this.coords.mainRow)
 
       if (isDoor) {
         level.complete()
@@ -492,12 +492,12 @@ export class Hero {
       }
     }
 
-    const tileType = level.getTileType(this._coords.mainCol, this._coords.mainRow)
+    const tileType = level.getTileType(this.coords.mainCol, this.coords.mainRow)
 
     if (!level.isBonusPickedUp && tileType !== TEXTURE_WALL && tileType !== TEXTURE_WALL_SAFE) {
       const [bonusCol, bonusRow] = level.bonusCoords
 
-      if (this._coords.mainCol === bonusCol && this._coords.mainRow === bonusRow) {
+      if (this.coords.mainCol === bonusCol && this.coords.mainRow === bonusRow) {
         level.pickUpBonus()
       }
     }
