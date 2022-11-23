@@ -7,6 +7,7 @@ interface ILevel {
   enemies: TEnemies
   bonus: IBonus
   reserveBonus?: IBonus
+  timeoutEnemy: TEnemyName
 }
 
 export type TLevelList = Record<number, ILevel>
