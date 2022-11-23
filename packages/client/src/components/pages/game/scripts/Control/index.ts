@@ -1,8 +1,5 @@
 /**
  * Класс отвечает за управление игрой с клавиатуры
- *
- * @TODO Взрыв бомб вручную при активном бонусе `detonator`
- * @TODO Вызывать removeListeners при смене роута
  */
 
 import { TKey, TCallback } from './types'

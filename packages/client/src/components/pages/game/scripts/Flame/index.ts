@@ -32,7 +32,7 @@ const flameTextures: TTextures = [
 const TEXTURE_FULL_START_INDEX = 2
 const TEXTURE_MIDDLE_INDEX = 1
 const TEXTURE_END_INDEX = 2
-const TEXTURE_CHANGE_INTERVAL_MS = 60
+const TEXTURE_CHANGE_INTERVAL_MS = 55
 
 const WALL_DESTROYING_SCORE = 5
 
@@ -118,6 +118,15 @@ export class Flame {
         stats.addScore(WALL_DESTROYING_SCORE)
 
         return counter
+      }
+
+      const isDoor = level.isDoor(col, row)
+      const isBonus = level.isBonus(col, row)
+
+      if (isDoor) {
+        level.addEnemies()
+      } else if (isBonus) {
+        level.removeBonus()
       }
 
       counter++
