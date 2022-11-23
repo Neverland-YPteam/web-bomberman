@@ -45,9 +45,10 @@ const LEVEL_INTRO_TIMEOUT_MS = 2000 // На этапе разработки бо
 const LEVEL_CHANGE_TIMEOUT_MS = 3000
 const END_GAME_TIMEOUT_MS = 2000
 const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена образовалась прямо возле героя
-const SAFE_TILES_ENEMY_COUNT = 5 // И враги тоже
+const SAFE_TILES_ENEMY_COUNT = 3 // И враги тоже
 const WALL_PROBABILITY_PCT = 35 // Вероятность появления стены
 const FLOWER_PROBABILITY_PCT = 20 // Вероятность появления цветка
+const TIMEOUT_ENEMIES_COUNT = 10 // Количество дополнительных врагов при окончании времени
 const LEVEL_COMPLETE_SCORE_BASE = 1000
 const KEYS_PAUSE = ['Escape', 'KeyP']
 const KEY_FULLSCREEN = 'KeyF'
@@ -235,8 +236,8 @@ class Level {
       return
     }
 
-    const { abilityName } = levelList[this.currentLevel].bonus
-    const { bonus, reserveBonus } = levelList[this.currentLevel]
+    const { abilityName } = this._currentLevelObject.bonus
+    const { bonus, reserveBonus } = this._currentLevelObject
 
     if (abilityName && hero.abilities[abilityName] && reserveBonus) {
       this._bonus = reserveBonus
@@ -261,7 +262,7 @@ class Level {
   private _setEnemies() {
     this.enemies = []
 
-    const { enemies } = levelList[this.currentLevel]
+    const { enemies } = this._currentLevelObject
     const enemyEntries = Object.entries(enemies) as TEnemyEntry[]
 
     enemyEntries.forEach(this._setEnemy)
@@ -271,7 +272,7 @@ class Level {
     let counter = 0
 
     while (counter < count) {
-      const freeCellCoords = this._findFreeCell(SAFE_TILES_ENEMY_COUNT)
+      const freeCellCoords = this._findFreeCellForEnemy(SAFE_TILES_ENEMY_COUNT)
 
       if (!freeCellCoords) {
         return
@@ -311,21 +312,28 @@ class Level {
     Object.values(this.scorePopups).forEach((instance) => instance.draw())
   }
 
-  private _findFreeCell(safeTilesCount: number, usedTilesChecked = 0): TCellCoords | null {
-    const row = getRandomNumberBetween(0, MAP_TILES_COUNT_Y - 3)
+  private _findFreeCellForEnemy(safeTilesCount: number, usedTilesChecked = 0): TCellCoords | null {
     const col = getRandomNumberBetween(0, MAP_TILES_COUNT_X - 3)
+    const row = getRandomNumberBetween(0, MAP_TILES_COUNT_Y - 3)
 
-    const isInsideSafeZone = row <= safeTilesCount && col <= safeTilesCount
+    const { mainCol, mainRow } = hero.coords
+    const [minColSafeZone, maxColSafeZone] = [mainCol - safeTilesCount, mainCol + safeTilesCount]
+    const [minRowSafeZone, maxRowSafeZone] = [mainRow - safeTilesCount, mainRow + safeTilesCount]
+
+    const isColInsideSafeZone = col >= minColSafeZone && col <= maxColSafeZone
+    const isRowInsideSafeZone = row >= minRowSafeZone && row <= maxRowSafeZone
+    const isInsideSafeZone = isColInsideSafeZone && isRowInsideSafeZone
+
     const isTileUsed = this._enemiesIndexes.includes(`${row}-${col}`)
     const texture = this._field[row][col]
 
     if (isInsideSafeZone || texture !== TEXTURE_GRASS) {
-      return this._findFreeCell(safeTilesCount, usedTilesChecked)
+      return this._findFreeCellForEnemy(safeTilesCount, usedTilesChecked)
     }
 
     if (isTileUsed) {
       return usedTilesChecked < 10
-        ? this._findFreeCell(safeTilesCount, usedTilesChecked + 1)
+        ? this._findFreeCellForEnemy(safeTilesCount, usedTilesChecked + 1)
         : null
     }
 
@@ -432,6 +440,10 @@ class Level {
     this._updateGrass(col + 1, row, { topLeft: true, top: true, left: false })
     this._updateGrass(col, row + 1, { topLeft: true, top: false, left: true })
     this._updateGrass(col + 1, row + 1, { topLeft: false, top: true, left: true })
+  }
+
+  private get _currentLevelObject() {
+    return levelList[this.currentLevel]
   }
 
   startGame() {
@@ -591,11 +603,9 @@ class Level {
   addEnemies() {
     /** @TODO Добавлять врагов в наказание:
      * - за взрыв двери (нужен дебаунс, если взрывы с нескольких сторон)
-     * - за истечение времени
      *
      * Проверить, что метод не срабатывает много раз подряд при контакте со взрывной волной
      */
-    console.log('Добавляем врагов')
   }
 
   removeEnemy(id: string) {
@@ -648,8 +658,7 @@ class Level {
   }
 
   onTimeExpiration() {
-    // @TODO Добавлять врагов в наказание
-    this.addEnemies()
+    this._setEnemy([this._currentLevelObject.timeoutEnemy, TIMEOUT_ENEMIES_COUNT])
   }
 
   complete = () => {
