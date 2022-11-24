@@ -48,6 +48,7 @@ class Pause {
     Object.values(level.bombs).forEach(this._pauseInstanceIntervals)
     Object.values(level.flames).forEach(this._pauseInstanceIntervals)
     stats.pauseIntervals()
+    level.pauseIntervals()
   }
 
   hide() {
@@ -58,6 +59,7 @@ class Pause {
     Object.values(level.bombs).forEach(this._resumeInstanceIntervals)
     Object.values(level.flames).forEach(this._resumeInstanceIntervals)
     stats.resumeIntervals()
+    level.resumeIntervals()
   }
 }
 

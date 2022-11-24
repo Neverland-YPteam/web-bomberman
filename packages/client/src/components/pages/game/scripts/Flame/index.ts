@@ -133,8 +133,8 @@ export class Flame {
     const isDoor = level.isDoor(col, row)
     const isBonus = level.isBonus(col, row)
 
-    if (isDoor && !this._isDoorFired) {
-      level.addDoorEnemies()
+    if (isDoor && level.isDoorAttackable && !this._isDoorFired) {
+      level.onDoorAttack()
       this._isDoorFired = true
     } else if (isBonus) {
       level.removeBonus()

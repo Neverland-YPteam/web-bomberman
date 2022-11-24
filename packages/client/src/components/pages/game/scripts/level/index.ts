@@ -17,6 +17,7 @@ import {
   getRandomNumberBetween,
   isEqual,
   LimitFrames,
+  PausableTimeout,
 } from '../utils'
 
 import { endGameCallback } from '../'
@@ -49,6 +50,7 @@ const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена
 const SAFE_TILES_ENEMY_COUNT = 3 // И враги тоже
 const WALL_PROBABILITY_PCT = 35 // Вероятность появления стены
 const FLOWER_PROBABILITY_PCT = 20 // Вероятность появления цветка
+const DOOR_ATTACK_DELAY_S = 3 // Как часто при взрыве двери появляются враги
 const DOOR_BONUS_ENEMIES_COUNT = 8 // Количество дополнительных врагов при взрыве двери или бонуса
 const TIMEOUT_ENEMY_NAME = 'coin' // Враг, который появляется по окончании времени
 const TIMEOUT_ENEMIES_COUNT = 10 // Количество дополнительных врагов по окончании времени
@@ -73,6 +75,7 @@ class Level {
   private _isPauseAllowed = false
   private _isPaused = false
   private _bonus: null | IBonus = null
+  private _doorAttackTimeout: null | PausableTimeout = null
 
   limitFrames: null | LimitFrames = null
   currentLevel = 0
@@ -85,6 +88,7 @@ class Level {
   enemies: Enemy[] = []
   scorePopups: Record<number, Score> = {}
   isBonusPickedUp = false
+  isDoorAttackable = true
 
   constructor() {
     this._controlFullscreen = new Control(KEY_FULLSCREEN, this._toggleFullscreen)
@@ -374,6 +378,8 @@ class Level {
     this._isPauseAllowed = false
     this.showHero = true
     this.bombs = {}
+    this.isBonusPickedUp = false
+    this.isDoorAttackable = true
   }
 
   private _endGame(isVictory: boolean) {
@@ -449,6 +455,13 @@ class Level {
     this._updateGrass(col + 1, row + 1, { topLeft: false, top: true, left: true })
   }
 
+  private _makeDoorAttackable = () => {
+    this.isDoorAttackable = true
+
+    this._doorAttackTimeout?.stop()
+    this._doorAttackTimeout = null
+  }
+
   private get _currentLevelObject() {
     return levelList[this.currentLevel]
   }
@@ -465,7 +478,6 @@ class Level {
   goToNextLevel = async (level = this.currentLevel + 1) => {
     this._tieUpLooseEnds()
     this.currentLevel = level // Перешли на новый уровень
-    this.isBonusPickedUp = false
 
     this._showIntro() // Показали заставку
     canvasModal.update() // Обновили canvas
@@ -617,13 +629,18 @@ class Level {
     }
   }
 
-  addDoorEnemies() {
+  onDoorAttack() {
+    this.isDoorAttackable = false
+
     this._setEnemy(
       this._currentLevelObject.doorEnemy,
       DOOR_BONUS_ENEMIES_COUNT,
       this.doorCoords,
       true
     )
+
+    this._doorAttackTimeout = new PausableTimeout(this._makeDoorAttackable, DOOR_ATTACK_DELAY_S * 1000)
+    this._doorAttackTimeout.start()
   }
 
   removeEnemy(id: string) {
@@ -699,6 +716,14 @@ class Level {
   removeControl() {
     this._controlFullscreen?.removeListeners()
     this._controlPause?.removeListeners()
+  }
+
+  pauseIntervals() {
+    this._doorAttackTimeout?.pause()
+  }
+
+  resumeIntervals() {
+    this._doorAttackTimeout?.resume()
   }
 }
 
