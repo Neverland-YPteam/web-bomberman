@@ -35,8 +35,8 @@ const DIRECTIONS: TDirection[] = ['left', 'right', 'up', 'down']
 const DIRECTION_DEFAULT: TDirectionX = 'right'
 const DIRECTION_CHANGE_PROBABILITY_PTC = 10
 const TEXTURE_DEAD_CHANGE_INTERVAL_MS = 200
-const IMMORTAL_DURATION_S = 3
-const BLINKING_INTERVAL_MS = 500
+const IMMORTAL_DURATION_S = 2
+const BLINKING_INTERVAL_MS = 400
 
 const bombTextures = [TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE]
 const blockingTexturesWallPass = [TEXTURE_COLUMN, TEXTURE_WALL_SAFE].concat(bombTextures)

@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import { TExplosionCallback } from './types'
 
 import { PANEL_HEIGHT_PX, TILE_SIZE, textures } from '../const'
@@ -25,7 +26,7 @@ class Bomb {
   id: string
 
   constructor(col: number, row: number, explosionCallback: TExplosionCallback) {
-    this.id = `${col}-${row}`
+    this.id = nanoid()
 
     this._col = col
     this._row = row

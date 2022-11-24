@@ -2,6 +2,7 @@
  * Класс отвечает за начало уровня, генерирование WALL, персонажей, проигрыш, выигрыш и разные прочие плюшки
  */
 
+ import { nanoid } from 'nanoid'
 import { TField, TCellCoords, TEnemyEntry, TCellColRow, IShadowsToCheck, IBonus } from './types'
 import { TEnemyName } from '../Enemy/types'
 
@@ -86,7 +87,7 @@ class Level {
   flames: Record<string, Flame> = {}
   burningCells: [number, number][] = []
   enemies: Enemy[] = []
-  scorePopups: Record<number, Score> = {}
+  scorePopups: Record<string, Score> = {}
   isBonusPickedUp = false
   isDoorAttackable = true
 
@@ -292,7 +293,7 @@ class Level {
         [row, col] = freeCellCoords
       }
 
-      const id = `${col}-${row}`
+      const id = nanoid()
       const enemy = new Enemy(name, id, immortal)
 
       enemy.setPosition(row, col)
@@ -651,7 +652,7 @@ class Level {
     this.scorePopups[instance.id] = instance
   }
 
-  removeScorePopup(id: number) {
+  removeScorePopup(id: string) {
     delete this.scorePopups[id]
   }
 

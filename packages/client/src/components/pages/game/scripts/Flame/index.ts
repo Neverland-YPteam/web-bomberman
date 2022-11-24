@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import {
   TTextures, TDirection, TBlockedDirections, TCellColRow,
 } from './types'
@@ -60,7 +61,7 @@ export class Flame {
   id: string
 
   constructor(col: number, row: number, radius: number) {
-    this.id = `${col}-${row}`
+    this.id = nanoid()
 
     this._col = col
     this._row = row

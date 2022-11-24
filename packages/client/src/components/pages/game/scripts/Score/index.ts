@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid'
+
 import { TILE_SIZE } from '../const';
 import { PausableInterval } from '../utils';
 import { canvas } from '../canvas';
@@ -9,8 +11,6 @@ const COORDS_UPDATE_COUNT_MAX = 40
 const COORDS_UPDATE_INTERVAL_MS = 30
 const FONT_SIZE = 18
 
-let id = 0 // Можно заменить на uuid / nanoid
-
 export class Score {
   private _score: number
   private _x: number
@@ -18,10 +18,10 @@ export class Score {
   private _changeCoordsInterval: null | PausableInterval = null
   private _updateCount = 0
 
-  id: number
+  id: string
 
   constructor(score: number, x: number, y: number) {
-    this.id = id++
+    this.id = nanoid()
 
     this._score = score;
     this._x = x;
