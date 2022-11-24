@@ -19,6 +19,7 @@ import {
   getBooleanWithProbability,
   floatNum,
   PausableInterval,
+  PausableTimeout,
 } from '../utils'
 import { canvas } from '../canvas'
 import { level } from '../level'
@@ -34,6 +35,8 @@ const DIRECTIONS: TDirection[] = ['left', 'right', 'up', 'down']
 const DIRECTION_DEFAULT: TDirectionX = 'right'
 const DIRECTION_CHANGE_PROBABILITY_PTC = 10
 const TEXTURE_DEAD_CHANGE_INTERVAL_MS = 200
+const IMMORTAL_DURATION_S = 3
+const BLINKING_INTERVAL_MS = 500
 
 const bombTextures = [TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE]
 const blockingTexturesWallPass = [TEXTURE_COLUMN, TEXTURE_WALL_SAFE].concat(bombTextures)
@@ -51,16 +54,20 @@ class Enemy {
   private _unpredictable
   private _points
 
+  private _isTextureVisible = true
   private _currentTextureIndex = 0
   private _changeTextureInterval: null | PausableInterval = null
+  private _blinkingInterval: null | PausableInterval = null
+  private _immortalTimeout: null | PausableTimeout = null
 
   id: string
   x = 0
   y = 0
 
   isDead = false
+  isImmortal = false
 
-  constructor(name: TEnemyName, id: string) {
+  constructor(name: TEnemyName, id: string, immortal = false) {
     const {
       textures,
       speed,
@@ -80,8 +87,11 @@ class Enemy {
     this._points = points
 
     const randomDirection = this._getRandomDirection(DIRECTIONS) as TDirection
-
     this._setDirection(randomDirection)
+
+    if (immortal) {
+      this._makeImmortal()
+    }
   }
 
   private get _backDirection() {
@@ -205,13 +215,40 @@ class Enemy {
     level.removeEnemy(this.id)
   }
 
+  private _toggleTextureVisibility = (isVisible?: boolean) => {
+    this._isTextureVisible = isVisible ?? !this._isTextureVisible
+  }
+
+  private _makeImmortal = () => {
+    this.isImmortal = true
+
+    this._immortalTimeout = new PausableTimeout(this._makeMortal, IMMORTAL_DURATION_S * 1000)
+    this._immortalTimeout.start()
+
+    this._blinkingInterval = new PausableInterval(this._toggleTextureVisibility, BLINKING_INTERVAL_MS)
+    this._blinkingInterval.start()
+  }
+
+  private _makeMortal = () => {
+    this.isImmortal = false
+    this._toggleTextureVisibility(true)
+
+    this._immortalTimeout?.stop()
+    this._immortalTimeout = null
+
+    this._blinkingInterval?.stop()
+    this._blinkingInterval = null
+  }
+
   setPosition(row: number, col: number) {
     this.x = TILE_SIZE + col * TILE_SIZE
     this.y = PANEL_HEIGHT_PX + TILE_SIZE + row * TILE_SIZE
   }
 
   draw() {
-    canvas.image(this._texturesCurrent[this._currentTextureIndex], this.x, this.y)
+    if (this._isTextureVisible) {
+      canvas.image(this._texturesCurrent[this._currentTextureIndex], this.x, this.y)
+    }
   }
 
   move() {
@@ -221,7 +258,7 @@ class Enemy {
 
     const hasFlameContact = this._checkForFlameContact()
 
-    if (hasFlameContact) {
+    if (hasFlameContact && !this.isImmortal) {
       this._die()
       return
     }

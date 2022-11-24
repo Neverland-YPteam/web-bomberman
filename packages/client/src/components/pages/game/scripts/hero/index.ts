@@ -15,6 +15,7 @@ import { level } from '../level'
 import { Control } from '../Control'
 import { Bomb } from '../Bomb'
 import { Flame } from '../Flame'
+import { TCellCoords } from '../level/types'
 
 const {
   TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_GRASS,
@@ -495,7 +496,7 @@ export class Hero {
     const tileType = level.getTileType(this.coords.mainCol, this.coords.mainRow)
 
     if (!level.isBonusPickedUp && tileType !== TEXTURE_WALL && tileType !== TEXTURE_WALL_SAFE) {
-      const [bonusCol, bonusRow] = level.bonusCoords
+      const [bonusCol, bonusRow] = level.bonusCoords as TCellCoords
 
       if (this.coords.mainCol === bonusCol && this.coords.mainRow === bonusRow) {
         level.pickUpBonus()

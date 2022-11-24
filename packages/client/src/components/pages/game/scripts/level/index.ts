@@ -77,8 +77,8 @@ class Level {
   limitFrames: null | LimitFrames = null
   currentLevel = 0
   showHero = true
-  doorCoords: Partial<TCellCoords> = []
-  bonusCoords: Partial<TCellCoords> = []
+  doorCoords?: TCellCoords
+  bonusCoords?: TCellCoords
   canExit = false
   bombs: Record<string, Bomb> = {}
   flames: Record<string, Flame> = {}
@@ -232,7 +232,7 @@ class Level {
   private _setBonus() {
     this.bonusCoords = getRandomArrayValue(this._walls)
 
-    const isBusy = isEqual(this.doorCoords, this.bonusCoords)
+    const isBusy = isEqual(this.doorCoords as TCellCoords, this.bonusCoords)
 
     if (isBusy) {
       this._setBonus()
@@ -273,20 +273,24 @@ class Level {
     })
   }
 
-  private _setEnemy = (name: TEnemyName, count: number) => {
+  private _setEnemy = (name: TEnemyName, count: number, coords?: TCellCoords, immortal = false) => {
     let counter = 0
 
     while (counter < count) {
-      const freeCellCoords = this._findFreeCellForEnemy(SAFE_TILES_ENEMY_COUNT)
+      let [col, row] = coords ?? []
 
-      if (!freeCellCoords) {
-        return
+      if (col === undefined || row === undefined) {
+        const freeCellCoords = this._findFreeCellForEnemy(SAFE_TILES_ENEMY_COUNT)
+
+        if (!freeCellCoords) {
+          return
+        }
+
+        [row, col] = freeCellCoords
       }
 
-      const [row, col] = freeCellCoords
       const id = `${col}-${row}`
-
-      const enemy = new Enemy(name, id)
+      const enemy = new Enemy(name, id, immortal)
 
       enemy.setPosition(row, col)
       enemy.draw()
@@ -496,7 +500,7 @@ class Level {
   }
 
   isDoor(col: number, row: number) {
-    const [doorCol, doorRow] = this.doorCoords
+    const [doorCol, doorRow] = this.doorCoords as TCellCoords
     return col === doorCol && row === doorRow
   }
 
@@ -505,7 +509,7 @@ class Level {
       return false
     }
 
-    const [bonusCol, bonusRow] = this.bonusCoords
+    const [bonusCol, bonusRow] = this.bonusCoords as TCellCoords
     return col === bonusCol && row === bonusRow
   }
 
@@ -606,13 +610,18 @@ class Level {
 
     if (this._bonus) {
       const bonusEnemyName = this._bonus.enemy
-      this._setEnemy(bonusEnemyName, DOOR_BONUS_ENEMIES_COUNT)
+      this._setEnemy(bonusEnemyName, DOOR_BONUS_ENEMIES_COUNT, this.bonusCoords, true)
       this._bonus = null
     }
   }
 
   addDoorEnemies() {
-    this._setEnemy(this._currentLevelObject.doorEnemy, DOOR_BONUS_ENEMIES_COUNT)
+    this._setEnemy(
+      this._currentLevelObject.doorEnemy,
+      DOOR_BONUS_ENEMIES_COUNT,
+      this.doorCoords,
+      true
+    )
   }
 
   removeEnemy(id: string) {
