@@ -55,6 +55,7 @@ export class Flame {
   private _burningCells: TCellColRow[] = []
   private _cellsToRemove: TCellColRow[] = []
   private _wallBlockedDirections: TBlockedDirections = {}
+  private _isDoorFired = false
 
   id: string
 
@@ -120,19 +121,24 @@ export class Flame {
         return counter
       }
 
-      const isDoor = level.isDoor(col, row)
-      const isBonus = level.isBonus(col, row)
-
-      if (isDoor) {
-        level.addEnemies()
-      } else if (isBonus) {
-        level.removeBonus()
-      }
+      this._handleDoorAndBonus(col, row)
 
       counter++
     }
 
     return counter - 1
+  }
+
+  private _handleDoorAndBonus(col: number, row: number) {
+    const isDoor = level.isDoor(col, row)
+    const isBonus = level.isBonus(col, row)
+
+    if (isDoor && !this._isDoorFired) {
+      level.addDoorEnemies()
+      this._isDoorFired = true
+    } else if (isBonus) {
+      level.removeBonus()
+    }
   }
 
   private get _textures() {
@@ -196,7 +202,9 @@ export class Flame {
     this.drawStartTexture()
 
     if (this._currentTextureIndex < TEXTURE_FULL_START_INDEX && !this._isAnimationBackwards) {
-      level.addBurningCell(this._burningCells[0])
+      const [burningCell] = this._burningCells
+      level.addBurningCell(burningCell)
+      this._handleDoorAndBonus(burningCell.col, burningCell.row)
       return
     }
 

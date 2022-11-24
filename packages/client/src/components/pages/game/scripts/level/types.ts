@@ -7,7 +7,7 @@ interface ILevel {
   enemies: TEnemies
   bonus: IBonus
   reserveBonus?: IBonus
-  timeoutEnemy: TEnemyName
+  doorEnemy: TEnemyName
 }
 
 export type TLevelList = Record<number, ILevel>
@@ -33,6 +33,7 @@ export interface IBonus {
   texture: number
   abilityName?: TAbilityName
   callback: () => unknown
+  enemy: TEnemyName
 }
 
 export type TBonuses = Record<TBonusName, IBonus>

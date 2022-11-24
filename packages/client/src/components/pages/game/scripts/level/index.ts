@@ -3,6 +3,7 @@
  */
 
 import { TField, TCellCoords, TEnemyEntry, TCellColRow, IShadowsToCheck, IBonus } from './types'
+import { TEnemyName } from '../Enemy/types'
 
 import {
   FPS, MAP_TILES_COUNT_X, MAP_TILES_COUNT_Y, BG_COLOR, FONT_SIZE,
@@ -48,7 +49,9 @@ const SAFE_TILES_WALL_COUNT = 2 // Нам не нужно, чтобы стена
 const SAFE_TILES_ENEMY_COUNT = 3 // И враги тоже
 const WALL_PROBABILITY_PCT = 35 // Вероятность появления стены
 const FLOWER_PROBABILITY_PCT = 20 // Вероятность появления цветка
-const TIMEOUT_ENEMIES_COUNT = 10 // Количество дополнительных врагов при окончании времени
+const DOOR_BONUS_ENEMIES_COUNT = 8 // Количество дополнительных врагов при взрыве двери или бонуса
+const TIMEOUT_ENEMY_NAME = 'coin' // Враг, который появляется по окончании времени
+const TIMEOUT_ENEMIES_COUNT = 10 // Количество дополнительных врагов по окончании времени
 const LEVEL_COMPLETE_SCORE_BASE = 1000
 const KEYS_PAUSE = ['Escape', 'KeyP']
 const KEY_FULLSCREEN = 'KeyF'
@@ -265,10 +268,12 @@ class Level {
     const { enemies } = this._currentLevelObject
     const enemyEntries = Object.entries(enemies) as TEnemyEntry[]
 
-    enemyEntries.forEach(this._setEnemy)
+    enemyEntries.forEach(([name, count]: TEnemyEntry) => {
+      this._setEnemy(name, count)
+    })
   }
 
-  private _setEnemy = ([name, count]: TEnemyEntry) => {
+  private _setEnemy = (name: TEnemyName, count: number) => {
     let counter = 0
 
     while (counter < count) {
@@ -598,14 +603,16 @@ class Level {
     this._updateNearestCellsShadows(col, row)
 
     canvasStatic.update()
+
+    if (this._bonus) {
+      const bonusEnemyName = this._bonus.enemy
+      this._setEnemy(bonusEnemyName, DOOR_BONUS_ENEMIES_COUNT)
+      this._bonus = null
+    }
   }
 
-  addEnemies() {
-    /** @TODO Добавлять врагов в наказание:
-     * - за взрыв двери (нужен дебаунс, если взрывы с нескольких сторон)
-     *
-     * Проверить, что метод не срабатывает много раз подряд при контакте со взрывной волной
-     */
+  addDoorEnemies() {
+    this._setEnemy(this._currentLevelObject.doorEnemy, DOOR_BONUS_ENEMIES_COUNT)
   }
 
   removeEnemy(id: string) {
@@ -658,7 +665,7 @@ class Level {
   }
 
   onTimeExpiration() {
-    this._setEnemy([this._currentLevelObject.timeoutEnemy, TIMEOUT_ENEMIES_COUNT])
+    this._setEnemy(TIMEOUT_ENEMY_NAME, TIMEOUT_ENEMIES_COUNT)
   }
 
   complete = () => {
