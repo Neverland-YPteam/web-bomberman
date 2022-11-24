@@ -89,6 +89,7 @@ class Level {
   enemies: Enemy[] = []
   scorePopups: Record<string, Score> = {}
   isBonusPickedUp = false
+  isDoorOpened = false
   isDoorAttackable = true
 
   constructor() {
@@ -380,6 +381,7 @@ class Level {
     this.showHero = true
     this.bombs = {}
     this.isBonusPickedUp = false
+    this.isDoorOpened = false
     this.isDoorAttackable = true
   }
 
@@ -573,6 +575,7 @@ class Level {
       map.drawTexture(TEXTURE_GRASS, mapCol, mapRow)
 
       if (isDoor) {
+        this.isDoorOpened = true
         map.drawTexture(TEXTURE_DOOR, mapCol, mapRow)
       } else if (isBonus) {
         map.drawTexture(this._bonus?.texture as number, mapCol, mapRow)
@@ -588,6 +591,18 @@ class Level {
 
       canvasStatic.update()
     }
+  }
+
+  onRemoveBomb(col: number, row: number) {
+    const isDoor = this.isDoor(col, row)
+    const isBonus = this.isBonus(col, row)
+
+    if (!isDoor && !isBonus) {
+      map.drawTexture(TEXTURE_GRASS, col + 1, row + 1)
+      this._drawGrassShadow(col, row)
+    }
+
+    canvasStatic.update()
   }
 
   removeWall = ({ col, row }: TCellColRow) => {

@@ -92,6 +92,7 @@ export class Flame {
     this._changeTextureInterval?.stop()
     level.removeFlame(this.id)
     this._cellsToRemove.forEach(level.removeWall)
+    level.onRemoveBomb(this._col, this._row)
   }
 
   private _getCellCount(direction: TDirection) {

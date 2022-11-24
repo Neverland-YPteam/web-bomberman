@@ -484,7 +484,7 @@ export class Hero {
       this._die()
     }
 
-    if (level.canExit) {
+    if (level.canExit && level.isDoorOpened) {
       const isDoor = level.isDoor(this.coords.mainCol, this.coords.mainRow)
 
       if (isDoor) {
