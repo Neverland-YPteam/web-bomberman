@@ -360,10 +360,14 @@ class Enemy {
 
   pauseIntervals() {
     this._changeTextureInterval?.pause()
+    this._blinkingInterval?.pause()
+    this._immortalTimeout?.pause()
   }
 
   resumeIntervals() {
     this._changeTextureInterval?.resume()
+    this._blinkingInterval?.resume()
+    this._immortalTimeout?.resume()
   }
 }
 
