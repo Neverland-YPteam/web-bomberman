@@ -79,7 +79,6 @@ class Level {
   showHero = true
   doorCoords?: TCellCoords
   bonusCoords?: TCellCoords
-  canExit = false
   bombs: Record<string, Bomb> = {}
   flames: Record<string, Flame> = {}
   burningCells: [number, number][] = []
@@ -373,7 +372,6 @@ class Level {
     map.draw()
 
     this._isPauseAllowed = false
-    this.canExit = false
     this.showHero = true
     this.bombs = {}
   }
@@ -453,6 +451,10 @@ class Level {
 
   private get _currentLevelObject() {
     return levelList[this.currentLevel]
+  }
+
+  get canExit() {
+    return this.enemies.length === 0
   }
 
   startGame() {
@@ -626,10 +628,6 @@ class Level {
 
   removeEnemy(id: string) {
     this.enemies = this.enemies.filter((enemy) => enemy.id !== id)
-
-    if (this.enemies.length === 0) {
-      this.canExit = true
-    }
   }
 
   addScorePopup(instance: Score) {
