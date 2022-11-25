@@ -126,9 +126,9 @@ class Canvas {
   }
 }
 
-let canvasStatic: Canvas
-let canvasDynamic: Canvas
-let canvasModal: Canvas
+let canvasStatic = new Canvas(CanvasSelectors.Static)
+let canvasDynamic = new Canvas(CanvasSelectors.Dynamic, true)
+let canvasModal = new Canvas(CanvasSelectors.Modal, true)
 
 const updateCanvases = () => {
   canvasStatic = new Canvas(CanvasSelectors.Static)

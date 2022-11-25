@@ -1,7 +1,7 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { Box, Typography } from '@mui/material'
 import { IRoute } from '@organisms/app-routes'
+import bombImage from '@images/bomb.png'
 
 interface Props {
   item: IRoute;
@@ -17,7 +17,7 @@ const MainMenuItem = ({ item }: Props) => {
         position: 'relative',
         ':hover::before': {
           position: 'absolute',
-          content: 'url("/src/assets/images/bomb.png")',
+          content: `url("${bombImage}")`,
           left: '-60px',
         }
       }}
