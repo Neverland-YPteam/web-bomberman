@@ -26,11 +26,9 @@ const URLS = [
 ]
 
 self.addEventListener('install', (event) => {
-  console.log('install')
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(URLS))
-      .then(() => { console.log('cached!') })
       .catch((error) => {
         throw new Error(error)
       })
@@ -38,13 +36,11 @@ self.addEventListener('install', (event) => {
 })
 
 self.addEventListener('activate', (event) => {
-  console.log('activate')
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(
       keys
         .map((key) => {
           const isKeyToDelete = key.startsWith(CACHE_BASE) && key !== CACHE_NAME
-          console.log(key, isKeyToDelete);
           return isKeyToDelete ? caches.delete(key) : null
         })
         .filter(Boolean)
@@ -53,8 +49,6 @@ self.addEventListener('activate', (event) => {
 })
 
 self.addEventListener('fetch', (event) => {
-  console.log('fetch', event)
-
   const { request } = event
 
   event.respondWith(
