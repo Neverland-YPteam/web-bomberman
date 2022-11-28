@@ -5,6 +5,7 @@ import './styles/index.css'
 import { AppThemeProvider } from '@services/AppThemeProvider'
 import { Provider } from 'react-redux'
 import { store } from '@services/store/store'
+import { startServiceWorker } from '../service-worker'
 
 ReactDOM.createRoot(document.getElementById('App') as HTMLElement).render(
   <React.StrictMode>
@@ -15,3 +16,7 @@ ReactDOM.createRoot(document.getElementById('App') as HTMLElement).render(
     </Provider>
   </React.StrictMode>
 )
+
+if (process.env.NODE_ENV === 'production') {
+  startServiceWorker()
+}

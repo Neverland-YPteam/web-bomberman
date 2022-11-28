@@ -26,4 +26,27 @@ export default defineConfig({
     }
   },
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      input: {
+        app: './index.html',
+        'service-worker': './service-worker.ts',
+        sw: './sw.ts',
+        game: './src/components/pages/game/scripts/index.ts'
+      },
+      output: {
+        entryFileNames: ({ name }) => {
+          if (name === 'game') {
+            return 'assets/game.js'
+          }
+
+          return ['service-worker', 'sw'].includes(name)
+             ? '[name].js'
+             : 'assets/[name].js'
+        },
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`
+      }
+    }
+  }
 })
