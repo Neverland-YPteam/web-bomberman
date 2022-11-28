@@ -3,6 +3,7 @@
  */
 
 import { TCoords } from './types'
+import imageSprite from '../../images/sprite.webp'
 
 import {
   SPRITE_TEXTURE_SIZE,
@@ -10,8 +11,6 @@ import {
 } from '../const'
 
 import { onLoad } from '../'
-
-const SPRITE_PATH = '/src/components/pages/game/images/sprite.webp'
 
 const spriteTextureCoords: TCoords = {
   [textures.TEXTURE_COLUMN]:               [0, 0],
@@ -168,7 +167,7 @@ const sprite = document.createElement('img')
 
 const loadSprite = () => {
   sprite.onload = onLoad
-  sprite.src = SPRITE_PATH
+  sprite.src = imageSprite
 }
 
 const getImageCoords = (texture: number): [number, number] => {
