@@ -6,7 +6,7 @@ import express from 'express'
 import { dbConnect } from './db'
 import router from './router'
 
-(async () => {
+;(async () => {
   await dbConnect()
 
   const app = express()
