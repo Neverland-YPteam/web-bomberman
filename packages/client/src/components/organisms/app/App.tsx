@@ -9,6 +9,7 @@ import { USER_LOGIN_SUCCESS } from '@services/store/actions/user-auth'
 import { tryOAuth } from '@services/OAuth'
 import { SnackbarProvider } from 'notistack'
 import { SnackbarUtilsConfigurator } from '@utils/snackbar'
+import background from '@/assets/images/background.png'
 
 function App() {
   const dispatch: any = useDispatch()
@@ -30,7 +31,12 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Box className="app__wrapper">
+      <Box sx={{
+        flex: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: `url('${background}') no-repeat 0 0 / cover fixed`
+      }}>
         <SnackbarProvider>
           <SnackbarUtilsConfigurator />
           <AppRoutes />
