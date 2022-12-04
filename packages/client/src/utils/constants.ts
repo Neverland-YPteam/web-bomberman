@@ -9,3 +9,5 @@ export const OAUTH_REDIRECT_URI = `http://localhost:3000`
 
 export const TEAM_NAME = 'bomberman'
 export const RATING_FIELD_NAME = 'score'
+
+export const IS_BROWSER = typeof window !== 'undefined'
