@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
-import './App.css';
-import { BrowserRouter } from 'react-router-dom';
-import { AppRoutes } from '@organisms/app-routes'
-import { Box } from '@mui/material';
+import { useEffect } from 'react'
+import { SnackbarProvider } from 'notistack'
+import { Box } from '@mui/material'
+
 import { useDispatch } from '@utils/hooks'
 import { loadUser } from '@services/store/actions/user'
 import { USER_LOGIN_SUCCESS } from '@services/store/actions/user-auth'
 import { tryOAuth } from '@services/OAuth'
-import { SnackbarProvider } from 'notistack'
+import { AppThemeProvider } from '@services/AppThemeProvider'
 import { SnackbarUtilsConfigurator } from '@utils/snackbar'
+import { AppRoutes } from '@organisms/app-routes'
 import background from '@/assets/images/background.png'
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
   }, [dispatch])
 
   return (
-    <BrowserRouter>
+    <AppThemeProvider>
       <Box sx={{
         flex: '100%',
         display: 'flex',
@@ -42,7 +42,7 @@ function App() {
           <AppRoutes />
         </SnackbarProvider>
       </Box>
-    </BrowserRouter>
+    </AppThemeProvider>
   )
 }
 

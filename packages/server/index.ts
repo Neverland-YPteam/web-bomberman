@@ -4,6 +4,7 @@ import path from 'path'
 import fs from 'fs'
 dotenv.config()
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { render } from './dist/ssr/entry-server.cjs'
 
@@ -11,8 +12,17 @@ import express from 'express'
 import { dbConnect } from './db'
 import router from './router'
 
+const PORT = process.env.SERVER_PORT || 3001
+
+const SSR_COMMENT_CSS = '<!--ssr-css-->'
+const SSR_COMMENT_APP = '<!--ssr-outlet-->'
+
 ;(async () => {
-  await dbConnect()
+  try {
+    await dbConnect()
+  } catch (err) {
+    console.error('DB connect error:', err)
+  }
 
   const app = express()
 
@@ -22,18 +32,23 @@ import router from './router'
   app.use(express.static(path.resolve(__dirname, './dist/client'), { index: false }))
   app.use(router)
 
-  const port = process.env.SERVER_PORT || 3001
+  app.get('*', ({ originalUrl }, res) => {
+    const result = render({ path: originalUrl })
 
-  app.get('*', (_, res) => {
-    const result = render()
+    const css = path.resolve(__dirname, './dist/client/assets/style.css')
+    const cssString = fs.readFileSync(css, 'utf-8')
+
     const template = path.resolve(__dirname, './dist/client/index.html')
     const htmlString = fs.readFileSync(template, 'utf-8')
-    const newString = htmlString.replace('<!--ssr-outlet-->', result)
+
+    const newString = htmlString
+      .replace(SSR_COMMENT_CSS, `<style>${cssString}</style>`)
+      .replace(SSR_COMMENT_APP, result)
 
     res.send(newString)
   })
 
-  app.listen(port, () => {
-    console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
+  app.listen(PORT, () => {
+    console.log(`  ➜ 🎸 Server is listening on port: ${PORT}`)
   })
 })()
