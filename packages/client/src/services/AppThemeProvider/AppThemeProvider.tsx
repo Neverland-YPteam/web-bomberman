@@ -2,6 +2,7 @@ import { Dispatch, memo, ReactElement, SetStateAction, createContext, useEffect,
 import { useSelector } from '@utils/hooks'
 import { createTheme, ThemeProvider } from '@mui/material'
 import { userController } from '@services/controllers'
+import { IS_BROWSER } from '@utils/constants'
 
 interface Props {
   children: ReactElement;
@@ -17,8 +18,8 @@ const DARK_THEME_STORAGE_KEY = 'darkTheme'
 export const ColorModeContext = createContext<IColorModeContext>({})
 
 const AppThemeProvider = ({ children }: Props) => {
-  const preferDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-  const isDarkModeChosen = !!localStorage.getItem(DARK_THEME_STORAGE_KEY)
+  const preferDarkMode = IS_BROWSER && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const isDarkModeChosen = IS_BROWSER && !!localStorage.getItem(DARK_THEME_STORAGE_KEY)
   const hasDarkTheme = preferDarkMode || isDarkModeChosen
   const [darkTheme, setDarkTheme] = useState(hasDarkTheme)
   const { user: { id: userId } } = useSelector(state => state)
