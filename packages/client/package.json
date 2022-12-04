@@ -6,7 +6,7 @@
     "dev": "vite",
     "build:client": "vite build --outDir=dist/client",
     "build:ssr": "vite build --outDir=dist/ssr --ssr src/entry-server.tsx",
-    "build": "npm run build:client && npm run build:ssr && npm run copy",
+    "build": "rimraf dist && npm run build:client && npm run build:ssr && npm run copy",
     "copy": "fse copy ./dist ../server/dist",
     "preview": "vite preview",
     "lint": "eslint .",
@@ -45,6 +45,7 @@
     "jest-environment-jsdom": "29.0.1",
     "lefthook": "1.1.1",
     "prettier": "2.7.1",
+    "rimraf": "^3.0.2",
     "ts-jest": "28.0.8",
     "typescript": "4.8.2",
     "vite": "3.0.7"
