@@ -3,7 +3,7 @@ import { useSelector } from '@utils/hooks'
 import { IRoute, routes } from '@organisms/app-routes'
 import { Navbar } from '@molecules/navbar'
 
-export type ConfigKey = 'landing' | 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'forum' | 'score'
+export type ConfigKey = 'landing' | 'auth' | 'signUp' | 'profile' | 'main' | 'game' | 'leaderboard' | 'score' | 'notFound'
 
 interface ConfigOption {
   showLogo?: boolean
@@ -15,7 +15,7 @@ type configOptions = Record<string, ConfigOption>
 const configOptions: configOptions = {
   landing: {
     showLogo: false,
-    links: ['auth', 'signUp', 'main', 'profile', 'leaderboard', 'forum'],
+    links: ['auth', 'signUp', 'main', 'profile', 'leaderboard'],
   },
   auth: {
     showLogo: true,
@@ -27,24 +27,28 @@ const configOptions: configOptions = {
   },
   profile: {
     showLogo: true,
-    links: ['main', 'leaderboard', 'forum'],
+    links: ['main', 'leaderboard'],
   },
   leaderboard: {
     showLogo: true,
-    links: ['main', 'profile', 'forum'],
+    links: ['main', 'profile'],
   },
   main: {
     showLogo: true,
-    links: ['forum'],
+    links: [],
   },
   game: {
     showLogo: true,
-    links: ['profile', 'forum', 'leaderboard'],
+    links: ['profile', 'leaderboard'],
   },
   score: {
     showLogo: true,
-    links: ['profile', 'forum'],
-  }
+    links: ['profile'],
+  },
+  notFound: {
+    showLogo: true,
+    links: []
+  },
 }
 
 const withNavbar = (WrappedComponent: React.ComponentType, configKey: ConfigKey) => ({ ...props }) => {

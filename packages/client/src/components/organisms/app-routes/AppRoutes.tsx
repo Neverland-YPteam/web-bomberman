@@ -10,6 +10,7 @@ import { BeginGamePage } from '@pages/begin-game'
 import { GamePage } from '@pages/game'
 import { ProtectedRoute } from '@molecules/protected-route'
 import { EndGamePage } from '@pages/end-game'
+import { NotFoundPage } from '@pages/not-found'
 
 const AppRoutes = () => {
   return (
@@ -25,6 +26,7 @@ const AppRoutes = () => {
           <Route path={routes.game.path} element={<GamePage />} />
           <Route path={routes.score.path} element={<EndGamePage />} />
         </Route>
+        <Route path={routes.notFound.path} element={<NotFoundPage />} />
       </Routes>
     </ErrorBoundary>
   )
