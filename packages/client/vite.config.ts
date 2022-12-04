@@ -25,8 +25,13 @@ export default defineConfig({
       '@images': path.resolve(__dirname, './src/assets/images'),
     }
   },
+  ssr: {
+    target: 'node',
+    format: 'cjs',
+  },
   plugins: [react()],
   build: {
+    minify: false,
     rollupOptions: {
       input: {
         app: './index.html',
