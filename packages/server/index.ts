@@ -6,7 +6,9 @@ import cookieParser from 'cookie-parser'
 import { dbConnect } from './db'
 import router from './router'
 import { API_LOCAL_URL_PATH } from './api/http'
-import { authMiddleware, proxyMiddleware, ssrMiddleware } from './middleware'
+import {
+  authMiddleware, proxyMiddleware, ssrMiddleware, storeMiddleware
+} from './middleware'
 
 dotenv.config()
 
@@ -28,7 +30,7 @@ const PORT = process.env.SERVER_PORT || 3001
   app.use(express.urlencoded({ extended: true }))
   app.use(express.static(path.resolve(__dirname, './dist/client'), { index: false }))
   app.use(router)
-  app.use('*', authMiddleware, ssrMiddleware)
+  app.use('*', storeMiddleware, authMiddleware, ssrMiddleware)
 
   app.listen(PORT, () => {
     console.log(` ➜ 🎸 Server is listening on port: ${PORT}`)

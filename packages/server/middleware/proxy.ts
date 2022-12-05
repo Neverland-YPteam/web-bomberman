@@ -13,7 +13,4 @@ export default createProxyMiddleware({
   cookieDomainRewrite: 'localhost',
   secure: false,
   timeout: REQUEST_TIMEOUT_MS,
-  onProxyReq: function onProxyReq(_proxyReq, req) {
-    console.log(req.originalUrl)
-  }
 })

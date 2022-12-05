@@ -6,7 +6,7 @@ export const sequelize = new Sequelize(
   process.env.POSTGRES_USER as string || 'postgres',
   process.env.POSTGRES_PASSWORD as string || 'postgres',
   {
-    host: 'localhost',
+    host: 'localhost', // @TODO replace with 'postgres'
     port: 5432,
     dialect: 'postgres',
     models: [User],
