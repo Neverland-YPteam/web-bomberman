@@ -4,7 +4,8 @@ import type { IRequest } from '../types/request'
 
 export default (req: Request, _res: Response, next: NextFunction) => {
   const initialState: IState = {
-    user: null
+    user: null,
+    theme: 'light',
   }
 
   ;(req as IRequest).initialState = initialState

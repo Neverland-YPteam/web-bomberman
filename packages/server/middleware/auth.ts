@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express'
 import { getUser } from '../api/user'
 import type { IRequest } from '../types/request'
 import { authRoutes, unauthRoutes, authRouteRedirect, unauthRouteRedirect } from '../routes'
+import { User } from '../models'
 
 export default async (
   req: Request,
@@ -18,6 +19,17 @@ export default async (
 
   const user = cookies ? await getUser(cookies) : null
   ;(req as IRequest).initialState.user = user
+
+  if (user) {
+    const userDBItem = await User.findOne({
+      where: {
+        id: user.id
+      }
+    })
+
+    const theme = userDBItem?.dataValues?.theme ?? 'light'
+    ;(req as IRequest).initialState.theme = theme
+  }
 
   let url = originalUrl
 
