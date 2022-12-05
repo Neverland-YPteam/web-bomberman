@@ -27,8 +27,11 @@ export default async (
       }
     })
 
-    const theme = userDBItem?.dataValues?.theme ?? 'light'
-    ;(req as IRequest).initialState.theme = theme
+    const theme = userDBItem?.dataValues?.theme
+
+    if (theme) {
+      ;(req as IRequest).initialState.theme = theme
+    }
   }
 
   let url = originalUrl

@@ -18,11 +18,16 @@ const DARK_THEME_STORAGE_KEY = 'darkTheme'
 export const ColorModeContext = createContext<IColorModeContext>({})
 
 const AppThemeProvider = ({ children }: Props) => {
-  const preferDarkMode = IS_BROWSER && window.matchMedia('(prefers-color-scheme: dark)').matches
-  const isDarkModeChosen = IS_BROWSER && !!localStorage.getItem(DARK_THEME_STORAGE_KEY)
-  const hasDarkTheme = preferDarkMode || isDarkModeChosen
-  const [darkTheme, setDarkTheme] = useState(hasDarkTheme)
+  const [darkTheme, setDarkTheme] = useState(false)
   const { user: { id: userId } } = useSelector(state => state)
+
+  useEffect(() => {
+    const preferDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isDarkModeChosen = !!localStorage.getItem(DARK_THEME_STORAGE_KEY)
+    const hasDarkTheme = preferDarkMode || isDarkModeChosen
+
+    setDarkTheme(hasDarkTheme)
+  }, [])
 
   useEffect(() => {
     if (darkTheme) {
