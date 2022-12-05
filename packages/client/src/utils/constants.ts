@@ -1,4 +1,8 @@
-export const API_URL = 'https://ya-praktikum.tech/api/v2'
+export const IS_PROD = process.env.NODE_ENV === 'production'
+export const IS_BROWSER = typeof window !== 'undefined'
+
+const HOST = IS_BROWSER ? location.origin : ''
+export const API_URL = `${HOST}/api`
 export const API_RESOURCE_URL = `${API_URL}/resources`
 
 export const API_LOCAL_BASE_URL = `http://localhost:${__SERVER_PORT__}`
@@ -9,6 +13,3 @@ export const OAUTH_REDIRECT_URI = `http://localhost:3000`
 
 export const TEAM_NAME = 'bomberman'
 export const RATING_FIELD_NAME = 'score'
-
-export const IS_PROD = process.env.NODE_ENV === 'production'
-export const IS_BROWSER = typeof window !== 'undefined'
