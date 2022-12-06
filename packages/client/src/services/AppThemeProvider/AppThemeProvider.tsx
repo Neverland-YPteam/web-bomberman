@@ -2,7 +2,6 @@ import { Dispatch, memo, ReactElement, SetStateAction, createContext, useEffect,
 import { useSelector } from '@utils/hooks'
 import { createTheme, ThemeProvider } from '@mui/material'
 import { userController } from '@services/controllers'
-import { IS_BROWSER } from '@utils/constants'
 
 interface Props {
   children: ReactElement;
