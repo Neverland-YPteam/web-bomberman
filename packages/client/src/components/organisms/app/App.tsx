@@ -1,14 +1,15 @@
-import { useEffect } from 'react';
-import './App.css';
-import { BrowserRouter } from 'react-router-dom';
-import { AppRoutes } from '@organisms/app-routes'
-import { Box } from '@mui/material';
+import { useEffect } from 'react'
+import { SnackbarProvider } from 'notistack'
+import { Box } from '@mui/material'
+
 import { useDispatch } from '@utils/hooks'
 import { loadUser } from '@services/store/actions/user'
 import { USER_LOGIN_SUCCESS } from '@services/store/actions/user-auth'
 import { tryOAuth } from '@services/OAuth'
-import { SnackbarProvider } from 'notistack'
+import { AppThemeProvider } from '@services/AppThemeProvider'
 import { SnackbarUtilsConfigurator } from '@utils/snackbar'
+import { AppRoutes } from '@organisms/app-routes'
+import background from '@/assets/images/background.png'
 
 function App() {
   const dispatch: any = useDispatch()
@@ -29,14 +30,19 @@ function App() {
   }, [dispatch])
 
   return (
-    <BrowserRouter>
-      <Box className="app__wrapper">
+    <AppThemeProvider>
+      <Box sx={{
+        flex: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: `url('${background}') no-repeat 0 0 / cover fixed`
+      }}>
         <SnackbarProvider>
           <SnackbarUtilsConfigurator />
           <AppRoutes />
         </SnackbarProvider>
       </Box>
-    </BrowserRouter>
+    </AppThemeProvider>
   )
 }
 

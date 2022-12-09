@@ -1,5 +1,7 @@
 import { TUserActions } from '@services/store/actions/user'
-import { API_RESOURCE_URL } from '@utils/constants'
+import { API_RESOURCE_URL, IS_BROWSER } from '@utils/constants'
+
+const preloadedState = IS_BROWSER ? window.__PRELOADED_STATE__ : null
 
 export interface IUserState {
   id: null | number
@@ -12,7 +14,7 @@ export interface IUserState {
   avatar: string
 }
 
-const initialState: IUserState = {
+const initialState: IUserState = preloadedState?.user ?? {
   id: null,
   first_name: null,
   second_name: null,

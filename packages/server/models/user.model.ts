@@ -2,7 +2,7 @@ import {
   AllowNull, AutoIncrement, Column, DataType, Model, PrimaryKey, Table
 } from 'sequelize-typescript'
 
-type TTheme = 'light' | 'dark'
+type TTheme = 'light' | 'dark' | null
 
 export interface IUser {
   id?: number

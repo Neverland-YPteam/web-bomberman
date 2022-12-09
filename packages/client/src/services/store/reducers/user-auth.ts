@@ -1,4 +1,7 @@
 import { TUserAuthActions } from '@services/store/actions/user-auth'
+import { IS_BROWSER } from '@utils/constants'
+
+const preloadedState = IS_BROWSER ? window.__PRELOADED_STATE__ : null
 
 export type TUserAuthState = {
   isUserAuth: boolean;
@@ -12,7 +15,7 @@ export type TUserAuthState = {
 }
 
 const initialState: TUserAuthState = {
-  isUserAuth: false,
+  isUserAuth: !!preloadedState?.user,
   isOAuth: false,
 
   loginRequest: false,
@@ -20,7 +23,7 @@ const initialState: TUserAuthState = {
 
   logoutRequest: false,
   logoutFailed: false,
-};
+}
 
 export const userAuthReducer = (state = initialState, actions: TUserAuthActions) => {
   switch (actions.type) {

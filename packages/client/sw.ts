@@ -17,7 +17,7 @@ const URLS = [
   '/assets/index.browser.js',
   '/assets/arrows.png',
   '/assets/background.png',
-  '/assets/index.css',
+  '/assets/style.css',
   '/assets/logo.png',
   '/assets/main_logo.png',
   '/assets/PressStart2P.ttf',

@@ -25,6 +25,10 @@ export default defineConfig({
       '@images': path.resolve(__dirname, './src/assets/images'),
     }
   },
+  ssr: {
+    target: 'node',
+    format: 'cjs',
+  },
   plugins: [react()],
   build: {
     rollupOptions: {
@@ -32,20 +36,26 @@ export default defineConfig({
         app: './index.html',
         'service-worker': './service-worker.ts',
         sw: './sw.ts',
-        game: './src/components/pages/game/scripts/index.ts'
+        game: './src/components/pages/game/scripts/index.ts',
+        css: './src/styles/style.css',
       },
       output: {
         entryFileNames: ({ name }) => {
-          if (name === 'game') {
-            return 'assets/game.js'
+          switch (name) {
+            case 'entry-server':
+              return '[name].cjs'
+            case 'sw':
+              return '[name].js'
+            case 'game':
+              return 'assets/[name].js'
+            case 'css':
+              return 'assets/[name].css'
+            default:
+              return 'assets/[name].js'
           }
-
-          return ['service-worker', 'sw'].includes(name)
-             ? '[name].js'
-             : 'assets/[name].js'
         },
         chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
+        assetFileNames: `assets/[name].[ext]`,
       }
     }
   }

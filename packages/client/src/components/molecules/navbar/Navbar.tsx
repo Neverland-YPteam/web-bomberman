@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom'
 import { IRoute, routes } from '@organisms/app-routes'
 import { Box, Container } from '@mui/material'
 import { useTheme } from '@mui/material'
-import './Navbar.css'
 import logo from './images/logo.png'
+import background from '@/assets/images/background.png'
 import { ChangeEvent, SyntheticEvent, useContext } from 'react'
 import { useDispatch, useSelector } from '@utils/hooks'
 import { logoutUser } from '@services/store/actions/user-auth'
@@ -34,14 +34,37 @@ const Navbar = ({ showLogo, links }: Props) => {
   return (
     <Box
       component="nav"
-      className="navbar"
-      sx={{ zIndex: theme.zIndex.appBar, boxShadow: 2 }}
+      sx={{
+        position: 'sticky',
+        top: 0,
+        zIndex: theme.zIndex.appBar,
+        boxShadow: 2,
+        '::before': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          zIndex: -1,
+          background: `url('${background}') no-repeat 0 0 / cover fixed`
+        },
+        '::after': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          backgroundColor: 'rgba(0, 0, 0, 30%)'
+        }
+      }}
     >
       <Container>
-        <Box
-          className="navbar__content"
-          sx={{ gap: 8 }}
-        >
+        <Box sx={{
+          position: 'relative',
+          zIndex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          minHeight: 54,
+          padding: '12px 48px'
+        }}>
           {showLogo &&
             <Link to={routes.landing.path} title="Об игре">
               <img src={logo} width="120" />
