@@ -46,10 +46,9 @@ const routes: TRoutes = {
     path: '/leaderboard',
     auth: true,
   },
-  forum: {
-    title: 'Форум',
-    path: '/forum',
-    auth: true,
+  notFound: {
+    title: 'Страница не найдена',
+    path: '*',
   },
 }
 

@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom'
 import { IRoute, routes } from '@organisms/app-routes'
-import { Container, Box } from '@mui/material'
-import { theme } from '@services/AppThemeProvider/theme'
-import './Navbar.css'
+import { Box, Container } from '@mui/material'
+import { useTheme } from '@mui/material'
 import logo from './images/logo.png'
-import { SyntheticEvent } from 'react'
+import background from '@/assets/images/background.png'
+import { ChangeEvent, SyntheticEvent, useContext } from 'react'
 import { useDispatch, useSelector } from '@utils/hooks'
 import { logoutUser } from '@services/store/actions/user-auth'
+import { ColorModeContext } from '@services/AppThemeProvider'
+import { MaterialUISwitch } from './Switch'
 
 interface Props {
   showLogo?: boolean
@@ -15,7 +17,14 @@ interface Props {
 
 const Navbar = ({ showLogo, links }: Props) => {
   const dispatch: any = useDispatch()
-  const { isUserAuth } = useSelector(state => state.userAuth)
+  const theme = useTheme()
+  const { userAuth: { isUserAuth } } = useSelector(state => state)
+  const { darkTheme, setDarkTheme } = useContext(ColorModeContext)
+
+  const changeTheme = (event: ChangeEvent) => {
+    const input = event.target as HTMLInputElement
+    setDarkTheme?.(() => input.checked)
+  }
 
   const handleExitClick = (evt: SyntheticEvent) => {
     evt.preventDefault()
@@ -25,14 +34,37 @@ const Navbar = ({ showLogo, links }: Props) => {
   return (
     <Box
       component="nav"
-      className="navbar"
-      sx={{ zIndex: theme.zIndex.appBar, boxShadow: 2 }}
+      sx={{
+        position: 'sticky',
+        top: 0,
+        zIndex: theme.zIndex.appBar,
+        boxShadow: 2,
+        '::before': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          zIndex: -1,
+          background: `url('${background}') no-repeat 0 0 / cover fixed`
+        },
+        '::after': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          backgroundColor: 'rgba(0, 0, 0, 30%)'
+        }
+      }}
     >
       <Container>
-        <Box
-          className="navbar__content"
-          sx={{ gap: 8 }}
-        >
+        <Box sx={{
+          position: 'relative',
+          zIndex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          minHeight: 54,
+          padding: '12px 48px'
+        }}>
           {showLogo &&
             <Link to={routes.landing.path} title="Об игре">
               <img src={logo} width="120" />
@@ -43,12 +75,13 @@ const Navbar = ({ showLogo, links }: Props) => {
             component="ul"
             sx={{
               display: 'flex',
+              alignItems: 'center',
               gap: 4,
               marginLeft: 'auto',
               padding: 0,
               listStyle: 'none',
               fontFamily: '"Press Start 2P"',
-              color: 'white',
+              color: theme.palette.secondary.main,
             }}
           >
             {links.map(link =>
@@ -68,7 +101,6 @@ const Navbar = ({ showLogo, links }: Props) => {
               </li>
             )}
 
-            {/* @TODO Кнопка «Выйти» */}
             {isUserAuth && (
               <Box
                 onClick={handleExitClick}
@@ -82,6 +114,8 @@ const Navbar = ({ showLogo, links }: Props) => {
                 Выход
               </Box>
             )}
+
+            <MaterialUISwitch checked={Boolean(darkTheme)} onChange={changeTheme} />
           </Box>
         </Box>
       </Container>

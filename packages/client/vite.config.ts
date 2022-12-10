@@ -25,5 +25,38 @@ export default defineConfig({
       '@images': path.resolve(__dirname, './src/assets/images'),
     }
   },
+  ssr: {
+    target: 'node',
+    format: 'cjs',
+  },
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      input: {
+        app: './index.html',
+        'service-worker': './service-worker.ts',
+        sw: './sw.ts',
+        game: './src/components/pages/game/scripts/index.ts',
+        css: './src/styles/style.css',
+      },
+      output: {
+        entryFileNames: ({ name }) => {
+          switch (name) {
+            case 'entry-server':
+              return '[name].cjs'
+            case 'sw':
+              return '[name].js'
+            case 'game':
+              return 'assets/[name].js'
+            case 'css':
+              return 'assets/[name].css'
+            default:
+              return 'assets/[name].js'
+          }
+        },
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`,
+      }
+    }
+  }
 })

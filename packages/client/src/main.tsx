@@ -1,17 +1,24 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { App } from '@organisms/app'
-import './styles/index.css'
-import { AppThemeProvider } from '@services/AppThemeProvider'
+import { hydrateRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from '@services/store/store'
+import { IS_PROD, IS_BROWSER } from '@utils/constants'
+import { startServiceWorker } from '../service-worker'
+import { App } from '@organisms/app'
+import './styles/style.css'
 
-ReactDOM.createRoot(document.getElementById('App') as HTMLElement).render(
+hydrateRoot(
+  document.getElementById('app') as HTMLElement,
   <React.StrictMode>
     <Provider store={store}>
-      <AppThemeProvider>
+      <BrowserRouter>
         <App />
-      </AppThemeProvider>
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 )
+
+if (IS_PROD && IS_BROWSER) {
+  startServiceWorker()
+}

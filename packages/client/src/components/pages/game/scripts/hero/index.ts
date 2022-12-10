@@ -9,12 +9,13 @@ import {
 
 import { PANEL_HEIGHT_PX, TILE_SIZE, textures } from '../const'
 
-import { PausableInterval } from '../utils'
+import { PausableInterval, PausableTimeout } from '../utils'
 import { canvas } from '../canvas'
 import { level } from '../level'
 import { Control } from '../Control'
 import { Bomb } from '../Bomb'
 import { Flame } from '../Flame'
+import { TCellCoords } from '../level/types'
 
 const {
   TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE, TEXTURE_GRASS,
@@ -51,19 +52,25 @@ const KEY_RIGHT = 'ArrowRight'
 const KEY_UP = 'ArrowUp'
 const KEY_DOWN = 'ArrowDown'
 const KEY_BOMB_PLACE = 'Space'
-const KEY_BOMB_DETONATE = 'Control'
+const KEY_BOMB_DETONATE = 'ControlLeft'
 
 const SPEED_DEFAULT = 3 // Скорость героя по умолчанию
-// const SPEED_IMPROVED = 4 // Скорость героя при активном бонусе
+const SPEED_IMPROVED = 4 // Скорость героя при активном бонусе
 const TOLERANCE_PX = 9 // Допустимое отклонение от границ COLUMN или WALL для прохода героя между текстурами
+const BOMBS_COUNT_DEFAULT = 1
+const FIRE_RADIUS_DEFAULT = 1
 const SAFE_BOUND_X_PX = 9 // Безопасная область HERO при контакте с ENEMY по оси X
 const SAFE_BOUND_Y_PX = 3 // Безопасная область HERO при контакте с ENEMY по оси Y
 const DIRECTION_DEFAULT: TDirectionX = 'right'
 const TEXTURE_STANDING_CHANGE_INTERVAL_MS = 400 // Скорость анимации standing
 const TEXTURE_MOVING_CHANGE_INTERVAL_MS = 150 // Скорость анимации moving
 const TEXTURE_DEAD_CHANGE_INTERVAL_MS = 200 // Скорость анимации dead
+const IMMORTAL_DURATION_S = 30 // Длительность бонуса бессмертия
+const BLINKING_FAST_INTERVAL_MS = 20 // Скорость мигания при бессмертии
+const BLINKING_SLOW_INTERVAL_MS = 80 // Скорость мигания перед окончанием бессмертия
+const BLINKING_SLOW_DURATION_S = 3 // Длительность мигания перед окончанием бессмертия
 
-const globalTextures = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE] // @TODO Убрать после добавления wallPass
+const globalTextures = [TEXTURE_COLUMN, TEXTURE_WALL, TEXTURE_WALL_SAFE]
 const bombTextures = [TEXTURE_BOMB_SMALL, TEXTURE_BOMB_MEDIUM, TEXTURE_BOMB_LARGE]
 
 export class Hero {
@@ -93,10 +100,15 @@ export class Hero {
     down: false,
   }
 
+  private _isTextureVisible = true
   private _currentTextureIndex = 0
   private _changeTextureInterval: PausableInterval
 
   private _bombsPlaced: TBombsPlaced = {}
+
+  private _blinkingInterval: null | PausableInterval = null
+  private _blinkingTimeout: null | PausableTimeout = null
+  private _immortalTimeout: null | PausableTimeout = null
 
   x = 0
   y = 0
@@ -105,32 +117,18 @@ export class Hero {
   speed = SPEED_DEFAULT
 
   abilities = {
-    bombs: 5, // Сколько бомб одновременно может размещать
-    flame: 3, // Радиус взрыва, не считая центральной клетки
+    bombs: BOMBS_COUNT_DEFAULT, // Сколько бомб одновременно может размещать
+    fire: FIRE_RADIUS_DEFAULT, // Радиус взрыва, не считая центральной клетки
     detonator: false, // Взрывает самую старую бомбу вручную
-    wallPass: false, // Может ходить сквозь стены
+    wallpass: false, // Может ходить сквозь стены
     bombpass: false, // Может ходить сквозь бомбы
-    flamepass: false, // Взрывы не причиняют вреда
+    firepass: false, // Взрывы не причиняют вреда
     immortal: false, // Враги и взрывы не причиняют вреда, выключается по таймауту
   }
 
   constructor() {
     this._changeTextureInterval = new PausableInterval(this._updateTextureIndex, TEXTURE_STANDING_CHANGE_INTERVAL_MS)
     this._changeTextureInterval.start()
-  }
-
-  private get _coords(): ICoords {
-    const x = this.x - TILE_SIZE
-    const y = this.y - PANEL_HEIGHT_PX - TILE_SIZE
-
-    return {
-      topLeft: { x, y },
-      topRight: { x: x + TILE_SIZE, y },
-      bottomLeft: { x, y: y + TILE_SIZE },
-      bottomRight: { x: x + TILE_SIZE, y: y + TILE_SIZE },
-      mainCol: Math.round(x / TILE_SIZE),
-      mainRow: Math.round(y / TILE_SIZE),
-    }
   }
 
   private get _isMoving() {
@@ -175,11 +173,25 @@ export class Hero {
     const flooredX = Math.floor(quotientX)
     const cols = Number.isInteger(quotientX) ? [flooredX] : [flooredX, Math.ceil(quotientX)]
 
-    const quotientY = this._coords.topLeft.y / TILE_SIZE
+    const quotientY = this.coords.topLeft.y / TILE_SIZE
     const flooredY = Math.floor(quotientY)
     const rows = Number.isInteger(quotientY) ? [flooredY] : [flooredY, Math.ceil(quotientY)]
 
     return { cols, rows }
+  }
+
+  get coords(): ICoords {
+    const x = this.x - TILE_SIZE
+    const y = this.y - PANEL_HEIGHT_PX - TILE_SIZE
+
+    return {
+      topLeft: { x, y },
+      topRight: { x: x + TILE_SIZE, y },
+      bottomLeft: { x, y: y + TILE_SIZE },
+      bottomRight: { x: x + TILE_SIZE, y: y + TILE_SIZE },
+      mainCol: Math.round(x / TILE_SIZE),
+      mainRow: Math.round(y / TILE_SIZE),
+    }
   }
 
   private _resetPosition() {
@@ -220,17 +232,17 @@ export class Hero {
   }
 
   private _tryToMoveX(direction: TDirectionX) {
-    const { _coords } = this
-    const moduloTop = _coords.topLeft.y % TILE_SIZE
-    const moduloBottom = TILE_SIZE - _coords.bottomLeft.y % TILE_SIZE
+    const { coords } = this
+    const moduloTop = coords.topLeft.y % TILE_SIZE
+    const moduloBottom = TILE_SIZE - coords.bottomLeft.y % TILE_SIZE
     const shiftY = moduloTop <= this._tolerance ? -moduloTop : moduloBottom
 
     if (Math.abs(shiftY) <= this._tolerance) {
       const col = direction === 'left'
-        ? Math.floor((_coords.topLeft.x - this.speed) / TILE_SIZE)
-        : Math.ceil((_coords.topLeft.x + this.speed) / TILE_SIZE)
+        ? Math.floor((coords.topLeft.x - this.speed) / TILE_SIZE)
+        : Math.ceil((coords.topLeft.x + this.speed) / TILE_SIZE)
 
-      const row = Math.floor((_coords.topLeft.y + shiftY) / TILE_SIZE)
+      const row = Math.floor((coords.topLeft.y + shiftY) / TILE_SIZE)
       const shiftX = direction === 'left' ? -this.speed : this.speed
 
       this._tryToMove('x', direction, col, row, shiftX, shiftY)
@@ -238,18 +250,18 @@ export class Hero {
   }
 
   private _tryToMoveY(direction: TDirectionY) {
-    const { _coords } = this
-    const moduloLeft = _coords.topLeft.x % TILE_SIZE
-    const moduloRight = TILE_SIZE - _coords.topRight.x % TILE_SIZE
+    const { coords } = this
+    const moduloLeft = coords.topLeft.x % TILE_SIZE
+    const moduloRight = TILE_SIZE - coords.topRight.x % TILE_SIZE
     const shiftX = moduloLeft <= this._tolerance ? -moduloLeft : moduloRight
     const shiftXPositive = Math.abs(shiftX)
 
     if (shiftXPositive <= this._tolerance) {
       const row = direction === 'up'
-        ? Math.floor((_coords.topLeft.y - this.speed) / TILE_SIZE)
-        : Math.ceil((_coords.topLeft.y + this.speed) / TILE_SIZE)
+        ? Math.floor((coords.topLeft.y - this.speed) / TILE_SIZE)
+        : Math.ceil((coords.topLeft.y + this.speed) / TILE_SIZE)
 
-      const col = Math.floor((_coords.topLeft.x + shiftX) / TILE_SIZE)
+      const col = Math.floor((coords.topLeft.x + shiftX) / TILE_SIZE)
       const shiftY = direction === 'up' ? -this.speed : this.speed
 
       this._tryToMove('y', direction, col, row, shiftX, shiftY)
@@ -266,7 +278,10 @@ export class Hero {
       return cols.includes(col) && rows.includes(row)
     }
 
-    // @TODO Поправить метод после добавления wallPass
+    if (this.abilities.wallpass) {
+      return tile !== TEXTURE_COLUMN
+    }
+
     return !globalTextures.includes(tile)
   }
 
@@ -296,8 +311,8 @@ export class Hero {
       return
     }
 
-    const col = Math.round(this._coords.topLeft.x / TILE_SIZE)
-    const row = Math.round(this._coords.topLeft.y / TILE_SIZE)
+    const col = Math.round(this.coords.topLeft.x / TILE_SIZE)
+    const row = Math.round(this.coords.topLeft.y / TILE_SIZE)
     const texture = level.getTileType(col, row)
 
     if (bombTextures.includes(texture) || texture !== TEXTURE_GRASS) {
@@ -314,11 +329,11 @@ export class Hero {
 
   private _onBombExplosion = (col: number, row: number) => {
     delete this._bombsPlaced[`${col}-${row}`]
-    new Flame(col, row, this.abilities.flame)
+    new Flame(col, row, this.abilities.fire)
   }
 
   private _checkForFlameContact() {
-    return level.burningCells.some(([col, row]) => col === this._coords.mainCol && row === this._coords.mainRow)
+    return level.burningCells.some(([col, row]) => col === this.coords.mainCol && row === this.coords.mainRow)
   }
 
   private _checkForEnemyContact() {
@@ -327,13 +342,33 @@ export class Hero {
         return false
       }
 
-      const hasContactXLeft = enemy.coords.topRight.x - this._coords.topLeft.x > SAFE_BOUND_X_PX
-      const hasContactXRight = this._coords.topRight.x - enemy.coords.topLeft.x > SAFE_BOUND_X_PX
-      const hasContactYTop = enemy.coords.bottomLeft.y - this._coords.topLeft.y > SAFE_BOUND_Y_PX
-      const hasContactYBottom = this._coords.bottomLeft.y - enemy.coords.topLeft.y > SAFE_BOUND_Y_PX
+      const hasContactXLeft = enemy.coords.topRight.x - this.coords.topLeft.x > SAFE_BOUND_X_PX
+      const hasContactXRight = this.coords.topRight.x - enemy.coords.topLeft.x > SAFE_BOUND_X_PX
+      const hasContactYTop = enemy.coords.bottomLeft.y - this.coords.topLeft.y > SAFE_BOUND_Y_PX
+      const hasContactYBottom = this.coords.bottomLeft.y - enemy.coords.topLeft.y > SAFE_BOUND_Y_PX
 
       return hasContactXLeft && hasContactXRight && hasContactYTop && hasContactYBottom
     })
+  }
+
+  private _toggleTextureVisibility = (isVisible?: boolean) => {
+    this._isTextureVisible = isVisible ?? !this._isTextureVisible
+  }
+
+  private _setFastBlinking = () => {
+    const blinkingDuration = (IMMORTAL_DURATION_S - BLINKING_SLOW_DURATION_S) * 1000
+
+    this._blinkingTimeout = new PausableTimeout(this._setSlowBlinking, blinkingDuration)
+    this._blinkingTimeout.start()
+
+    this._blinkingInterval = new PausableInterval(this._toggleTextureVisibility, BLINKING_FAST_INTERVAL_MS)
+    this._blinkingInterval.start()
+  }
+
+  private _setSlowBlinking = () => {
+    this._blinkingInterval?.stop()
+    this._blinkingInterval = new PausableInterval(this._toggleTextureVisibility, BLINKING_SLOW_INTERVAL_MS)
+    this._blinkingInterval.start()
   }
 
   private _die() {
@@ -355,11 +390,23 @@ export class Hero {
 
   reset() {
     this.isDead = false
+    this.makeMortal()
     this._resetPosition()
   }
 
+  resetAbilities() {
+    this.speed = SPEED_DEFAULT
+    this.abilities.detonator = false
+    this.abilities.wallpass = false
+    this.abilities.bombpass = false
+    this.abilities.firepass = false
+    this.makeMortal()
+  }
+
   draw() {
-    canvas.image(this._texturesCurrent[this._currentTextureIndex], this.x, this.y)
+    if (this._isTextureVisible) {
+      canvas.image(this._texturesCurrent[this._currentTextureIndex], this.x, this.y)
+    }
   }
 
   allowControl() {
@@ -426,36 +473,80 @@ export class Hero {
 
     const hasFlameContact = this._checkForFlameContact()
 
-    if (hasFlameContact) {
+    if (hasFlameContact && !this.abilities.firepass && !this.abilities.immortal) {
       this._die()
       return
     }
 
     const hasEnemyContact = this._checkForEnemyContact()
 
-    if (hasEnemyContact) {
+    if (hasEnemyContact && !this.abilities.immortal) {
       this._die()
     }
 
-    if (level.canExit) {
-      const [doorCol, doorRow] = level.doorCoords
+    if (level.canExit && level.isDoorOpened) {
+      const isDoor = level.isDoor(this.coords.mainCol, this.coords.mainRow)
 
-      if (this._coords.mainCol === doorCol && this._coords.mainRow === doorRow) {
+      if (isDoor) {
         level.complete()
+        return
+      }
+    }
+
+    const tileType = level.getTileType(this.coords.mainCol, this.coords.mainRow)
+
+    if (!level.isBonusPickedUp && tileType !== TEXTURE_WALL && tileType !== TEXTURE_WALL_SAFE) {
+      const [bonusCol, bonusRow] = level.bonusCoords as TCellCoords
+
+      if (this.coords.mainCol === bonusCol && this.coords.mainRow === bonusRow) {
+        level.pickUpBonus()
       }
     }
   }
 
+  increaseSpeed = () => {
+    this.speed = SPEED_IMPROVED
+  }
+
+  makeImmortal = () => {
+    this.abilities.immortal = true
+
+    this._immortalTimeout = new PausableTimeout(this.makeMortal, IMMORTAL_DURATION_S * 1000)
+    this._immortalTimeout.start()
+
+    this._setFastBlinking()
+  }
+
+  makeMortal = () => {
+    this.abilities.immortal = false
+
+    this._toggleTextureVisibility(true)
+    this._blinkingTimeout?.stop()
+    this._blinkingTimeout = null
+    this._blinkingInterval?.stop()
+    this._immortalTimeout?.stop()
+    this._immortalTimeout = null
+  }
+
   pauseIntervals() {
     this._changeTextureInterval.pause()
+    this._blinkingTimeout?.pause()
+    this._blinkingInterval?.pause()
+    this._immortalTimeout?.pause()
   }
 
   resumeIntervals() {
     this._changeTextureInterval.resume()
+    this._blinkingTimeout?.resume()
+    this._blinkingInterval?.resume()
+    this._immortalTimeout?.resume()
   }
 
   stopIntervals() {
     this._changeTextureInterval.stop()
+    this._blinkingTimeout?.stop()
+    this._blinkingInterval?.stop()
+    this._immortalTimeout?.stop()
   }
 }
 
