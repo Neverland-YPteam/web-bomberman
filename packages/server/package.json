@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "rimraf dist && tsc --p ./tsconfig.prod.json",
+    "build": "rimraf dist && tsc --p ./tsconfig.prod.json && npm run copy:postgres",
+    "copy:postgres": "fse copy ./wait-for-postgres.sh ./dist/wait-for-postgres.sh",
     "preview": "node ./dist/index.js",
     "dev": "NODE_ENV=development nodemon index.ts",
     "lint": "eslint .",
