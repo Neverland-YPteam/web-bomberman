@@ -13,8 +13,8 @@ services:
       - ./tmp/pgdata:/var/lib/postgresql/data
 
   server:
-    container_name: prakticum-server
-    image: prackicum-server
+    container_name: practicum-server
+    image: practicum-server
     build:
       context: .
       dockerfile: Dockerfile.server
@@ -30,8 +30,8 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD}
 
   client:
-    container_name: prakticum-client
-    image: prakticum-client
+    container_name: practicum-client
+    image: practicum-client
     build:
       context: .
       dockerfile: Dockerfile.client
@@ -43,4 +43,3 @@ services:
     environment:
       - CLIENT_PORT=${CLIENT_PORT}
       - SERVER_PORT=${SERVER_PORT}
-
