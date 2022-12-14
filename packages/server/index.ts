@@ -14,7 +14,7 @@ import {
 
 dotenv.config()
 
-const PORT = process.env.SERVER_PORT || 3001
+const PORT = process.env.SERVER_PORT || 8080
 
 ;(async () => {
   try {
