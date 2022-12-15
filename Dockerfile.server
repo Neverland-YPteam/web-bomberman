@@ -24,5 +24,10 @@ COPY --from=builder /app/packages/server/package.json /app/package.json
 COPY --from=builder /app/packages/client/dist/ /app/dist/
 RUN yarn install --production=true
 
+RUN apt-get update
+RUN apt-get -y install postgresql-client
+
+RUN chmod +x /app/wait-for-postgres.sh
+
 EXPOSE $SERVER_PORT
 CMD [ "node", "/app/index.js" ]
