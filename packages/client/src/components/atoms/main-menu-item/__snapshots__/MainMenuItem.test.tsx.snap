@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MainMenuItem snapshot 1`] = `
+<a
+  className="MuiBox-root css-14hnrkt"
+  href="/title"
+  onClick={[Function]}
+>
+  <h6
+    className="MuiTypography-root MuiTypography-subtitle1 css-10wpov9-MuiTypography-root"
+  >
+    Title
+  </h6>
+</a>
+`;

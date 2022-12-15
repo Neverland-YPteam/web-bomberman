@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MainMenuItem snapshot 1`] = `
+<a
+  className="css-1md0id3"
+  href="/link"
+  onClick={[Function]}
+>
+  test link
+</a>
+`;

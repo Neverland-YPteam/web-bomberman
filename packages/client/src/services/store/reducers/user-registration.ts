@@ -1,6 +1,6 @@
 import { TUserRegistrationActions } from '@services/store/actions/user-registration'
 
-interface userRegistrationState {
+export interface userRegistrationState {
   registrationRequest: boolean;
   registrationFailed: boolean;
   registrationSuccess: boolean;
