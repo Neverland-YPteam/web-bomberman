@@ -8,7 +8,7 @@ const API_SUFFIX = IS_PROD ? '/api' : '/api/v2'
 export const API_URL = `${HOST}${API_SUFFIX}`
 export const API_RESOURCE_URL = `${API_URL}/resources`
 
-export const API_LOCAL_BASE_URL = `http://localhost:${__SERVER_PORT__}`
+export const API_LOCAL_BASE_URL = IS_PROD ? location.origin : `http://localhost:${__SERVER_PORT__}`
 export const API_LOCAL_USER_URL = `${API_LOCAL_BASE_URL}/user`
 
 export const OAUTH_YANDEX_AUTHORIZE_URL = `https://oauth.yandex.ru/authorize?response_type=code`
