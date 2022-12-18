@@ -8,10 +8,8 @@ const HTTP_STATUS_OK = 200
 const RESPONSE_TYPE_NORMAL = 'basic'
 
 const URLS = [
-  '/',
   '/index.html',
   '/bomberman.png',
-  '/assets',
   '/assets/app.js',
   '/assets/game.js',
   '/assets/index.browser.js',
@@ -50,6 +48,13 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event
+
+  const { pathname } = new URL(request.url)
+  const isResponseFromUrlList = URLS.includes(pathname)
+
+  if (!isResponseFromUrlList) {
+    return
+  }
 
   event.respondWith(
     caches.match(event.request)
