@@ -36,7 +36,7 @@ describe('User profile reducer', () => {
     }))
       .toEqual({
         ...user,
-        avatar: `http://localhost/api/resources${user.avatar}`,
+        avatar: `https://ya-praktikum.tech/api/v2/resources${user.avatar}`,
       })
   });
 
@@ -47,7 +47,7 @@ describe('User profile reducer', () => {
     }))
       .toEqual({
         ...user,
-        avatar: `http://localhost/api/resources/image2`
+        avatar: `https://ya-praktikum.tech/api/v2/resources/image2`
       })
   })
 })
