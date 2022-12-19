@@ -1,4 +1,4 @@
-import { Dispatch, memo, ReactElement, SetStateAction, createContext, useEffect, useState } from 'react'
+import { Dispatch, memo, ReactElement, SetStateAction, createContext, useEffect, useLayoutEffect, useState } from 'react'
 import { useSelector } from '@utils/hooks'
 import { createTheme, ThemeProvider } from '@mui/material'
 import { userController } from '@services/controllers'
@@ -16,19 +16,26 @@ const DARK_THEME_STORAGE_KEY = 'darkTheme'
 
 export const ColorModeContext = createContext<IColorModeContext>({})
 
+let canChangeTheme = false
+
 const AppThemeProvider = ({ children }: Props) => {
   const [darkTheme, setDarkTheme] = useState(false)
   const { user: { id: userId } } = useSelector(state => state)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const preferDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
     const isDarkModeChosen = !!localStorage.getItem(DARK_THEME_STORAGE_KEY)
     const hasDarkTheme = preferDarkMode || isDarkModeChosen
 
     setDarkTheme(hasDarkTheme)
+    setTimeout(() => canChangeTheme = true, 500)
   }, [])
 
   useEffect(() => {
+    if (!canChangeTheme) {
+      return
+    }
+
     if (darkTheme) {
       localStorage.setItem(DARK_THEME_STORAGE_KEY, 'true')
     } else {

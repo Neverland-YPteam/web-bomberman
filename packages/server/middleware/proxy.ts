@@ -10,7 +10,7 @@ export default createProxyMiddleware({
   },
   target: `${API_YANDEX_URL_BASE}`,
   changeOrigin: true,
-  cookieDomainRewrite: 'localhost',
+  cookieDomainRewrite: '',
   secure: false,
   timeout: REQUEST_TIMEOUT_MS,
 })
